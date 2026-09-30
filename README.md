@@ -206,7 +206,7 @@ git tag phase-0
 > CMD: `doskey k=kubectl $*` (session only).
 
 ```bash
-kubectl version --short                     # client + server versions
+kubectl version                             # client + server versions
 kubectl config get-contexts                 # confirm you're on rancher-desktop
 kubectl config use-context rancher-desktop  # if needed
 kubectl get nodes -o wide                   # nodes, IPs, container runtime
@@ -214,6 +214,16 @@ kubectl get pods -A                         # all system pods (k3s, traefik, cor
 helm version
 kubectl api-resources | head -30            # discover object types
 ```
+
+**Common errors:**
+
+- `error: unknown flag: --short` — deprecated in kubectl 1.28, **removed in
+  1.30**. Plain `kubectl version` prints client + server.
+- `connection refused (localhost:8080)` — Rancher Desktop not running, or
+  Kubernetes disabled (Preferences → Kubernetes).
+- `no context exists with the name "rancher-desktop"` — kubeconfig lacks it;
+  enabling Kubernetes in Rancher Desktop writes `~/.kube/config`.
+- `helm: command not found` — `brew install helm`.
 
 **Verify:** Node shows `Ready`; `kube-system` pods `Running`.
 
