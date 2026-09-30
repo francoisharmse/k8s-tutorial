@@ -60,6 +60,46 @@ git tag phase-0
 
 **Concepts:** kubeconfig, contexts, control plane vs worker nodes.
 
+!!! tip "Optional: alias `kubectl` → `k`"
+    Every command in this tutorial spells out `kubectl` for clarity — but most
+    people alias it to `k` and never look back. One-time setup, per shell:
+
+    === "zsh (macOS default)"
+
+        ```bash
+        echo 'alias k=kubectl' >> ~/.zshrc && source ~/.zshrc
+        # keep tab-completion working on the alias:
+        echo 'source <(kubectl completion zsh)' >> ~/.zshrc
+        echo 'compdef k=kubectl' >> ~/.zshrc
+        ```
+
+    === "bash"
+
+        ```bash
+        echo 'alias k=kubectl' >> ~/.bashrc && source ~/.bashrc
+        # on macOS the login file is ~/.bash_profile instead
+        # completion: complete -o default -F __start_kubectl k
+        ```
+
+    === "fish"
+
+        ```bash
+        echo 'alias k=kubectl' >> ~/.config/fish/config.fish
+        ```
+
+    === "PowerShell (Windows)"
+
+        ```powershell
+        Set-Alias k kubectl                                # current session
+        Add-Content $PROFILE 'Set-Alias k kubectl'         # persist
+        ```
+
+    === "CMD (Windows)"
+
+        ```bat
+        doskey k=kubectl $*    :: current session only
+        ```
+
 ```bash
 kubectl version --short                     # client + server versions
 kubectl config get-contexts                 # confirm you're on rancher-desktop
