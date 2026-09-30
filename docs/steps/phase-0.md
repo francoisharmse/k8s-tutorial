@@ -118,6 +118,10 @@ with yours — the `+` markers inside the output explain every column and status
 
 1.  Check client + server versions:
 
+    *Why:* the cheapest end-to-end test — if kubectl can reach the API server,
+    this prints both versions. It also exposes version *skew* between your
+    client and the cluster.
+
     ```bash
     kubectl version
     ```
@@ -134,6 +138,10 @@ with yours — the `+` markers inside the output explain every column and status
             means it's **k3s**, Rancher Desktop's bundled distribution.
 
 2.  List the contexts in your kubeconfig:
+
+    *Why:* kubectl multiplexes clusters — the same binary can talk to a local
+    k3s, minikube, or a production cluster. Always confirm *which* cluster
+    you're about to touch before running anything.
 
     ```bash
     kubectl config get-contexts
@@ -156,6 +164,9 @@ with yours — the `+` markers inside the output explain every column and status
 
 3.  Switch context — only needed if `*` wasn't on `rancher-desktop`:
 
+    *Why:* everything after this targets `rancher-desktop`. Getting contexts
+    wrong is how people accidentally run commands against the wrong cluster.
+
     ```bash
     kubectl config use-context rancher-desktop
     ```
@@ -166,6 +177,10 @@ with yours — the `+` markers inside the output explain every column and status
         targets this context unless you override it with `--context`.
 
 4.  List the cluster's nodes:
+
+    *Why:* nodes are the machines your workloads land on. `get nodes` is the
+    cluster health check; `-o wide` adds IPs, OS, and container runtime —
+    the facts you reach for when pods won't schedule.
 
     ```bash
     kubectl get nodes -o wide
@@ -187,6 +202,10 @@ with yours — the `+` markers inside the output explain every column and status
             `lima-` is the Lima VM it lives in.
 
 5.  List every pod in the cluster:
+
+    *Why:* `-A` (all namespaces) shows the system workloads too — it's both a
+    health check and a lesson: DNS, ingress, and storage are just pods in
+    `kube-system`, same as the ones you'll deploy.
 
     ```bash
     kubectl get pods -A
@@ -213,6 +232,9 @@ with yours — the `+` markers inside the output explain every column and status
 
 6.  Confirm helm is installed:
 
+    *Why:* you'll deploy PostgreSQL via a Helm chart in step 1.2 — better to
+    discover a missing install now than mid-step.
+
     ```bash
     helm version
     ```
@@ -222,7 +244,69 @@ with yours — the `+` markers inside the output explain every column and status
         `version.BuildInfo{Version:"v3.x.x", GitCommit:"…", GoVersion:"…"}` —
         just proves helm works; the version prints inside `BuildInfo`.
 
+    ??? tip "helm: command not found? Install it"
+
+        === "macOS — Homebrew"
+
+            ```bash
+            brew install helm
+            ```
+
+        === "Windows — winget"
+
+            ```powershell
+            winget install Helm.Helm
+            ```
+
+        === "Windows — Chocolatey"
+
+            ```powershell
+            choco install kubernetes-helm
+            ```
+
+        === "Windows — Scoop"
+
+            ```powershell
+            scoop install helm
+            ```
+
+        === "Debian/Ubuntu — apt"
+
+            ```bash
+            curl https://baltocdn.com/helm/signing.asc | gpg --dearmor | \
+              sudo tee /usr/share/keyrings/helm.gpg > /dev/null
+            echo "deb [signed-by=/usr/share/keyrings/helm.gpg] \
+              https://baltocdn.com/helm/stable/debian/ all main" | \
+              sudo tee /etc/apt/sources.list.d/helm-stable-debian.list
+            sudo apt update && sudo apt install helm
+            ```
+
+        === "Fedora — dnf"
+
+            ```bash
+            sudo dnf install helm
+            ```
+
+        === "Linux — Snap"
+
+            ```bash
+            sudo snap install helm --classic
+            ```
+
+        === "Any OS — official script"
+
+            ```bash
+            curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+            ```
+
+        All of these install the `helm` binary on your `PATH` — re-run
+        `helm version` afterwards to confirm.
+
 7.  Browse the API surface:
+
+    *Why:* this is the catalog of everything kubectl can manage — discoverable
+    instead of memorized. It answers "does `hpa` have a shortname?" and "is a
+    `clusterrole` namespaced?" without leaving the terminal.
 
     ```bash
     kubectl api-resources | head -30
@@ -268,7 +352,8 @@ with yours — the `+` markers inside the output explain every column and status
     in (e.g., `kubectl get nodes .`). kubectl reads it as a resource name —
     drop it.
 
-    **`helm: command not found`** — `brew install helm`.
+    **`helm: command not found`** — see the *Install it* dropdown under
+    command 6 above (`brew install helm` on macOS).
 
 !!! success "Verify"
     Node shows `Ready`; `kube-system` pods `Running`.

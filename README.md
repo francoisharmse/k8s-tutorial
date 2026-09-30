@@ -223,7 +223,10 @@ kubectl api-resources | head -30            # discover object types
   Kubernetes disabled (Preferences → Kubernetes).
 - `no context exists with the name "rancher-desktop"` — kubeconfig lacks it;
   enabling Kubernetes in Rancher Desktop writes `~/.kube/config`.
-- `helm: command not found` — `brew install helm`.
+- `helm: command not found` — macOS: `brew install helm` · Windows: `winget
+  install Helm.Helm` (or `choco`/`scoop`) · Linux:
+  `curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash`
+  (or `snap`/`dnf`/apt via the helm stable repo).
 
 **Verify:** Node shows `Ready`; `kube-system` pods `Running`.
 
