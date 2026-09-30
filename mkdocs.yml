@@ -2,9 +2,8 @@ site_name: Kubernetes Three-Tier Tutorial
 site_description: >-
   Hands-on Kubernetes tutorial — build, deploy, and operate a three-tier app
   on a local Rancher Desktop (k3s) cluster.
-# Uncomment after pushing to GitHub (enables repo link + edit button):
-# repo_url: https://github.com/<you>/k8s-tutorial
-# edit_uri: edit/main/docs/
+repo_url: https://github.com/francoisharmse/k8s-tutorial
+edit_uri: edit/main/docs/
 
 theme:
   name: material
