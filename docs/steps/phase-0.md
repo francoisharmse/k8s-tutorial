@@ -113,40 +113,142 @@ git tag phase-0                                            # (2)
         doskey k=kubectl $*    :: current session only
         ```
 
-```bash
-kubectl version                             # client + server versions (1)
-kubectl config get-contexts                 # confirm you're on rancher-desktop (2)
-kubectl config use-context rancher-desktop  # if needed (3)
-kubectl get nodes -o wide                   # nodes, IPs, container runtime (4)
-kubectl get pods -A                         # all system pods (5)
-helm version                                # (6)
-kubectl api-resources | head -30            # discover object types (7)
-```
+Run these in order. Expand **ⓘ Expected output** under each command to compare
+with yours — the `+` markers inside the output explain every column and status.
 
-1.  `Client Version: v1.xx.x` and `Server Version: v1.32.x+k3s1` — the `+k3s1`
-    suffix confirms the server is k3s (Rancher Desktop's distribution).
-2.  Lists every context in `~/.kube/config`; `*` marks the active one:
+1.  Check client + server versions:
 
-    ```text
-    CURRENT   NAME              CLUSTER           AUTHINFO          NAMESPACE
-              minikube          minikube          minikube          default
-    *         rancher-desktop   rancher-desktop   rancher-desktop
+    ```bash
+    kubectl version
     ```
 
-3.  `Switched to context "rancher-desktop".` — only needed if `*` wasn't
-    already on it. All later commands now default to this context.
-4.  One line per node — Rancher Desktop runs a single-node cluster:
+    ??? info "Expected output"
 
-    ```text
-    NAME                   STATUS   ROLES                  AGE   VERSION
-    lima-rancher-desktop   Ready    control-plane,master   37s   v1.32.3+k3s1
+        ```bash
+        Client Version: v1.34.x
+        Kustomize Version: v5.x.x
+        Server Version: v1.32.x+k3s1      # (1)!
+        ```
+
+        1.  `Server Version` is what the cluster runs — the `+k3s1` suffix
+            means it's **k3s**, Rancher Desktop's bundled distribution.
+
+2.  List the contexts in your kubeconfig:
+
+    ```bash
+    kubectl config get-contexts
     ```
 
-5.  Pods in **all** namespaces — expect `coredns`, `traefik`,
-    `local-path-provisioner`, `metrics-server` under `kube-system`.
-6.  `version.BuildInfo{Version:"v3.x", …}` — just proves helm is installed.
-7.  A long table of every API type the cluster serves — `head -30` trims it.
-    Handy later: `kubectl api-resources | grep deploy`.
+    ??? info "Expected output"
+
+        ```bash
+        CURRENT   NAME              CLUSTER           AUTHINFO          NAMESPACE   # (1)!
+                  minikube          minikube          minikube          default
+        *         rancher-desktop   rancher-desktop   rancher-desktop               # (2)!
+        ```
+
+        1.  Columns — `CURRENT`: `*` marks the active context · `NAME`: the
+            alias you pass to `--context` · `CLUSTER`: which cluster entry it
+            targets · `AUTHINFO`: which credentials it uses · `NAMESPACE`:
+            default namespace for commands (empty = cluster default).
+        2.  `*` on `rancher-desktop` — already active, so the next command is
+            a no-op for you.
+
+3.  Switch context — only needed if `*` wasn't on `rancher-desktop`:
+
+    ```bash
+    kubectl config use-context rancher-desktop
+    ```
+
+    ??? info "Expected output"
+
+        `Switched to context "rancher-desktop".` — every command from here on
+        targets this context unless you override it with `--context`.
+
+4.  List the cluster's nodes:
+
+    ```bash
+    kubectl get nodes -o wide
+    ```
+
+    ??? info "Expected output"
+
+        ```bash
+        NAME                   STATUS   ROLES                  AGE   VERSION       # (1)!
+        lima-rancher-desktop   Ready    control-plane,master   37s   v1.32.3+k3s1  # (2)!
+        ```
+
+        1.  Columns — `NAME`: node name · `STATUS`: `Ready` = kubelet healthy
+            (`NotReady` under pressure/network loss) · `ROLES`: `control-plane`
+            means it runs the API server + etcd · `AGE`: time since the node
+            joined · `VERSION`: kubelet version. `-o wide` adds
+            `INTERNAL-IP`, `OS-IMAGE`, `KERNEL`, `RUNTIME`.
+        2.  Single node — Rancher Desktop runs a one-node k3s cluster;
+            `lima-` is the Lima VM it lives in.
+
+5.  List every pod in the cluster:
+
+    ```bash
+    kubectl get pods -A
+    ```
+
+    ??? info "Expected output"
+
+        ```bash
+        NAMESPACE     NAME                              READY   STATUS      RESTARTS   AGE   # (1)!
+        kube-system   coredns-…                         1/1     Running     0          2m
+        kube-system   helm-install-traefik-…            0/1     Completed   0          2m
+        kube-system   local-path-provisioner-…          1/1     Running     0          2m
+        kube-system   metrics-server-…                  1/1     Running     0          2m
+        kube-system   traefik-…                         1/1     Running     0          2m    # (2)!
+        ```
+
+        1.  Columns — `NAMESPACE`: owning namespace · `READY`: containers
+            ready / total · `STATUS`: lifecycle state (`Running`,
+            `Completed`, `CrashLoopBackOff`, `ImagePullBackOff`, …) ·
+            `RESTARTS`: container restart count · `AGE`: time since scheduled.
+        2.  A healthy k3s baseline — everything lives in `kube-system`: DNS
+            (`coredns`), ingress (`traefik`), storage (`local-path-provisioner`),
+            `kubectl top` data (`metrics-server`).
+
+6.  Confirm helm is installed:
+
+    ```bash
+    helm version
+    ```
+
+    ??? info "Expected output"
+
+        `version.BuildInfo{Version:"v3.x.x", GitCommit:"…", GoVersion:"…"}` —
+        just proves helm works; the version prints inside `BuildInfo`.
+
+7.  Browse the API surface:
+
+    ```bash
+    kubectl api-resources | head -30
+    ```
+
+    ??? info "Expected output"
+
+        ```bash
+        NAME                    SHORTNAMES   APIVERSION   NAMESPACED   KIND      # (1)!
+        bindings                             v1           true         Binding
+        componentstatuses       cs           v1           false        ComponentStatus
+        configmaps              cm           v1           true         ConfigMap
+        endpoints               ep           v1           true         Endpoints
+        namespaces              ns           v1           false        Namespace
+        nodes                   no           v1           false        Node
+        pods                    po           v1           true         Pod        # (2)!
+        services                svc          v1           true         Service    # (3)!
+        ```
+
+        1.  Columns — `NAME`: plural resource name for `kubectl get` ·
+            `SHORTNAMES`: aliases you can type instead · `APIVERSION`: API
+            group/version · `NAMESPACED`: whether objects live inside a
+            namespace · `KIND`: the type name for YAML `kind:` fields.
+        2.  `po` works anywhere `pods` does: `kubectl get po`.
+        3.  `NAMESPACED: false` resources (nodes, namespaces, PVs) don't take
+            `-n` — they're cluster-scoped.
 
 ??? warning "Common errors & fixes"
     **`error: unknown flag: --short`** — the `--short` flag was deprecated in
