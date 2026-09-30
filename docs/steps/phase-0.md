@@ -334,6 +334,91 @@ with yours — the `+` markers inside the output explain every column and status
         3.  `NAMESPACED: false` resources (nodes, namespaces, PVs) don't take
             `-n` — they're cluster-scoped.
 
+#### Mental model — clusters, contexts, namespaces
+
+These three words sound alike but live in different places — a classic early
+confusion:
+
+| Concept | Where it lives | List it with |
+|---------|----------------|--------------|
+| **Cluster** | kubeconfig — an API endpoint + CA cert | `kubectl config get-clusters` |
+| **Context** | kubeconfig — cluster + credentials + default namespace | `kubectl config get-contexts` |
+| **Namespace** | *inside* a cluster — scopes your objects | `kubectl get namespaces` |
+
+Explore the difference yourself:
+
+1.  List the cluster connections kubectl knows:
+
+    *Why:* contexts point *at* clusters — this shows the API endpoints your
+    kubeconfig can reach.
+
+    ```bash
+    kubectl config get-clusters
+    ```
+
+    ??? info "Expected output"
+
+        ```bash
+        NAME
+        rancher-desktop
+        minikube              # (1)!
+        ```
+
+        1.  These are kubeconfig *entries*, not running machines — `minikube`
+            lists even if that cluster is stopped or deleted.
+
+2.  List the namespaces inside the **current** cluster:
+
+    *Why:* namespaces are created *inside* a cluster and scope the objects in
+    it — they say nothing about connections.
+
+    ```bash
+    kubectl get namespaces
+    ```
+
+    ??? info "Expected output"
+
+        ```bash
+        NAME              STATUS   AGE   # (1)!
+        default           Active   31m
+        kube-node-lease   Active   31m
+        kube-public       Active   31m
+        kube-system       Active   31m
+        playground        Active   16s   # (2)!
+        ```
+
+        1.  Columns — `STATUS`: `Active` or `Terminating` · `AGE`: time since
+            created.
+        2.  `playground` exists if you ran step 0.3. The other four ship with
+            every cluster: `kube-system` holds cluster services, `default` is
+            where un-namespaced commands land.
+
+3.  Try switching context to a namespace — it fails on purpose:
+
+    *Why:* proves contexts and namespaces are different things — a context is
+    a kubeconfig entry; you can't `use-context` a namespace name.
+
+    ```bash
+    kubectl config use-context playground
+    ```
+
+    ??? failure "Expected output"
+
+        `error: no context exists with the name: "playground"` — `playground`
+        is a *namespace* inside the cluster, not a kubeconfig context.
+
+    What you probably meant — default the **current context** to a namespace:
+
+    ```bash
+    kubectl config set-context --current --namespace=playground
+    ```
+
+    ??? info "Expected output"
+
+        `Context "rancher-desktop" modified.` — this fills the `NAMESPACE`
+        column in `get-contexts`, so later commands can drop `-n playground`.
+        (Step [1.1](phase-1.md#11-namespace--secrets) uses exactly this trick.)
+
 ??? warning "Common errors & fixes"
     **`error: unknown flag: --short`** — the `--short` flag was deprecated in
     kubectl 1.28 and **removed in 1.30**. Run plain `kubectl version` — it
@@ -343,10 +428,12 @@ with yours — the `+` markers inside the output explain every column and status
     isn't running. Start Rancher Desktop and confirm *Preferences → Kubernetes →
     Enable Kubernetes* is checked.
 
-    **`error: no context exists with the name "rancher-desktop"`** — your
-    kubeconfig is missing the context. Rancher Desktop writes `~/.kube/config`
-    when Kubernetes is enabled; enable it (or restart Rancher Desktop) and
-    re-run `kubectl config get-contexts`.
+    **`error: no context exists with the name "…"`** — two causes. If the name
+    is `rancher-desktop`: your kubeconfig is missing it — enable Kubernetes in
+    Rancher Desktop (it writes `~/.kube/config`) and re-run
+    `kubectl config get-contexts`. If the name is a *namespace* (e.g.
+    `playground`): contexts aren't namespaces — use
+    `kubectl config set-context --current --namespace=<ns>` instead.
 
     **`error: invalid resource name ".": may not be '.'`** — a stray `.` slipped
     in (e.g., `kubectl get nodes .`). kubectl reads it as a resource name —
@@ -366,27 +453,203 @@ with yours — the `+` markers inside the output explain every column and status
 
 **Concepts:** Pods, namespaces, describe/logs/exec, `kubectl explain`.
 
-```bash
-kubectl create namespace playground                            # (1)
-kubectl run demo --image=nginx:1.27 -n playground                # (2)
-kubectl get pods -n playground -w                                # (3) watch — Ctrl+C to stop
-kubectl describe pod demo -n playground                          # (4) events + conditions
-kubectl logs demo -n playground                                  # (5)
-kubectl exec -it demo -n playground -- /bin/sh                   # (6)
-kubectl explain pod.spec.containers                              # (7) built-in API docs
-kubectl delete namespace playground                              # (8) cascades everything
-```
+Run these in order. Expand **ⓘ Expected output** under each command to compare
+with yours — the `+` markers inside the output explain every column and status.
 
-1.  `namespace/playground created` — a fresh, empty scope for experimenting.
-2.  `pod/demo created` — the first run also pulls the `nginx:1.27` image.
-3.  Streams live status: `Pending` → `ContainerCreating` → `Running`.
-    Ctrl+C stops watching — the pod keeps running.
-4.  Full spec, status, and an **Events** section at the bottom — your first
-    stop whenever something's wrong.
-5.  nginx's startup/access logs — probably empty until you send it a request.
-6.  An interactive shell *inside* the container (`/ #` prompt); `exit` to leave.
-7.  Prints that field's documentation inline — works on any `resource.field`.
-8.  `namespace "playground" deleted` — everything inside it goes with it.
+1.  Create a scratch namespace:
+
+    *Why:* namespaces scope everything that follows. A disposable `playground`
+    keeps experiments from polluting other namespaces — and deleting it at the
+    end cleans up in one shot.
+
+    ```bash
+    kubectl create namespace playground
+    ```
+
+    ??? info "Expected output"
+
+        ```bash
+        namespace/playground created      # (1)!
+        ```
+
+        1.  kubectl confirms creation as `resource/name created` — that exact
+            pattern is how you'll address it later (`kubectl get ns playground`).
+
+2.  Run a pod imperatively:
+
+    *Why:* `kubectl run` is the fastest way to get a workload up without YAML —
+    good for experiments, debugging, and throwaway tools. (Real apps come from
+    Deployments, covered later.)
+
+    ```bash
+    kubectl run demo --image=nginx:1.27 -n playground
+    ```
+
+    ??? info "Expected output"
+
+        ```bash
+        pod/demo created                  # (1)!
+        ```
+
+        1.  The pod object exists — but the image still has to be *pulled* in
+            the background. The pod won't be `Running` until that finishes.
+
+3.  Watch the pod lifecycle live:
+
+    *Why:* `-w` streams changes in real time — you see the full lifecycle
+    (`Pending` → `ContainerCreating` → `Running`) instead of a snapshot.
+
+    ```bash
+    kubectl get pods -n playground -w
+    ```
+
+    ??? info "Expected output"
+
+        ```bash
+        NAME   READY   STATUS              RESTARTS   AGE     # (1)!
+        demo   0/1     Pending             0          2s
+        demo   0/1     ContainerCreating   0          4s      # (2)!
+        demo   1/1     Running             0          15s     # (3)!
+        ```
+
+        1.  Columns — `READY`: containers ready / total · `STATUS`: lifecycle
+            phase · `RESTARTS`: container restart count · `AGE`: time since
+            the pod was scheduled.
+        2.  `ContainerCreating` = image pulling + container starting. The most
+            common stall point — slow pulls or a bad image name (typo →
+            `ErrImagePull`/`ImagePullBackOff` appears here).
+        3.  `1/1 Running` — all containers up. Ctrl+C exits the *watch*; the
+            pod keeps running.
+
+4.  Inspect the pod in detail:
+
+    *Why:* `describe` is the diagnostic command — full spec, status,
+    conditions, and the **Events** log of what the cluster *did*. It's the
+    first thing to run whenever a pod misbehaves.
+
+    ```bash
+    kubectl describe pod demo -n playground
+    ```
+
+    ??? info "Expected output (trimmed)"
+
+        ```bash
+        Name:         demo
+        Namespace:    playground
+        Status:       Running
+        Containers:
+          demo:
+            Image:    nginx:1.27
+            State:    Running
+            Ready:    True
+        Conditions:
+          Type            Status
+          Ready           True                                   # (1)!
+        Events:
+          Type    Reason     Age   From               Message
+          ----    ------   ----  ----               -------
+          Normal  Scheduled  2m   default-scheduler  Successfully assigned playground/demo to lima-rancher-desktop  # (2)!
+          Normal  Pulling    2m   kubelet            Pulling image "nginx:1.27"                                   # (3)!
+          Normal  Pulled     1m   kubelet            Successfully pulled image "nginx:1.27"
+          Normal  Started    1m   kubelet            Started container demo                                        # (4)!
+        ```
+
+        1.  `Conditions` = health gates the pod must pass — `Ready` is what
+            Services check before routing traffic.
+        2.  The scheduler's decision — which node got the pod. `FailedScheduling`
+            here = no node fits (resources, taints).
+        3.  Image pull starts — a common failure point
+            (`ErrImagePull`/`ImagePullBackOff` events).
+        4.  Events are the story of *what Kubernetes did* — read them
+            bottom-up when triaging.
+
+5.  Read the app's own logs:
+
+    *Why:* `describe` tells you what *Kubernetes* did; `logs` tells you what
+    the *application* said. Knowing which to check is the core debugging split.
+
+    ```bash
+    kubectl logs demo -n playground
+    ```
+
+    ??? info "Expected output"
+
+        ```bash
+        /docker-entrypoint.sh: Configuration complete; ready for start up
+        2026/09/30 10:00:00 [notice] 1#1: nginx/1.27.x             # (1)!
+        ```
+
+        1.  nginx startup lines on stdout — you'll also see access-log entries
+            here once requests hit it. Empty output isn't an error, just means
+            the app has been quiet.
+
+6.  Get a shell inside the container:
+
+    *Why:* `exec -it` drops you into the container's own environment — run
+    `ps`, `ls`, `wget localhost` to verify the app as the cluster sees it.
+    `-i -t` makes it interactive; `--` separates kubectl flags from the command.
+
+    ```bash
+    kubectl exec -it demo -n playground -- /bin/sh
+    ```
+
+    ??? info "Expected output"
+
+        ```bash
+        / # hostname
+        demo                                      # (1)!
+        / # exit                                  # (2)!
+        ```
+
+        1.  Inside the container, `hostname` = the pod name — a quick proof
+            you're inside it.
+        2.  `exit` leaves the shell; the pod keeps running. If `/bin/sh`
+            doesn't exist in the image, try `/bin/bash`.
+
+7.  Look up field docs without leaving the terminal:
+
+    *Why:* `kubectl explain` is the built-in API reference — it answers "what
+    fields exist and what do they mean?" for any resource, which beats
+    guessing YAML keys.
+
+    ```bash
+    kubectl explain pod.spec.containers
+    ```
+
+    ??? info "Expected output"
+
+        ```bash
+        KIND:     Pod
+        VERSION:  v1
+
+        FIELD:    containers <[]Container>                        # (1)!
+
+        DESCRIPTION:
+            List of containers belonging to the pod. ...          # (2)!
+        ```
+
+        1.  `<[]Container>` = a **list** of container objects — that's why
+            `containers:` takes `- name:` items in YAML.
+        2.  Keep drilling: `pod.spec.containers.image`,
+            `pod.spec.containers.resources`, …
+
+8.  Tear everything down:
+
+    *Why:* namespace deletion cascades — every object inside `playground`
+    dies with it. The fastest way to reset a scratch environment.
+
+    ```bash
+    kubectl delete namespace playground
+    ```
+
+    ??? info "Expected output"
+
+        ```bash
+        namespace "playground" deleted      # (1)!
+        ```
+
+        1.  The `demo` pod goes with it — no separate `delete pod` needed.
+            Deletion takes a few seconds while children terminate.
 
 !!! success "Verify"
     You can explain the difference between `describe` (what happened) and

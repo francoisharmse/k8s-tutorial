@@ -228,6 +228,21 @@ kubectl api-resources | head -30            # discover object types
   `curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash`
   (or `snap`/`dnf`/apt via the helm stable repo).
 
+**Clusters vs contexts vs namespaces** — three different layers beginners
+conflate:
+
+| Concept | Where it lives | List it with |
+|---------|----------------|--------------|
+| Cluster | kubeconfig — API endpoint + CA cert | `kubectl config get-clusters` |
+| Context | kubeconfig — cluster + credentials + default namespace | `kubectl config get-contexts` |
+| Namespace | inside a cluster — scopes objects | `kubectl get namespaces` |
+
+Proof: `kubectl config use-context playground` fails — `no context exists with
+the name "playground"`, because `playground` is a namespace, not a context. To
+default the current context to a namespace instead:
+`kubectl config set-context --current --namespace=playground` (Step 3 uses
+exactly this).
+
 **Verify:** Node shows `Ready`; `kube-system` pods `Running`.
 
 ---
