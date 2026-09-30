@@ -75,5 +75,6 @@ nav:
       - Phase 7 · Operations at Scale: steps/phase-7.md
       - Phase 8 · Advanced / Optional: steps/phase-8.md
   - Reference:
+      - Kubernetes architecture: reference/architecture.md
       - Command cheat sheet: reference/cheatsheet.md
       - Key concepts map: reference/concepts-map.md

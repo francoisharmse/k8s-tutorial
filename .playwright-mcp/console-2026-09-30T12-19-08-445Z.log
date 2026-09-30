@@ -1,0 +1,7 @@
+[      66ms] [LOG] Enabled live reload @ http://127.0.0.1:8080/:1156
+[  304360ms] [ERROR] Failed to load resource: net::ERR_NETWORK_IO_SUSPENDED @ http://127.0.0.1:8080/livereload/1791969416/1792141041:0
+[ 2659798ms] [ERROR] Failed to load resource: net::ERR_NETWORK_IO_SUSPENDED @ http://127.0.0.1:8080/livereload/1791969416/1792141041:0
+[ 2728060ms] [LOG] Enabled live reload @ http://127.0.0.1:8080/reference/architecture/:1259
+[ 2743581ms] [LOG] Enabled live reload @ http://127.0.0.1:8080/:1156
+[ 2746063ms] [LOG] Enabled live reload @ http://127.0.0.1:8080/reference/concepts-map/:1025
+[ 2751838ms] [LOG] Enabled live reload @ http://127.0.0.1:8080/reference/cheatsheet/:1024

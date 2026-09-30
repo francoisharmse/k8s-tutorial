@@ -25,6 +25,11 @@ flowchart LR
 | App  | `k8s-tutorial-app` on `python:3.12-slim` | Built locally | Deployment |
 | DB   | `bitnami/postgresql` | Public registry via Helm | StatefulSet |
 
+*Under the hood:* those pods are scheduled and kept alive by Kubernetes
+itself — API server, etcd, scheduler, controller manager, and the kubelets on
+each node. See [Kubernetes architecture](reference/architecture.md) for how the
+control plane works and what happens when you `kubectl create`.
+
 ## Assumptions
 
 - **Rancher Desktop on macOS** — k3s under the hood, Traefik ingress controller,

@@ -1,0 +1,284 @@
+- generic [active] [ref=f6e1]:
+  - link "Skip to content" [ref=f6e2] [cursor=pointer]:
+    - /url: "#kubernetes-architecture"
+  - banner [ref=f6e3]:
+    - navigation "Header" [ref=f6e4]:
+      - generic [ref=f6e5] [cursor=pointer]
+      - generic [ref=f6e9]:
+        - generic [ref=f6e10]: Kubernetes Three-Tier Tutorial
+        - generic: Kubernetes architecture
+      - generic [ref=f6e12]:
+        - radio "Switch to light mode"
+        - radio "Switch to dark mode"
+        - radio "Switch to system preference"
+        - generic "Switch to system preference" [ref=f6e13] [cursor=pointer]
+      - dialog [ref=f6e16]:
+        - search [ref=f6e17]:
+          - generic [ref=f6e18]:
+            - textbox "Search" [ref=f6e19]
+            - navigation "Search":
+              - button "Clear"
+          - generic: Initializing search
+      - link [ref=f6e24] [cursor=pointer]:
+        - /url: https://github.com/francoisharmse/k8s-tutorial
+        - generic [ref=f6e28]:
+          - text: GitHub
+          - list [ref=f6e29]:
+            - listitem [ref=f6e30]: "0"
+            - listitem [ref=f6e31]: "0"
+  - generic [ref=f6e32]:
+    - main [ref=f6e33]:
+      - generic [ref=f6e34]:
+        - navigation "Navigation" [ref=f6e37]:
+          - generic [ref=f6e38] [cursor=pointer]:
+            - link "Kubernetes Three-Tier Tutorial" [ref=f6e39]:
+              - /url: ../..
+            - text: Kubernetes Three-Tier Tutorial
+          - list [ref=f6e42]:
+            - listitem [ref=f6e43]:
+              - link "Home" [ref=f6e44] [cursor=pointer]:
+                - /url: ../..
+            - listitem [ref=f6e46]:
+              - link "Getting started" [ref=f6e47] [cursor=pointer]:
+                - /url: ../../getting-started/
+            - listitem [ref=f6e49]:
+              - generic [ref=f6e50]: Steps
+              - navigation "Steps" [ref=f6e53]:
+                - list [ref=f6e56]:
+                  - listitem [ref=f6e57]:
+                    - link "Phase 0 · Environment & Orientation" [ref=f6e58] [cursor=pointer]:
+                      - /url: ../../steps/phase-0/
+                  - listitem [ref=f6e60]:
+                    - link "Phase 1 · DB Tier (PostgreSQL)" [ref=f6e61] [cursor=pointer]:
+                      - /url: ../../steps/phase-1/
+                  - listitem [ref=f6e63]:
+                    - link "Phase 2 · App Tier (FastAPI)" [ref=f6e64] [cursor=pointer]:
+                      - /url: ../../steps/phase-2/
+                  - listitem [ref=f6e66]:
+                    - link "Phase 3 · Web Tier (nginx)" [ref=f6e67] [cursor=pointer]:
+                      - /url: ../../steps/phase-3/
+                  - listitem [ref=f6e69]:
+                    - link "Phase 4 · Ingress & TLS" [ref=f6e70] [cursor=pointer]:
+                      - /url: ../../steps/phase-4/
+                  - listitem [ref=f6e72]:
+                    - link "Phase 5 · Helm-ify Everything" [ref=f6e73] [cursor=pointer]:
+                      - /url: ../../steps/phase-5/
+                  - listitem [ref=f6e75]:
+                    - link "Phase 6 · Security" [ref=f6e76] [cursor=pointer]:
+                      - /url: ../../steps/phase-6/
+                  - listitem [ref=f6e78]:
+                    - link "Phase 7 · Operations at Scale" [ref=f6e79] [cursor=pointer]:
+                      - /url: ../../steps/phase-7/
+                  - listitem [ref=f6e81]:
+                    - link "Phase 8 · Advanced / Optional" [ref=f6e82] [cursor=pointer]:
+                      - /url: ../../steps/phase-8/
+            - listitem [ref=f6e84]:
+              - generic [ref=f6e85]: Reference
+              - navigation "Reference" [ref=f6e88]:
+                - list [ref=f6e91]:
+                  - listitem [ref=f6e92]:
+                    - link "Kubernetes architecture" [ref=f6e93] [cursor=pointer]:
+                      - /url: ./
+                  - listitem [ref=f6e95]:
+                    - link "Command cheat sheet" [ref=f6e96] [cursor=pointer]:
+                      - /url: ../cheatsheet/
+                  - listitem [ref=f6e98]:
+                    - link "Key concepts map" [ref=f6e99] [cursor=pointer]:
+                      - /url: ../concepts-map/
+        - navigation "Table of contents" [ref=f6e104]:
+          - list [ref=f6e106]:
+            - listitem [ref=f6e107]:
+              - link "The two halves — control plane and nodes" [ref=f6e108] [cursor=pointer]:
+                - /url: "#the-two-halves-control-plane-and-nodes"
+            - listitem [ref=f6e110]:
+              - link "The components, one line each" [ref=f6e111] [cursor=pointer]:
+                - /url: "#the-components-one-line-each"
+            - listitem [ref=f6e113]:
+              - link "What happens when you run kubectl create" [ref=f6e114] [cursor=pointer]:
+                - /url: "#what-happens-when-you-run-kubectl-create"
+            - listitem [ref=f6e116]:
+              - link "The core idea — desired state + control loops" [ref=f6e117] [cursor=pointer]:
+                - /url: "#the-core-idea-desired-state-control-loops"
+        - article [ref=f6e120]:
+          - heading [level=1] [ref=f6e121]:
+            - text: Kubernetes Architecture
+            - link "¶" [ref=f6e122] [cursor=pointer]:
+              - /url: "#kubernetes-architecture"
+          - paragraph [ref=f6e123]:
+            - text: What's actually inside the cluster you connected to in step
+            - link "0.2" [ref=f6e124] [cursor=pointer]:
+              - /url: ../../steps/phase-0/#02-verify-cluster-access
+            - text: . This is the
+            - emphasis [ref=f6e125]: design
+            - text: "layer below the three-tier app: who stores the state, who makes decisions, and who does the work."
+          - heading [level=2] [ref=f6e126]:
+            - text: The two halves — control plane and nodes
+            - link "¶" [ref=f6e127] [cursor=pointer]:
+              - /url: "#the-two-halves-control-plane-and-nodes"
+          - paragraph [ref=f6e128]:
+            - text: Kubernetes splits every cluster into a
+            - strong [ref=f6e129]: control plane
+            - text: (the brain — stores state and makes decisions) and
+            - strong [ref=f6e130]: worker nodes
+            - text: (the muscle — run your pods). On Rancher Desktop both live on one machine, but the separation still exists logically.
+          - heading [level=2] [ref=f6e132]:
+            - text: The components, one line each
+            - link "¶" [ref=f6e133] [cursor=pointer]:
+              - /url: "#the-components-one-line-each"
+          - table [ref=f6e136]:
+            - rowgroup [ref=f6e137]:
+              - row [ref=f6e138]:
+                - columnheader "Component" [ref=f6e139]
+                - columnheader "Lives on" [ref=f6e140]
+                - columnheader "What it does" [ref=f6e141]
+                - columnheader "You saw it when…" [ref=f6e142]
+            - rowgroup [ref=f6e143]:
+              - row [ref=f6e144]:
+                - cell [ref=f6e145]:
+                  - strong [ref=f6e146]: API server
+                - cell "Control plane" [ref=f6e147]
+                - cell [ref=f6e148]:
+                  - text: The
+                  - emphasis [ref=f6e149]: only
+                  - text: front door — every kubectl command, every internal component talks to it. Validates and persists objects.
+                - cell [ref=f6e150]:
+                  - code [ref=f6e151]: kubectl
+                  - text: commands target it;
+                  - code [ref=f6e152]: localhost:8080
+                  - text: error = can't reach it
+              - row [ref=f6e153]:
+                - cell [ref=f6e154]:
+                  - strong [ref=f6e155]: etcd
+                - cell "Control plane" [ref=f6e156]
+                - cell "Distributed key-value store holding the entire cluster state (desired + observed). If it's lost, the cluster has amnesia." [ref=f6e157]
+                - cell [ref=f6e158]:
+                  - text: It's why
+                  - code [ref=f6e159]: get-contexts
+                  - text: /
+                  - code [ref=f6e160]: use-context
+                  - text: matters — contexts point at
+                  - emphasis [ref=f6e161]: which
+                  - text: etcd-backed API you're mutating
+              - row [ref=f6e162]:
+                - cell [ref=f6e163]:
+                  - strong [ref=f6e164]: Scheduler
+                - cell "Control plane" [ref=f6e165]
+                - cell [ref=f6e166]:
+                  - text: Watches for pods with no
+                  - code [ref=f6e167]: nodeName
+                  - text: ", scores nodes, binds the pod to the best fit."
+                - cell [ref=f6e168]:
+                  - code [ref=f6e169]: pod.spec.containers
+                  - text: field from
+                  - code [ref=f6e170]: kubectl explain
+                  - text: — the scheduler fills in
+                  - code [ref=f6e171]: nodeName
+                  - text: ", not you"
+              - row [ref=f6e172]:
+                - cell [ref=f6e173]:
+                  - strong [ref=f6e174]: Controller manager
+                - cell "Control plane" [ref=f6e175]
+                - cell "Bundles the control loops (Deployment, StatefulSet, Job, ReplicaSet controllers…). Each watches the API, compares desired vs actual, acts." [ref=f6e176]
+                - cell [ref=f6e177]:
+                  - code [ref=f6e178]: kubectl run
+                  - text: → something else created the pod; a
+                  - emphasis [ref=f6e179]: controller
+                  - text: did the work
+              - row [ref=f6e180]:
+                - cell [ref=f6e181]:
+                  - strong [ref=f6e182]: kubelet
+                - cell "Every node" [ref=f6e183]
+                - cell [ref=f6e184]:
+                  - text: Agent on each node. Watches the API for pods assigned to
+                  - emphasis [ref=f6e185]: its
+                  - text: node, drives the runtime to start them, reports status back.
+                - cell [ref=f6e186]:
+                  - code [ref=f6e187]: STATUS
+                  - text: column in
+                  - code [ref=f6e188]: get pods -w
+                  - text: — kubelet reporting up
+              - row [ref=f6e189]:
+                - cell [ref=f6e190]:
+                  - strong [ref=f6e191]: Container runtime
+                - cell "Every node" [ref=f6e192]
+                - cell "Actually pulls images and runs containers." [ref=f6e193]
+                - cell [ref=f6e194]:
+                  - code [ref=f6e195]: containerd
+                  - text: — the Rancher Desktop caveat in step 2.2
+              - row [ref=f6e196]:
+                - cell [ref=f6e197]:
+                  - strong [ref=f6e198]: kube-proxy
+                - cell "Every node" [ref=f6e199]
+                - cell "Programs routing so a Service's virtual IP fans out to pod IPs." [ref=f6e200]
+                - cell [ref=f6e201]:
+                  - code [ref=f6e202]: svc/web
+                  - text: ClusterIP from phase 3 works because of this
+          - heading [level=2] [ref=f6e203]:
+            - text: What happens when you run
+            - code [ref=f6e204]: kubectl create
+            - link "¶" [ref=f6e205] [cursor=pointer]:
+              - /url: "#what-happens-when-you-run-kubectl-create"
+          - paragraph [ref=f6e206]:
+            - text: The tutorial's
+            - code [ref=f6e207]: pod/demo created
+            - text: "message is deceptively simple — five components coordinated to make that pod real:"
+          - paragraph [ref=f6e209]:
+            - text: "Read it top to bottom as:"
+            - strong [ref=f6e210]: declare intent → persist → react
+            - text: . Nobody "runs your pod" at create time — the API server just records the
+            - emphasis [ref=f6e211]: desired
+            - text: state, and downstream loops reconcile reality toward it.
+          - heading [level=2] [ref=f6e212]:
+            - text: The core idea — desired state + control loops
+            - link "¶" [ref=f6e213] [cursor=pointer]:
+              - /url: "#the-core-idea-desired-state-control-loops"
+          - paragraph [ref=f6e214]: "This is the one concept everything else hangs on:"
+          - list [ref=f6e215]:
+            - listitem [ref=f6e216]:
+              - strong [ref=f6e217]: You declare desired state
+              - text: — "2 nginx replicas", "a Secret named
+              - code [ref=f6e218]: postgres
+              - text: "\", written to etcd via the API server."
+            - listitem [ref=f6e219]:
+              - strong [ref=f6e220]: Controllers loop forever
+              - text: "— watch → compare desired vs actual → act to close the gap. That's why deleting a pod under a Deployment gets a fresh one for free: the ReplicaSet controller sees"
+              - code [ref=f6e221]: desired=1, actual=0
+              - text: and creates a replacement.
+            - listitem [ref=f6e222]:
+              - strong [ref=f6e223]: Nothing calls kubectl but you
+              - text: — the cluster manages itself through the API.
+              - code [ref=f6e224]: kubectl
+              - text: is just one client of many (scheduler, kubelet, controllers all speak to the same API server).
+          - generic [ref=f6e225]:
+            - paragraph [ref=f6e226]: k3s under Rancher Desktop
+            - paragraph [ref=f6e227]:
+              - text: k3s bundles the API server, scheduler, controller manager, and embedded etcd into a
+              - strong [ref=f6e228]: single process
+              - text: — that's why
+              - code [ref=f6e229]: lima-rancher-desktop
+              - text: shows
+              - code [ref=f6e230]: control-plane,master
+              - text: in its
+              - code [ref=f6e231]: ROLES
+              - text: column yet also runs your pods. In a production cluster these would be 3+ separate machines, and you'd point
+              - code [ref=f6e232]: get-contexts
+              - text: at a remote API server instead of
+              - code [ref=f6e233]: 127.0.0.1
+              - text: .
+      - button "Back to top"
+    - contentinfo [ref=f6e234]:
+      - navigation "Footer" [ref=f6e235]:
+        - 'link "Previous: Phase 8 · Advanced / Optional" [ref=f6e236] [cursor=pointer]':
+          - /url: ../../steps/phase-8/
+          - generic [ref=f6e240]:
+            - text: Previous
+            - generic [ref=f6e241]: Phase 8 · Advanced / Optional
+        - 'link "Next: Command cheat sheet" [ref=f6e242] [cursor=pointer]':
+          - /url: ../cheatsheet/
+          - generic [ref=f6e243]:
+            - text: Next
+            - generic [ref=f6e244]: Command cheat sheet
+      - generic [ref=f6e250]:
+        - text: Made with
+        - link "Material for MkDocs" [ref=f6e251] [cursor=pointer]:
+          - /url: https://squidfunk.github.io/mkdocs-material/

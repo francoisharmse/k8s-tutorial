@@ -1,0 +1,208 @@
+- generic [active] [ref=f1e1]:
+  - link "Skip to content" [ref=f1e2] [cursor=pointer]:
+    - /url: "#kubernetes-three-tier-tutorial"
+  - banner [ref=f1e3]:
+    - navigation "Header" [ref=f1e4]:
+      - generic [ref=f1e5] [cursor=pointer]
+      - generic [ref=f1e9]:
+        - generic [ref=f1e10]: Kubernetes Three-Tier Tutorial
+        - generic: Home
+      - generic [ref=f1e12]:
+        - radio "Switch to light mode"
+        - radio "Switch to dark mode"
+        - radio "Switch to system preference"
+        - generic "Switch to system preference" [ref=f1e13] [cursor=pointer]
+      - dialog [ref=f1e16]:
+        - search [ref=f1e17]:
+          - generic [ref=f1e18]:
+            - textbox "Search" [ref=f1e19]
+            - navigation "Search":
+              - button "Clear"
+          - generic: Type to start searching
+      - link [ref=f1e24] [cursor=pointer]:
+        - /url: https://github.com/francoisharmse/k8s-tutorial
+        - generic [ref=f1e28]:
+          - text: GitHub
+          - list [ref=f1e29]:
+            - listitem [ref=f1e30]: "0"
+            - listitem [ref=f1e31]: "0"
+  - generic [ref=f1e32]:
+    - main [ref=f1e33]:
+      - generic [ref=f1e34]:
+        - navigation "Navigation" [ref=f1e37]:
+          - generic [ref=f1e38] [cursor=pointer]:
+            - link "Kubernetes Three-Tier Tutorial" [ref=f1e39]:
+              - /url: .
+            - text: Kubernetes Three-Tier Tutorial
+          - list [ref=f1e42]:
+            - listitem [ref=f1e43]:
+              - link "Home" [ref=f1e44] [cursor=pointer]:
+                - /url: .
+            - listitem [ref=f1e46]:
+              - link "Getting started" [ref=f1e47] [cursor=pointer]:
+                - /url: getting-started/
+            - listitem [ref=f1e49]:
+              - generic [ref=f1e50]: Steps
+              - navigation "Steps" [ref=f1e53]:
+                - list [ref=f1e56]:
+                  - listitem [ref=f1e57]:
+                    - link "Phase 0 · Environment & Orientation" [ref=f1e58] [cursor=pointer]:
+                      - /url: steps/phase-0/
+                  - listitem [ref=f1e60]:
+                    - link "Phase 1 · DB Tier (PostgreSQL)" [ref=f1e61] [cursor=pointer]:
+                      - /url: steps/phase-1/
+                  - listitem [ref=f1e63]:
+                    - link "Phase 2 · App Tier (FastAPI)" [ref=f1e64] [cursor=pointer]:
+                      - /url: steps/phase-2/
+                  - listitem [ref=f1e66]:
+                    - link "Phase 3 · Web Tier (nginx)" [ref=f1e67] [cursor=pointer]:
+                      - /url: steps/phase-3/
+                  - listitem [ref=f1e69]:
+                    - link "Phase 4 · Ingress & TLS" [ref=f1e70] [cursor=pointer]:
+                      - /url: steps/phase-4/
+                  - listitem [ref=f1e72]:
+                    - link "Phase 5 · Helm-ify Everything" [ref=f1e73] [cursor=pointer]:
+                      - /url: steps/phase-5/
+                  - listitem [ref=f1e75]:
+                    - link "Phase 6 · Security" [ref=f1e76] [cursor=pointer]:
+                      - /url: steps/phase-6/
+                  - listitem [ref=f1e78]:
+                    - link "Phase 7 · Operations at Scale" [ref=f1e79] [cursor=pointer]:
+                      - /url: steps/phase-7/
+                  - listitem [ref=f1e81]:
+                    - link "Phase 8 · Advanced / Optional" [ref=f1e82] [cursor=pointer]:
+                      - /url: steps/phase-8/
+            - listitem [ref=f1e84]:
+              - generic [ref=f1e85]: Reference
+              - navigation "Reference" [ref=f1e88]:
+                - list [ref=f1e91]:
+                  - listitem [ref=f1e92]:
+                    - link "Kubernetes architecture" [ref=f1e93] [cursor=pointer]:
+                      - /url: reference/architecture/
+                  - listitem [ref=f1e95]:
+                    - link "Command cheat sheet" [ref=f1e96] [cursor=pointer]:
+                      - /url: reference/cheatsheet/
+                  - listitem [ref=f1e98]:
+                    - link "Key concepts map" [ref=f1e99] [cursor=pointer]:
+                      - /url: reference/concepts-map/
+        - navigation "Table of contents" [ref=f1e104]:
+          - list [ref=f1e106]:
+            - listitem [ref=f1e107]:
+              - link "Architecture" [ref=f1e108] [cursor=pointer]:
+                - /url: "#architecture"
+            - listitem [ref=f1e110]:
+              - link "Assumptions" [ref=f1e111] [cursor=pointer]:
+                - /url: "#assumptions"
+            - listitem [ref=f1e113]:
+              - link "How to use this tutorial" [ref=f1e114] [cursor=pointer]:
+                - /url: "#how-to-use-this-tutorial"
+        - article [ref=f1e117]:
+          - heading [level=1] [ref=f1e118]:
+            - text: Kubernetes Three-Tier Tutorial
+            - link "¶" [ref=f1e119] [cursor=pointer]:
+              - /url: "#kubernetes-three-tier-tutorial"
+          - paragraph [ref=f1e120]: A hands-on, step-by-step tutorial project to learn Kubernetes from basics to advanced topics, running on a local Rancher Desktop cluster (k3s).
+          - paragraph [ref=f1e121]:
+            - text: The application being deployed
+            - strong [ref=f1e122]: is the tutorial itself
+            - text: ": a three-tier app where nginx serves the tutorial UI, a Python (FastAPI) middleware tier serves step content and tracks progress, and PostgreSQL persists which steps you've completed. When you check off a step in the browser, you've just proven all three tiers work end to end."
+          - heading [level=2] [ref=f1e123]:
+            - text: Architecture
+            - link "¶" [ref=f1e124] [cursor=pointer]:
+              - /url: "#architecture"
+          - table [ref=f1e128]:
+            - rowgroup [ref=f1e129]:
+              - row [ref=f1e130]:
+                - columnheader "Tier" [ref=f1e131]
+                - columnheader "Image" [ref=f1e132]
+                - columnheader "Source" [ref=f1e133]
+                - columnheader "K8s workload" [ref=f1e134]
+            - rowgroup [ref=f1e135]:
+              - row [ref=f1e136]:
+                - cell "Web" [ref=f1e137]
+                - cell [ref=f1e138]:
+                  - code [ref=f1e139]: nginx:1.27
+                  - text: (+ baked static assets)
+                - cell "Public registry" [ref=f1e140]
+                - cell "Deployment" [ref=f1e141]
+              - row [ref=f1e142]:
+                - cell "App" [ref=f1e143]
+                - cell [ref=f1e144]:
+                  - code [ref=f1e145]: k8s-tutorial-app
+                  - text: "on"
+                  - code [ref=f1e146]: python:3.12-slim
+                - cell "Built locally" [ref=f1e147]
+                - cell "Deployment" [ref=f1e148]
+              - row [ref=f1e149]:
+                - cell "DB" [ref=f1e150]
+                - cell [ref=f1e151]:
+                  - code [ref=f1e152]: bitnami/postgresql
+                - cell "Public registry via Helm" [ref=f1e153]
+                - cell "StatefulSet" [ref=f1e154]
+          - paragraph [ref=f1e155]:
+            - emphasis [ref=f1e156]: "Under the hood:"
+            - text: those pods are scheduled and kept alive by Kubernetes itself — API server, etcd, scheduler, controller manager, and the kubelets on each node. See
+            - link "Kubernetes architecture" [ref=f1e157] [cursor=pointer]:
+              - /url: reference/architecture/
+            - text: for how the control plane works and what happens when you
+            - code [ref=f1e158]: kubectl create
+            - text: .
+          - heading [level=2] [ref=f1e159]:
+            - text: Assumptions
+            - link "¶" [ref=f1e160] [cursor=pointer]:
+              - /url: "#assumptions"
+          - list [ref=f1e161]:
+            - listitem [ref=f1e162]:
+              - strong [ref=f1e163]: Rancher Desktop on macOS
+              - text: — k3s under the hood, Traefik ingress controller, built-in network policy enforcement. On a Rancher Manager downstream cluster, only
+              - link "step 0.2" [ref=f1e164] [cursor=pointer]:
+                - /url: steps/phase-0/#02-verify-cluster-access
+              - text: and the ingress/TLS steps differ (flagged inline).
+            - listitem [ref=f1e165]: PostgreSQL and nginx are pulled from public registries. The Python app is built locally — deliberately, since "build → deploy → iterate" is a core real-world skill.
+          - generic [ref=f1e166]:
+            - paragraph [ref=f1e167]: Runtime caveat
+            - paragraph [ref=f1e168]:
+              - text: Rancher Desktop defaults to
+              - code [ref=f1e169]: containerd
+              - text: . Images built with
+              - code [ref=f1e170]: docker build
+              - text: are invisible to k3s unless you switch to the
+              - code [ref=f1e171]: moby
+              - text: engine or build with
+              - code [ref=f1e172]: nerdctl build
+              - text: (
+              - link "step 2.2" [ref=f1e173] [cursor=pointer]:
+                - /url: steps/phase-2/#22-build-the-image-rancher-desktop-runtime-caveat
+              - text: ).
+          - heading [level=2] [ref=f1e174]:
+            - text: How to use this tutorial
+            - link "¶" [ref=f1e175] [cursor=pointer]:
+              - /url: "#how-to-use-this-tutorial"
+          - paragraph [ref=f1e176]:
+            - text: Work through the steps in order — each has
+            - strong [ref=f1e177]: Goals
+            - text: ","
+            - strong [ref=f1e178]: Concepts
+            - text: ","
+            - strong [ref=f1e179]: Commands
+            - text: ", and a"
+            - strong [ref=f1e180]: Verify
+            - text: checkpoint. Start with
+            - link "Getting started" [ref=f1e181] [cursor=pointer]:
+              - /url: getting-started/
+            - text: to check prerequisites and scaffold the repo, then begin at
+            - link "Phase 0" [ref=f1e182] [cursor=pointer]:
+              - /url: steps/phase-0/
+            - text: .
+      - button "Back to top"
+    - contentinfo [ref=f1e183]:
+      - navigation "Footer" [ref=f1e184]:
+        - 'link "Next: Getting started" [ref=f1e185] [cursor=pointer]':
+          - /url: getting-started/
+          - generic [ref=f1e186]:
+            - text: Next
+            - generic [ref=f1e187]: Getting started
+      - generic [ref=f1e193]:
+        - text: Made with
+        - link "Material for MkDocs" [ref=f1e194] [cursor=pointer]:
+          - /url: https://squidfunk.github.io/mkdocs-material/
