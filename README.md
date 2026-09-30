@@ -142,27 +142,38 @@ and a **Verify** checkpoint. The app's UI mirrors these same steps from `steps/*
 
 ## Phase 0 — Environment & Cluster Orientation
 
-### Step 0 — Scaffold the repo
+### Step 0 — Scaffold the project directory
 
-**Goals:** Create the directory layout; set up the git checkpoint-tag workflow.
+**Goals:** Create the directory layout you'll work in for the whole tutorial.
 
-**Concepts:** Single-branch + tags workflow, `.gitkeep` placeholders for empty
-dirs, keeping secrets out of git from day one.
+**Concepts:** Project layout conventions; optional single-branch + tag workflow
+if you choose to track your work in git.
 
 ```bash
 mkdir k8s && cd k8s
-git init -b main
-
 mkdir -p steps app static db scripts \
   deploy/manifests/{app,db,ingress,netpol,web} \
   deploy/charts
+```
+
+> **Git tracking is optional.** Everything in this tutorial works on a plain
+> directory of files — the cluster never sees git. The git commands below are
+> only needed if you want to commit and track your progress in a repo
+> (checkpoint tags, `git checkout` savepoints). To work completely locally
+> without git, skip them — nothing else in the tutorial depends on them.
+
+If you do want git tracking (recommended — it gives you savepoints):
+
+```bash
+git init -b main
 
 # git doesn't track empty dirs — placeholders keep the skeleton visible:
 find . -type d -empty -exec touch {}/.gitkeep \;
 ```
 
-Add a `.gitignore` covering your editor/OS noise plus these tutorial-specific
-rules — real Secrets never get committed (reinforced in Step 18):
+Then add a `.gitignore` covering your editor/OS noise plus these
+tutorial-specific rules — real Secrets never get committed (reinforced in
+Step 18):
 
 ```gitignore
 secrets.yaml            # secrets.example.yaml stays tracked
@@ -172,11 +183,11 @@ dump.sql                # pg_dump output (Step 25)
 
 ```bash
 git add -A && git commit -m "Scaffold tutorial repo"
-git tag step-00
+git tag phase-0
 ```
 
-**Verify:** `git log --oneline` shows the scaffold commit; `find . -type d`
-matches the layout above. From here on, tag at each phase boundary
+**Verify:** `find . -type d` matches the layout above. With git: `git log
+--oneline` shows the scaffold commit; tag at each phase boundary
 (`git tag phase-1`, …) — see *Git strategy* above.
 
 ---
