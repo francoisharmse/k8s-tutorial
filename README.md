@@ -50,6 +50,9 @@ incrementally. Step 0 scaffolds this structure:
 ```
 k8s-tutorial/
 ├── README.md                # this file — the master tutorial
+├── mkdocs.yml               # MkDocs Material site config (author tooling)
+├── docs/                    # published site source — mirrors the steps below
+├── .github/workflows/       # GitHub Pages deploy (mkdocs gh-deploy)
 ├── Makefile                 # optional: build / deploy / reset entry points
 ├── steps/                   # per-step markdown served by the app
 │   └── 01-verify-cluster.md ...
@@ -81,6 +84,9 @@ k8s-tutorial/
     ├── reset.sh             # helm uninstall + delete ns + delete PVCs
     └── loadgen.sh           # HPA load generator (Step 23)
 ```
+
+*`mkdocs.yml`, `docs/`, and `.github/workflows/` publish this tutorial as a
+website — author tooling, not part of the Step 0 scaffold.*
 
 ## Git strategy — checkpoint tags, not branches
 
