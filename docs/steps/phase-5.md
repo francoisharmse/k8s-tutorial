@@ -1,6 +1,6 @@
 # Phase 5 — IaC: Helm-ify Everything
 
-## Step 16 — Build the umbrella chart
+## 5.1 — Build the umbrella chart
 
 **Goals:** Convert all hand-applied manifests into one versioned,
 parameterizable chart.
@@ -34,7 +34,7 @@ annotations:
 
 ---
 
-## Step 17 — Migrate to Helm-managed; release lifecycle
+## 5.2 — Migrate to Helm-managed; release lifecycle
 
 **Goals:** Own the stack as a Helm release; learn upgrade/rollback.
 

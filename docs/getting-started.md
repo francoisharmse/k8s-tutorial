@@ -4,7 +4,7 @@
 
 - Rancher Desktop installed and running, Kubernetes enabled (k3s)
 - `kubectl`, `helm` (v3), `nerdctl` (or `docker` if using moby runtime)
-- Optional: `mkcert` ([TLS step](steps/phase-4.md#step-15-tls)), `stern`
+- Optional: `mkcert` ([step 4.2](steps/phase-4.md#42-tls)), `stern`
   (log tailing), `jq`
 
 ```bash
@@ -15,7 +15,7 @@ helm version
 ## Repo layout
 
 The repo holds the **final state** of every file; the steps create the pieces
-incrementally. Step 0 scaffolds this structure:
+incrementally. Step 0.1 scaffolds this structure:
 
 ```text
 k8s-tutorial/
@@ -27,21 +27,20 @@ k8s-tutorial/
 │   ├── main.py
 │   ├── requirements.txt
 │   └── Dockerfile           # FROM python:3.12-slim
-├── web/
-│   ├── static/              # tutorial UI (step viewer, progress checkboxes)
+├── static/                  # web tier: tutorial UI + nginx
 │   ├── nginx.conf           # proxy /api → app service
-│   └── Dockerfile           # FROM nginx:1.27
+│   └── Dockerfile           # FROM nginx:1.27 (static assets baked in)
 ├── db/
 │   └── init.sql             # tutorial db, app_user, progress table
 ├── deploy/                  # everything kubectl/helm consume
 │   ├── manifests/           # raw YAML (Phases 1–4, before Helm), grouped by tier
 │   │   ├── namespace.yaml
 │   │   ├── secrets.example.yaml
-│   │   ├── db/              # values-db.yaml, backup-cronjob.yaml
 │   │   ├── app/             # deployment, service, configmap, pdb
-│   │   ├── web/             # deployment, service, nginx-conf ConfigMap
+│   │   ├── db/              # values-db.yaml, backup-cronjob.yaml
 │   │   ├── ingress/
-│   │   └── netpol/
+│   │   ├── netpol/
+│   │   └── web/             # deployment, service, nginx-conf ConfigMap
 │   └── charts/
 │       └── k8s-tutorial/    # umbrella Helm chart (Phase 5)
 │           ├── Chart.yaml   # dependency: bitnami/postgresql
@@ -49,8 +48,7 @@ k8s-tutorial/
 │           └── templates/   # web + app deployments, services, ingress, secrets
 └── scripts/
     ├── reset.sh             # helm uninstall + delete ns + delete PVCs
-    └── loadgen.sh           # HPA load generator
-        # (Step 23: steps/phase-7.md#step-23-horizontal-pod-autoscaler)
+    └── loadgen.sh           # HPA load generator (step 7.2)
 ```
 
 ## Git strategy — checkpoint tags, not branches

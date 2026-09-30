@@ -1,18 +1,18 @@
 # Phase 3 — Web Tier (nginx)
 
-## Step 12 — nginx deployment
+## 3.1 — nginx deployment
 
 **Goals:** Serve the tutorial UI; reverse-proxy API calls to the app tier.
 
 **Concepts:** ConfigMap-mounted config, reverse proxy, multi-tier request flow.
 
 ```bash
-nerdctl --namespace k8s.io build -t k8s-tutorial-web:0.1.0 ./web
+nerdctl --namespace k8s.io build -t k8s-tutorial-web:0.1.0 ./static
 kubectl apply -f deploy/manifests/web/   # deployment + service + nginx-conf ConfigMap
 kubectl port-forward svc/web 8080:80
 ```
 
-`web/nginx.conf` key block:
+`static/nginx.conf` key block:
 
 ```nginx
 location /api/ {
@@ -26,7 +26,7 @@ location /api/ {
 
 ---
 
-## Step 13 — Config rollout without rebuild
+## 3.2 — Config rollout without rebuild
 
 **Goals:** Learn ConfigMap update semantics.
 
@@ -35,7 +35,7 @@ location /api/ {
 [Phase 5](phase-5.md)).
 
 ```bash
-# edit web/nginx.conf, then:
+# edit static/nginx.conf, then:
 kubectl apply -f deploy/manifests/web/nginx-conf.yaml
 kubectl rollout restart deploy/web
 kubectl rollout status deploy/web

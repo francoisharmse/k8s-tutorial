@@ -1,6 +1,6 @@
 # Phase 2 — App Tier (Python / FastAPI)
 
-## Step 7 — Write the app
+## 2.1 — Write the app
 
 **Goals:** Build `app/main.py` — the middleware that talks to Postgres.
 
@@ -17,7 +17,7 @@ Config via env: `DB_HOST`, `DB_NAME`, `DB_USER`, `DB_PASSWORD` (from Secret).
 
 ---
 
-## Step 8 — Build the image (Rancher Desktop runtime caveat)
+## 2.2 — Build the image (Rancher Desktop runtime caveat)
 
 **Goals:** Get a locally-built image visible to k3s.
 
@@ -39,7 +39,7 @@ docker build -t k8s-tutorial-app:0.1.0 ./app
 
 ---
 
-## Step 9 — Deployment + ConfigMap + Secret wiring
+## 2.3 — Deployment + ConfigMap + Secret wiring
 
 **Goals:** Deploy the app tier declaratively; separate config from code from
 secrets.
@@ -68,7 +68,7 @@ kubectl logs deploy/app --previous  # logs from a crashed container
 
 ---
 
-## Step 10 — Probes & self-healing
+## 2.4 — Probes & self-healing
 
 **Goals:** Make k8s detect and route around failure.
 
@@ -89,7 +89,7 @@ kubectl get events --sort-by=.lastTimestamp      # watch the story unfold
 
 ---
 
-## Step 11 — Resources & metrics
+## 2.5 — Resources & metrics
 
 **Goals:** Right-size workloads; observe actual usage.
 

@@ -29,7 +29,8 @@ flowchart LR
 
 - **Rancher Desktop on macOS** — k3s under the hood, Traefik ingress controller,
   built-in network policy enforcement. On a Rancher Manager downstream cluster,
-  only Step 1 and the ingress/TLS steps differ (flagged inline).
+  only [step 0.2](steps/phase-0.md#02-verify-cluster-access) and the ingress/TLS
+  steps differ (flagged inline).
 - PostgreSQL and nginx are pulled from public registries. The Python app is built
   locally — deliberately, since "build → deploy → iterate" is a core real-world
   skill.
@@ -38,7 +39,7 @@ flowchart LR
     Rancher Desktop defaults to `containerd`. Images built with `docker build`
     are invisible to k3s unless you switch to the `moby` engine or build with
     `nerdctl build`
-    ([Step 8](steps/phase-2.md#step-8-build-the-image-rancher-desktop-runtime-caveat)).
+    ([step 2.2](steps/phase-2.md#22-build-the-image-rancher-desktop-runtime-caveat)).
 
 ## How to use this tutorial
 

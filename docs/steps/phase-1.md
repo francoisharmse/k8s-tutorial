@@ -1,6 +1,6 @@
 # Phase 1 — DB Tier (PostgreSQL)
 
-## Step 3 — Namespace + Secrets
+## 1.1 — Namespace + Secrets
 
 **Goals:** Isolate tutorial resources; create and inspect Secrets.
 
@@ -22,12 +22,12 @@ kubectl describe secret postgres-creds
 
 !!! success "Verify"
     You can decode the secret — that's the point.
-    [Step 18](phase-6.md#step-18-secrets-encryption-at-rest) addresses real
+    Step [6.1](phase-6.md#61-secrets-encryption-at-rest) addresses real
     encryption at rest.
 
 ---
 
-## Step 4 — Deploy PostgreSQL via Helm (Bitnami chart)
+## 1.2 — Deploy PostgreSQL via Helm (Bitnami chart)
 
 **Goals:** Deploy a production-grade chart; understand StatefulSets and
 persistence.
@@ -58,7 +58,7 @@ helm get values pg -n tutorial                 # effective configuration
 
 ---
 
-## Step 5 — DB user & password management
+## 1.3 — DB user & password management
 
 **Goals:** Create a least-privilege app user; learn credential handling.
 
@@ -102,7 +102,7 @@ kubectl rollout restart statefulset/pg-postgresql   # pods pick up new secret on
 
 ---
 
-## Step 6 — Cluster DNS & Services
+## 1.4 — Cluster DNS & Services
 
 **Goals:** Understand how pods find each other.
 

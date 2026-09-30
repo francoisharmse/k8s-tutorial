@@ -1,6 +1,6 @@
 # Phase 6 — Security
 
-## Step 18 — Secrets encryption at rest
+## 6.1 — Secrets encryption at rest
 
 **Goals:** Understand why base64 Secrets aren't secure; enable etcd encryption.
 
@@ -25,7 +25,7 @@ kubectl get secret postgres-creds -o yaml     # readable → demonstrate the pro
 
 ---
 
-## Step 19 — RBAC
+## 6.2 — RBAC
 
 **Goals:** Give workloads and humans exactly the access they need — no more.
 
@@ -57,7 +57,7 @@ kubectl exec -it deploy/app -- cat /var/run/secrets/kubernetes.io/serviceaccount
 
 ---
 
-## Step 20 — Pod security & securityContext
+## 6.3 — Pod security & securityContext
 
 **Goals:** Harden containers; enforce standards at the namespace level.
 
@@ -85,7 +85,7 @@ kubectl apply -f ...   # admission error is explicit about which field violates
 
 ---
 
-## Step 21 — NetworkPolicies
+## 6.4 — NetworkPolicies
 
 **Goals:** Enforce tier-to-tier traffic rules at the network level.
 

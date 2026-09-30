@@ -62,21 +62,20 @@ k8s-tutorial/
 │   ├── main.py
 │   ├── requirements.txt
 │   └── Dockerfile           # FROM python:3.12-slim
-├── web/
-│   ├── static/              # tutorial UI (step viewer, progress checkboxes)
+├── static/                  # web tier: tutorial UI + nginx
 │   ├── nginx.conf           # proxy /api → app service
-│   └── Dockerfile           # FROM nginx:1.27
+│   └── Dockerfile           # FROM nginx:1.27 (static assets baked in)
 ├── db/
 │   └── init.sql             # tutorial db, app_user, progress table
 ├── deploy/                  # everything kubectl/helm consume
 │   ├── manifests/           # raw YAML (Phases 1–4, before Helm), grouped by tier
 │   │   ├── namespace.yaml
 │   │   ├── secrets.example.yaml
-│   │   ├── db/              # values-db.yaml, backup-cronjob.yaml
 │   │   ├── app/             # deployment, service, configmap, pdb
-│   │   ├── web/             # deployment, service, nginx-conf ConfigMap
+│   │   ├── db/              # values-db.yaml, backup-cronjob.yaml
 │   │   ├── ingress/
-│   │   └── netpol/
+│   │   ├── netpol/
+│   │   └── web/             # deployment, service, nginx-conf ConfigMap
 │   └── charts/
 │       └── k8s-tutorial/    # umbrella Helm chart (Phase 5)
 │           ├── Chart.yaml   # dependency: bitnami/postgresql
@@ -154,8 +153,8 @@ dirs, keeping secrets out of git from day one.
 mkdir k8s-tutorial && cd k8s-tutorial
 git init -b main
 
-mkdir -p steps app web/static db scripts \
-  deploy/manifests/{db,app,web,ingress,netpol} \
+mkdir -p steps app static db scripts \
+  deploy/manifests/{app,db,ingress,netpol,web} \
   deploy/charts
 
 # git doesn't track empty dirs — placeholders keep the skeleton visible:
@@ -450,12 +449,12 @@ kubectl get events --field-selector reason=OOMKilled
 **Concepts:** ConfigMap-mounted config, reverse proxy, multi-tier request flow.
 
 ```bash
-nerdctl --namespace k8s.io build -t k8s-tutorial-web:0.1.0 ./web
+nerdctl --namespace k8s.io build -t k8s-tutorial-web:0.1.0 ./static
 kubectl apply -f deploy/manifests/web/   # deployment + service + nginx-conf ConfigMap
 kubectl port-forward svc/web 8080:80
 ```
 
-`web/nginx.conf` key block:
+`static/nginx.conf` key block:
 ```nginx
 location /api/ {
     proxy_pass http://app.tutorial.svc.cluster.local:8000;
@@ -475,7 +474,7 @@ web → app → postgres) renders. **All three tiers now live.**
 `rollout restart`; checksum annotations (revisited in Helm phase).
 
 ```bash
-# edit web/nginx.conf, then:
+# edit static/nginx.conf, then:
 kubectl apply -f deploy/manifests/web/nginx-conf.yaml
 kubectl rollout restart deploy/web
 kubectl rollout status deploy/web

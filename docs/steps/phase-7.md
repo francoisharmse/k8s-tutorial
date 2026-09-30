@@ -1,6 +1,6 @@
 # Phase 7 — Operations at Scale
 
-## Step 22 — Scaling, rolling updates, rollbacks, PDBs
+## 7.1 — Scaling, rolling updates, rollbacks, PDBs
 
 **Goals:** Change running workloads safely; protect availability during
 disruption.
@@ -27,7 +27,7 @@ kubectl uncordon <node>
 
 ---
 
-## Step 23 — Horizontal Pod Autoscaler
+## 7.2 — Horizontal Pod Autoscaler
 
 **Goals:** Scale on real load.
 
@@ -50,7 +50,7 @@ kubectl run loadgen --image=busybox:1.36 --rm -it --restart=Never -- \
 
 ---
 
-## Step 24 — Logging & debugging toolkit
+## 7.3 — Logging & debugging toolkit
 
 **Goals:** Build the real-world debugging muscle.
 
@@ -73,7 +73,7 @@ kubectl run netshoot --rm -it --image=nicolaka/netshoot      # the swiss army kn
 
 ---
 
-## Step 25 — Jobs & database backup/restore
+## 7.4 — Jobs & database backup/restore
 
 **Goals:** Run one-off and scheduled work; prove backups actually restore.
 

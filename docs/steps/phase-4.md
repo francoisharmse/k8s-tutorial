@@ -1,6 +1,6 @@
 # Phase 4 — Ingress & TLS
 
-## Step 14 — Ingress (Traefik, built into k3s)
+## 4.1 — Ingress (Traefik, built into k3s)
 
 **Goals:** Route external traffic by hostname/path instead of port-forward.
 
@@ -25,7 +25,7 @@ kubectl describe ingress tutorial
 
 ---
 
-## Step 15 — TLS
+## 4.2 — TLS
 
 **Goals:** Serve HTTPS; manage certs as cluster objects.
 

@@ -1,6 +1,6 @@
 # Phase 0 — Environment & Cluster Orientation
 
-## Step 0 — Scaffold the repo
+## 0.1 — Scaffold the repo
 
 **Goals:** Create the directory layout; set up the git checkpoint-tag workflow.
 
@@ -11,8 +11,8 @@ dirs, keeping secrets out of git from day one.
 mkdir k8s-tutorial && cd k8s-tutorial
 git init -b main
 
-mkdir -p steps app web/static db scripts \
-  deploy/manifests/{db,app,web,ingress,netpol} \
+mkdir -p steps app static db scripts \
+  deploy/manifests/{app,db,ingress,netpol,web} \
   deploy/charts
 
 # git doesn't track empty dirs — placeholders keep the skeleton visible:
@@ -21,17 +21,17 @@ find . -type d -empty -exec touch {}/.gitkeep \;
 
 Add a `.gitignore` covering your editor/OS noise plus these tutorial-specific
 rules — real Secrets never get committed (reinforced in
-[Step 18](phase-6.md#step-18-secrets-encryption-at-rest)):
+[step 6.1](phase-6.md#61-secrets-encryption-at-rest)):
 
 ```gitignore
 secrets.yaml            # secrets.example.yaml stays tracked
-*-key.pem               # mkcert/openssl private keys (Step 15)
-dump.sql                # pg_dump output (Step 25)
+*-key.pem               # mkcert/openssl private keys (step 4.2)
+dump.sql                # pg_dump output (step 7.4)
 ```
 
 ```bash
 git add -A && git commit -m "Scaffold tutorial repo"
-git tag step-00
+git tag phase-0
 ```
 
 !!! success "Verify"
@@ -42,7 +42,7 @@ git tag step-00
 
 ---
 
-## Step 1 — Verify cluster access
+## 0.2 — Verify cluster access
 
 **Goals:** Confirm kubectl talks to the local cluster; understand contexts.
 
@@ -63,7 +63,7 @@ kubectl api-resources | head -30            # discover object types
 
 ---
 
-## Step 2 — Imperative playground
+## 0.3 — Imperative playground
 
 **Goals:** Learn the core objects hands-on before declarative YAML.
 

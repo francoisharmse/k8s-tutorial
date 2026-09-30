@@ -1,6 +1,6 @@
 # Phase 8 — Advanced / Optional
 
-## Step 26 — Observability stack (Prometheus + Grafana)
+## 8.1 — Observability stack (Prometheus + Grafana)
 
 **Goals:** Metrics-based insight into the whole cluster.
 
@@ -21,7 +21,7 @@ ServiceMonitor → app metrics appear in Grafana alongside cluster metrics.
 
 ---
 
-## Step 27 — GitOps preview
+## 8.2 — GitOps preview
 
 **Goals:** See how Helm + git replaces manual `kubectl apply` in production.
 
@@ -33,7 +33,7 @@ is conceptual + optional install.
 
 ---
 
-## Step 28 — Teardown & troubleshooting playbook
+## 8.3 — Teardown & troubleshooting playbook
 
 **Goals:** Clean removal; a repeatable triage flow.
 
