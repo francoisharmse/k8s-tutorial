@@ -18,7 +18,7 @@ The repo holds the **final state** of every file; the steps create the pieces
 incrementally. Step 0.1 scaffolds this structure:
 
 ```text
-k8s-tutorial/
+k8s/                         # top-level dir for everything tutorial-related
 ├── README.md                # the master tutorial document
 ├── Makefile                 # optional: build / deploy / reset entry points
 ├── steps/                   # per-step markdown served by the app

@@ -8,7 +8,7 @@
 dirs, keeping secrets out of git from day one.
 
 ```bash
-mkdir k8s-tutorial && cd k8s-tutorial
+mkdir k8s && cd k8s
 git init -b main
 
 mkdir -p steps app static db scripts \

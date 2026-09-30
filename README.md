@@ -50,7 +50,7 @@ The repo holds the **final state** of every file; the steps create the pieces
 incrementally. Step 0 scaffolds this structure:
 
 ```
-k8s-tutorial/
+k8s/                         # top-level dir for everything tutorial-related
 ├── README.md                # this file — the master tutorial
 ├── mkdocs.yml               # MkDocs Material site config (author tooling)
 ├── docs/                    # published site source — mirrors the steps below
@@ -150,7 +150,7 @@ and a **Verify** checkpoint. The app's UI mirrors these same steps from `steps/*
 dirs, keeping secrets out of git from day one.
 
 ```bash
-mkdir k8s-tutorial && cd k8s-tutorial
+mkdir k8s && cd k8s
 git init -b main
 
 mkdir -p steps app static db scripts \
