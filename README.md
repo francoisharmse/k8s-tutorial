@@ -1,5 +1,7 @@
 # Kubernetes Three-Tier Tutorial
 
+> **Read this tutorial as a website:** <https://francoisharmse.github.io/k8s-tutorial/>
+
 A hands-on, step-by-step tutorial project to learn Kubernetes from basics to advanced
 topics, running on a local Rancher Desktop cluster (k3s).
 
