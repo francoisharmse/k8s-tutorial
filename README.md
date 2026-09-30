@@ -243,6 +243,12 @@ default the current context to a namespace instead:
 `kubectl config set-context --current --namespace=playground` (Step 3 uses
 exactly this).
 
+> **OpenShift aside:** OpenShift calls namespaces **Projects** — same object,
+> plus display-name metadata and self-service creation (`oc new-project`
+> instead of `kubectl create ns`). `oc project playground` *does* switch you —
+> it's a first-class verb that edits the current context's namespace, exactly
+> like `set-context --current --namespace=…`.
+
 **Verify:** Node shows `Ready`; `kube-system` pods `Running`.
 
 ---

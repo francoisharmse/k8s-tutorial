@@ -419,6 +419,38 @@ Explore the difference yourself:
         column in `get-contexts`, so later commands can drop `-n playground`.
         (Step [1.1](phase-1.md#11-namespace--secrets) uses exactly this trick.)
 
+    ??? tip "How OpenShift handles this — Projects"
+
+        OpenShift (Red Hat's Kubernetes distribution) calls namespaces
+        **Projects**. A `Project` *is* a namespace — same object underneath —
+        with extra metadata (display name, description) and default RBAC
+        wiring on top.
+
+        Two differences you'd notice:
+
+        - **Creation:** `oc new-project playground` instead of
+          `kubectl create namespace` — and it's *self-service*: users can
+          request projects subject to admin-set quotas, where raw
+          `kubectl create ns` typically needs elevated rights.
+        - **Switching:** the `oc` CLI (kubectl + OpenShift verbs) makes
+          project switching first-class:
+
+          ```bash
+          oc project playground
+          ```
+
+          → `Now using project "playground" on server "https://…".`
+
+          This works where `kubectl config use-context playground` failed —
+          under the hood it does exactly what
+          `kubectl config set-context --current --namespace=playground` does:
+          edits the current context's namespace field. Related verbs:
+          `oc projects` lists what you can access, `oc project` (no args)
+          shows the current one.
+
+        Same mental model — context still holds cluster + creds + namespace;
+        OpenShift just gives the namespace-switch a dedicated verb.
+
 ??? warning "Common errors & fixes"
     **`error: unknown flag: --short`** — the `--short` flag was deprecated in
     kubectl 1.28 and **removed in 1.30**. Run plain `kubectl version` — it

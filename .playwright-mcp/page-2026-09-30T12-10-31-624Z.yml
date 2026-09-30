@@ -1,0 +1,680 @@
+- generic [active] [ref=e1]:
+  - link "Skip to content" [ref=e2] [cursor=pointer]:
+    - /url: "#phase-0-environment-cluster-orientation"
+  - banner [ref=e3]:
+    - navigation "Header" [ref=e4]:
+      - generic [ref=e5] [cursor=pointer]
+      - generic [ref=e9]:
+        - generic [ref=e10]: Kubernetes Three-Tier Tutorial
+        - generic: Phase 0 · Environment & Orientation
+      - generic [ref=e12]:
+        - radio "Switch to light mode"
+        - generic "Switch to light mode" [ref=e13] [cursor=pointer]
+        - radio "Switch to dark mode"
+        - radio "Switch to system preference"
+      - dialog [ref=e16]:
+        - search [ref=e17]:
+          - generic [ref=e18]:
+            - textbox "Search" [ref=e19]
+            - navigation "Search":
+              - button "Clear"
+          - generic: Initializing search
+      - link "GitHub" [ref=e24] [cursor=pointer]:
+        - /url: https://github.com/francoisharmse/k8s-tutorial
+  - generic [ref=e29]:
+    - main [ref=e30]:
+      - generic [ref=e31]:
+        - navigation "Navigation" [ref=e34]:
+          - generic [ref=e35] [cursor=pointer]:
+            - link "Kubernetes Three-Tier Tutorial" [ref=e36]:
+              - /url: ../..
+            - text: Kubernetes Three-Tier Tutorial
+          - list [ref=e39]:
+            - listitem [ref=e40]:
+              - link "Home" [ref=e41] [cursor=pointer]:
+                - /url: ../..
+            - listitem [ref=e43]:
+              - link "Getting started" [ref=e44] [cursor=pointer]:
+                - /url: ../../getting-started/
+            - listitem [ref=e46]:
+              - generic [ref=e47]: Steps
+              - navigation "Steps" [ref=e50]:
+                - list [ref=e53]:
+                  - listitem [ref=e54]:
+                    - link "Phase 0 · Environment & Orientation" [ref=e55] [cursor=pointer]:
+                      - /url: ./
+                  - listitem [ref=e57]:
+                    - link "Phase 1 · DB Tier (PostgreSQL)" [ref=e58] [cursor=pointer]:
+                      - /url: ../phase-1/
+                  - listitem [ref=e60]:
+                    - link "Phase 2 · App Tier (FastAPI)" [ref=e61] [cursor=pointer]:
+                      - /url: ../phase-2/
+                  - listitem [ref=e63]:
+                    - link "Phase 3 · Web Tier (nginx)" [ref=e64] [cursor=pointer]:
+                      - /url: ../phase-3/
+                  - listitem [ref=e66]:
+                    - link "Phase 4 · Ingress & TLS" [ref=e67] [cursor=pointer]:
+                      - /url: ../phase-4/
+                  - listitem [ref=e69]:
+                    - link "Phase 5 · Helm-ify Everything" [ref=e70] [cursor=pointer]:
+                      - /url: ../phase-5/
+                  - listitem [ref=e72]:
+                    - link "Phase 6 · Security" [ref=e73] [cursor=pointer]:
+                      - /url: ../phase-6/
+                  - listitem [ref=e75]:
+                    - link "Phase 7 · Operations at Scale" [ref=e76] [cursor=pointer]:
+                      - /url: ../phase-7/
+                  - listitem [ref=e78]:
+                    - link "Phase 8 · Advanced / Optional" [ref=e79] [cursor=pointer]:
+                      - /url: ../phase-8/
+            - listitem [ref=e81]:
+              - generic [ref=e82]: Reference
+              - navigation "Reference" [ref=e85]:
+                - list [ref=e88]:
+                  - listitem [ref=e89]:
+                    - link "Command cheat sheet" [ref=e90] [cursor=pointer]:
+                      - /url: ../../reference/cheatsheet/
+                  - listitem [ref=e92]:
+                    - link "Key concepts map" [ref=e93] [cursor=pointer]:
+                      - /url: ../../reference/concepts-map/
+        - navigation "Table of contents" [ref=e98]:
+          - list [ref=e100]:
+            - listitem [ref=e101]:
+              - link "0.1 — Scaffold the project directory" [ref=e102] [cursor=pointer]:
+                - /url: "#01-scaffold-the-project-directory"
+            - listitem [ref=e104]:
+              - link "0.2 — Verify cluster access" [ref=e105] [cursor=pointer]:
+                - /url: "#02-verify-cluster-access"
+              - navigation "0.2 — Verify cluster access" [ref=e107]:
+                - list [ref=e108]:
+                  - listitem [ref=e109]:
+                    - link "Mental model — clusters, contexts, namespaces" [ref=e110] [cursor=pointer]:
+                      - /url: "#mental-model-clusters-contexts-namespaces"
+            - listitem [ref=e112]:
+              - link "0.3 — Imperative playground" [ref=e113] [cursor=pointer]:
+                - /url: "#03-imperative-playground"
+        - article [ref=e116]:
+          - heading [level=1] [ref=e117]:
+            - text: Phase 0 — Environment & Cluster Orientation
+            - link "¶" [ref=e118] [cursor=pointer]:
+              - /url: "#phase-0-environment-cluster-orientation"
+          - heading [level=2] [ref=e119]:
+            - text: 0.1 — Scaffold the project directory
+            - link "¶" [ref=e120] [cursor=pointer]:
+              - /url: "#01-scaffold-the-project-directory"
+          - paragraph [ref=e121]:
+            - strong [ref=e122]: "Goals:"
+            - text: Create the directory layout you'll work in for the whole tutorial.
+          - paragraph [ref=e123]:
+            - strong [ref=e124]: "Concepts:"
+            - text: Project layout conventions; optional single-branch + tag workflow if you choose to track your work in git.
+          - generic [ref=e126]:
+            - navigation [ref=e127]:
+              - button "Copy to clipboard" [ref=e128] [cursor=pointer]
+            - code [ref=e129]:
+              - generic [ref=e130]:
+                - text: mkdir k8s && cd k8s
+                - generic [ref=e131]:
+                  - text: "#"
+                  - complementary [ref=e132]:
+                    - tooltip "Creates the working dir and enters it — silence means success." [ref=e133]
+                    - link [ref=e135] [cursor=pointer]:
+                      - /url: "#__code_0_annotation_1"
+              - generic [ref=e136]:
+                - text: mkdir -p steps app static db scripts \
+                - generic [ref=e137]:
+                  - text: "#"
+                  - complementary [ref=e138]:
+                    - tooltip [ref=e139]:
+                      - generic [ref=e140]:
+                        - code [ref=e141]: mkdir -p
+                        - text: builds the whole tree in one shot;
+                        - code [ref=e142]: "{a,b,c}"
+                        - text: brace expansion creates the five manifest dirs at once. No output on success.
+                    - link [ref=e143] [cursor=pointer]:
+                      - /url: "#__code_0_annotation_2"
+              - generic [ref=e144]: "deploy/manifests/{app,db,ingress,netpol,web} \\"
+              - generic [ref=e145]: deploy/charts
+          - generic [ref=e146]:
+            - paragraph [ref=e147]: Git tracking is optional
+            - paragraph [ref=e148]:
+              - text: Everything in this tutorial works on a plain directory of files — the cluster never sees git. The git commands below are
+              - strong [ref=e149]: only needed if you want to commit and track your progress in a repo
+              - text: (checkpoint tags,
+              - code [ref=e150]: git checkout
+              - text: savepoints). If you prefer to work completely locally without git, skip them — nothing else in the tutorial depends on them.
+          - paragraph [ref=e151]: "If you do want git tracking (recommended — it gives you savepoints):"
+          - generic [ref=e153]:
+            - navigation [ref=e154]:
+              - button "Copy to clipboard" [ref=e155] [cursor=pointer]
+            - code [ref=e156]:
+              - generic [ref=e157]:
+                - text: git init -b main
+                - generic [ref=e158]:
+                  - text: "#"
+                  - complementary [ref=e159]:
+                    - tooltip [ref=e160]:
+                      - generic [ref=e161]:
+                        - code [ref=e162]: Initialized empty Git repository in …/k8s/.git/
+                        - text: —
+                        - code [ref=e163]: "-b main"
+                        - text: names the default branch
+                        - code [ref=e164]: main
+                        - text: .
+                    - link [ref=e165] [cursor=pointer]:
+                      - /url: "#__code_1_annotation_1"
+              - generic [ref=e167]: "# git doesn't track empty dirs — placeholders keep the skeleton visible:"
+              - generic [ref=e168]:
+                - text: "find . -type d -empty -exec touch {}/.gitkeep \\;"
+                - generic [ref=e169]:
+                  - text: "#"
+                  - complementary [ref=e170]:
+                    - tooltip [ref=e171]:
+                      - generic [ref=e172]:
+                        - text: No output — drops an empty
+                        - code [ref=e173]: .gitkeep
+                        - text: file into every directory that has no content yet, so the skeleton survives the commit.
+                    - link [ref=e174] [cursor=pointer]:
+                      - /url: "#__code_1_annotation_2"
+          - paragraph [ref=e175]:
+            - text: Then add a
+            - code [ref=e176]: .gitignore
+            - text: covering your editor/OS noise plus these tutorial-specific rules — real Secrets never get committed (reinforced in
+            - link "step 6.1" [ref=e177] [cursor=pointer]:
+              - /url: ../phase-6/#61-secrets-encryption-at-rest
+            - text: "):"
+          - generic [ref=e179]:
+            - navigation [ref=e180]:
+              - button "Copy to clipboard" [ref=e181] [cursor=pointer]
+            - code [ref=e182]:
+              - generic [ref=e183]: "secrets.yaml # secrets.example.yaml stays tracked"
+              - generic [ref=e184]: "*-key.pem # mkcert/openssl private keys (step 4.2)"
+              - generic [ref=e185]: "dump.sql # pg_dump output (step 7.4)"
+          - generic [ref=e187]:
+            - navigation [ref=e188]:
+              - button "Copy to clipboard" [ref=e189] [cursor=pointer]
+            - code [ref=e190]:
+              - generic [ref=e191]:
+                - text: git add -A && git commit -m "Scaffold tutorial repo"
+                - generic [ref=e192]:
+                  - text: "#"
+                  - complementary [ref=e193]:
+                    - tooltip [ref=e194]:
+                      - generic [ref=e195]:
+                        - code [ref=e196]: "[main (root-commit) <hash>] Scaffold tutorial repo"
+                        - text: — followed by a file/insertion count summary.
+                    - link [ref=e197] [cursor=pointer]:
+                      - /url: "#__code_3_annotation_1"
+              - generic [ref=e198]:
+                - text: git tag phase-0
+                - generic [ref=e199]:
+                  - text: "#"
+                  - complementary [ref=e200]:
+                    - tooltip [ref=e201]:
+                      - generic [ref=e202]:
+                        - text: No output — the
+                        - code [ref=e203]: phase-0
+                        - text: tag now marks this commit as a savepoint.
+                    - link [ref=e204] [cursor=pointer]:
+                      - /url: "#__code_3_annotation_2"
+          - generic [ref=e205]:
+            - paragraph [ref=e206]: Verify
+            - paragraph [ref=e207]:
+              - code [ref=e208]: find . -type d
+              - text: shows the
+              - link "repo layout" [ref=e209] [cursor=pointer]:
+                - /url: ../../getting-started/#repo-layout
+              - text: ". If you're using git:"
+              - code [ref=e210]: git log --oneline
+              - text: shows the scaffold commit — from here on, tag at each phase boundary (
+              - code [ref=e211]: git tag phase-1
+              - text: ", …) per"
+              - link "Git strategy" [ref=e212] [cursor=pointer]:
+                - /url: ../../getting-started/#git-strategy-checkpoint-tags-not-branches
+              - text: .
+          - separator [ref=e213]
+          - heading [level=2] [ref=e214]:
+            - text: 0.2 — Verify cluster access
+            - link "¶" [ref=e215] [cursor=pointer]:
+              - /url: "#02-verify-cluster-access"
+          - paragraph [ref=e216]:
+            - strong [ref=e217]: "Goals:"
+            - text: Confirm kubectl talks to the local cluster; understand contexts.
+          - paragraph [ref=e218]:
+            - strong [ref=e219]: "Concepts:"
+            - text: kubeconfig, contexts, control plane vs worker nodes.
+          - generic [ref=e220]:
+            - paragraph [ref=e221]:
+              - text: "Optional: alias"
+              - code [ref=e222]: kubectl
+              - text: →
+              - code [ref=e223]: k
+            - paragraph [ref=e224]:
+              - text: Every command in this tutorial spells out
+              - code [ref=e225]: kubectl
+              - text: for clarity — but most people alias it to
+              - code [ref=e226]: k
+              - text: "and never look back. One-time setup, per shell:"
+            - generic [ref=e227]:
+              - radio "zsh (macOS default)" [checked]
+              - radio "bash"
+              - radio "fish"
+              - radio "PowerShell (Windows)"
+              - radio "CMD (Windows)"
+              - generic [ref=e228]:
+                - link "zsh (macOS default)" [ref=e230] [cursor=pointer]:
+                  - /url: "#__tabbed_1_1"
+                - link "bash" [ref=e232] [cursor=pointer]:
+                  - /url: "#__tabbed_1_2"
+                - link "fish" [ref=e234] [cursor=pointer]:
+                  - /url: "#__tabbed_1_3"
+                - link "PowerShell (Windows)" [ref=e236] [cursor=pointer]:
+                  - /url: "#__tabbed_1_4"
+                - link "CMD (Windows)" [ref=e238] [cursor=pointer]:
+                  - /url: "#__tabbed_1_5"
+              - generic [ref=e242]:
+                - navigation [ref=e243]:
+                  - button "Copy to clipboard" [ref=e244] [cursor=pointer]
+                - code [ref=e245]:
+                  - generic [ref=e246]: echo 'alias k=kubectl' >> ~/.zshrc && source ~/.zshrc
+                  - generic [ref=e247]: "# keep tab-completion working on the alias:"
+                  - generic [ref=e248]: echo 'source <(kubectl completion zsh)' >> ~/.zshrc
+                  - generic [ref=e249]: echo 'compdef k=kubectl' >> ~/.zshrc
+              - button [aria-hidden] [ref=e250] [cursor=pointer]
+              - button [aria-hidden] [ref=e251] [cursor=pointer]
+          - paragraph [ref=e252]:
+            - text: Run these in order. Expand
+            - strong [ref=e253]: ⓘ Expected output
+            - text: under each command to compare with yours — the
+            - code [ref=e254]: +
+            - text: markers inside the output explain every column and status.
+          - list [ref=e255]:
+            - listitem [ref=e256]:
+              - paragraph [ref=e257]: "Check client + server versions:"
+              - paragraph [ref=e258]:
+                - emphasis [ref=e259]: "Why:"
+                - text: the cheapest end-to-end test — if kubectl can reach the API server, this prints both versions. It also exposes version
+                - emphasis [ref=e260]: skew
+                - text: between your client and the cluster.
+              - generic [ref=e262]:
+                - navigation [ref=e263]:
+                  - button "Copy to clipboard" [ref=e264] [cursor=pointer]
+                - code [ref=e265]:
+                  - generic [ref=e266]: kubectl version
+              - group [ref=e267]:
+                - generic "Expected output" [ref=e268] [cursor=pointer]
+            - listitem [ref=e269]:
+              - paragraph [ref=e270]: "List the contexts in your kubeconfig:"
+              - paragraph [ref=e271]:
+                - emphasis [ref=e272]: "Why:"
+                - text: kubectl multiplexes clusters — the same binary can talk to a local k3s, minikube, or a production cluster. Always confirm
+                - emphasis [ref=e273]: which
+                - text: cluster you're about to touch before running anything.
+              - generic [ref=e275]:
+                - navigation [ref=e276]:
+                  - button "Copy to clipboard" [ref=e277] [cursor=pointer]
+                - code [ref=e278]:
+                  - generic [ref=e279]: kubectl config get-contexts
+              - group [ref=e280]:
+                - generic "Expected output" [ref=e281] [cursor=pointer]
+            - listitem [ref=e282]:
+              - paragraph [ref=e283]:
+                - text: Switch context — only needed if
+                - code [ref=e284]: "*"
+                - text: wasn't on
+                - code [ref=e285]: rancher-desktop
+                - text: ":"
+              - paragraph [ref=e286]:
+                - emphasis [ref=e287]: "Why:"
+                - text: everything after this targets
+                - code [ref=e288]: rancher-desktop
+                - text: . Getting contexts wrong is how people accidentally run commands against the wrong cluster.
+              - generic [ref=e290]:
+                - navigation [ref=e291]:
+                  - button "Copy to clipboard" [ref=e292] [cursor=pointer]
+                - code [ref=e293]:
+                  - generic [ref=e294]: kubectl config use-context rancher-desktop
+              - group [ref=e295]:
+                - generic "Expected output" [ref=e296] [cursor=pointer]
+            - listitem [ref=e297]:
+              - paragraph [ref=e298]: "List the cluster's nodes:"
+              - paragraph [ref=e299]:
+                - emphasis [ref=e300]: "Why:"
+                - text: nodes are the machines your workloads land on.
+                - code [ref=e301]: get nodes
+                - text: is the cluster health check;
+                - code [ref=e302]: "-o wide"
+                - text: adds IPs, OS, and container runtime — the facts you reach for when pods won't schedule.
+              - generic [ref=e304]:
+                - navigation [ref=e305]:
+                  - button "Copy to clipboard" [ref=e306] [cursor=pointer]
+                - code [ref=e307]:
+                  - generic [ref=e308]: kubectl get nodes -o wide
+              - group [ref=e309]:
+                - generic "Expected output" [ref=e310] [cursor=pointer]
+            - listitem [ref=e311]:
+              - paragraph [ref=e312]: "List every pod in the cluster:"
+              - paragraph [ref=e313]:
+                - emphasis [ref=e314]: "Why:"
+                - code [ref=e315]: "-A"
+                - text: "(all namespaces) shows the system workloads too — it's both a health check and a lesson: DNS, ingress, and storage are just pods in"
+                - code [ref=e316]: kube-system
+                - text: ", same as the ones you'll deploy."
+              - generic [ref=e318]:
+                - navigation [ref=e319]:
+                  - button "Copy to clipboard" [ref=e320] [cursor=pointer]
+                - code [ref=e321]:
+                  - generic [ref=e322]: kubectl get pods -A
+              - group [ref=e323]:
+                - generic "Expected output" [ref=e324] [cursor=pointer]
+            - listitem [ref=e325]:
+              - paragraph [ref=e326]: "Confirm helm is installed:"
+              - paragraph [ref=e327]:
+                - emphasis [ref=e328]: "Why:"
+                - text: you'll deploy PostgreSQL via a Helm chart in step 1.2 — better to discover a missing install now than mid-step.
+              - generic [ref=e330]:
+                - navigation [ref=e331]:
+                  - button "Copy to clipboard" [ref=e332] [cursor=pointer]
+                - code [ref=e333]:
+                  - generic [ref=e334]: helm version
+              - group [ref=e335]:
+                - generic "Expected output" [ref=e336] [cursor=pointer]
+              - group [ref=e337]:
+                - 'generic "helm: command not found? Install it" [ref=e338] [cursor=pointer]'
+            - listitem [ref=e339]:
+              - paragraph [ref=e340]: "Browse the API surface:"
+              - paragraph [ref=e341]:
+                - emphasis [ref=e342]: "Why:"
+                - text: this is the catalog of everything kubectl can manage — discoverable instead of memorized. It answers "does
+                - code [ref=e343]: hpa
+                - text: have a shortname?" and "is a
+                - code [ref=e344]: clusterrole
+                - text: namespaced?" without leaving the terminal.
+              - generic [ref=e346]:
+                - navigation [ref=e347]:
+                  - button "Copy to clipboard" [ref=e348] [cursor=pointer]
+                - code [ref=e349]:
+                  - generic [ref=e350]: kubectl api-resources | head -30
+              - group [ref=e351]:
+                - generic "Expected output" [ref=e352] [cursor=pointer]
+          - heading [level=4] [ref=e353]:
+            - text: Mental model — clusters, contexts, namespaces
+            - link "¶" [ref=e354] [cursor=pointer]:
+              - /url: "#mental-model-clusters-contexts-namespaces"
+          - paragraph [ref=e355]: "These three words sound alike but live in different places — a classic early confusion:"
+          - table [ref=e358]:
+            - rowgroup [ref=e359]:
+              - row [ref=e360]:
+                - columnheader "Concept" [ref=e361]
+                - columnheader "Where it lives" [ref=e362]
+                - columnheader "List it with" [ref=e363]
+            - rowgroup [ref=e364]:
+              - row [ref=e365]:
+                - cell [ref=e366]:
+                  - strong [ref=e367]: Cluster
+                - cell "kubeconfig — an API endpoint + CA cert" [ref=e368]
+                - cell [ref=e369]:
+                  - code [ref=e370]: kubectl config get-clusters
+              - row [ref=e371]:
+                - cell [ref=e372]:
+                  - strong [ref=e373]: Context
+                - cell "kubeconfig — cluster + credentials + default namespace" [ref=e374]
+                - cell [ref=e375]:
+                  - code [ref=e376]: kubectl config get-contexts
+              - row [ref=e377]:
+                - cell [ref=e378]:
+                  - strong [ref=e379]: Namespace
+                - cell [ref=e380]:
+                  - emphasis [ref=e381]: inside
+                  - text: a cluster — scopes your objects
+                - cell [ref=e382]:
+                  - code [ref=e383]: kubectl get namespaces
+          - paragraph [ref=e384]: "Explore the difference yourself:"
+          - list [ref=e385]:
+            - listitem [ref=e386]:
+              - paragraph [ref=e387]: "List the cluster connections kubectl knows:"
+              - paragraph [ref=e388]:
+                - emphasis [ref=e389]: "Why:"
+                - text: contexts point
+                - emphasis [ref=e390]: at
+                - text: clusters — this shows the API endpoints your kubeconfig can reach.
+              - generic [ref=e392]:
+                - navigation [ref=e393]:
+                  - button "Copy to clipboard" [ref=e394] [cursor=pointer]
+                - code [ref=e395]:
+                  - generic [ref=e396]: kubectl config get-clusters
+              - group [ref=e397]:
+                - generic "Expected output" [ref=e398] [cursor=pointer]
+            - listitem [ref=e399]:
+              - paragraph [ref=e400]:
+                - text: List the namespaces inside the
+                - strong [ref=e401]: current
+                - text: "cluster:"
+              - paragraph [ref=e402]:
+                - emphasis [ref=e403]: "Why:"
+                - text: namespaces are created
+                - emphasis [ref=e404]: inside
+                - text: a cluster and scope the objects in it — they say nothing about connections.
+              - generic [ref=e406]:
+                - navigation [ref=e407]:
+                  - button "Copy to clipboard" [ref=e408] [cursor=pointer]
+                - code [ref=e409]:
+                  - generic [ref=e410]: kubectl get namespaces
+              - group [ref=e411]:
+                - generic "Expected output" [ref=e412] [cursor=pointer]
+            - listitem [ref=e413]:
+              - paragraph [ref=e414]: "Try switching context to a namespace — it fails on purpose:"
+              - paragraph [ref=e415]:
+                - emphasis [ref=e416]: "Why:"
+                - text: proves contexts and namespaces are different things — a context is a kubeconfig entry; you can't
+                - code [ref=e417]: use-context
+                - text: a namespace name.
+              - generic [ref=e419]:
+                - navigation [ref=e420]:
+                  - button "Copy to clipboard" [ref=e421] [cursor=pointer]
+                - code [ref=e422]:
+                  - generic [ref=e423]: kubectl config use-context playground
+              - group [ref=e424]:
+                - generic "Expected output" [ref=e425] [cursor=pointer]
+              - paragraph [ref=e426]:
+                - text: What you probably meant — default the
+                - strong [ref=e427]: current context
+                - text: "to a namespace:"
+              - generic [ref=e429]:
+                - navigation [ref=e430]:
+                  - button "Copy to clipboard" [ref=e431] [cursor=pointer]
+                - code [ref=e432]:
+                  - generic [ref=e433]: kubectl config set-context --current --namespace=playground
+              - group [ref=e434]:
+                - generic "Expected output" [ref=e435] [cursor=pointer]
+              - group [ref=e436]:
+                - generic "How OpenShift handles this — Projects" [ref=e437] [cursor=pointer]
+          - group [ref=e438]:
+            - generic "Common errors & fixes" [ref=e439] [cursor=pointer]
+          - generic [ref=e440]:
+            - paragraph [ref=e441]: Verify
+            - paragraph [ref=e442]:
+              - text: Node shows
+              - code [ref=e443]: Ready
+              - text: ;
+              - code [ref=e444]: kube-system
+              - text: pods
+              - code [ref=e445]: Running
+              - text: .
+          - separator [ref=e446]
+          - heading [level=2] [ref=e447]:
+            - text: 0.3 — Imperative playground
+            - link "¶" [ref=e448] [cursor=pointer]:
+              - /url: "#03-imperative-playground"
+          - paragraph [ref=e449]:
+            - strong [ref=e450]: "Goals:"
+            - text: Learn the core objects hands-on before declarative YAML.
+          - paragraph [ref=e451]:
+            - strong [ref=e452]: "Concepts:"
+            - text: Pods, namespaces, describe/logs/exec,
+            - code [ref=e453]: kubectl explain
+            - text: .
+          - paragraph [ref=e454]:
+            - text: Run these in order. Expand
+            - strong [ref=e455]: ⓘ Expected output
+            - text: under each command to compare with yours — the
+            - code [ref=e456]: +
+            - text: markers inside the output explain every column and status.
+          - list [ref=e457]:
+            - listitem [ref=e458]:
+              - paragraph [ref=e459]: "Create a scratch namespace:"
+              - paragraph [ref=e460]:
+                - emphasis [ref=e461]: "Why:"
+                - text: namespaces scope everything that follows. A disposable
+                - code [ref=e462]: playground
+                - text: keeps experiments from polluting other namespaces — and deleting it at the end cleans up in one shot.
+              - generic [ref=e464]:
+                - navigation [ref=e465]:
+                  - button "Copy to clipboard" [ref=e466] [cursor=pointer]
+                - code [ref=e467]:
+                  - generic [ref=e468]: kubectl create namespace playground
+              - group [ref=e469]:
+                - generic "Expected output" [ref=e470] [cursor=pointer]
+            - listitem [ref=e471]:
+              - paragraph [ref=e472]: "Run a pod imperatively:"
+              - paragraph [ref=e473]:
+                - emphasis [ref=e474]: "Why:"
+                - code [ref=e475]: kubectl run
+                - text: is the fastest way to get a workload up without YAML — good for experiments, debugging, and throwaway tools. (Real apps come from Deployments, covered later.)
+              - generic [ref=e477]:
+                - navigation [ref=e478]:
+                  - button "Copy to clipboard" [ref=e479] [cursor=pointer]
+                - code [ref=e480]:
+                  - generic [ref=e481]: kubectl run demo --image=nginx:1.27 -n playground
+              - group [ref=e482]:
+                - generic "Expected output" [ref=e483] [cursor=pointer]
+            - listitem [ref=e484]:
+              - paragraph [ref=e485]: "Watch the pod lifecycle live:"
+              - paragraph [ref=e486]:
+                - emphasis [ref=e487]: "Why:"
+                - code [ref=e488]: "-w"
+                - text: streams changes in real time — you see the full lifecycle (
+                - code [ref=e489]: Pending
+                - text: →
+                - code [ref=e490]: ContainerCreating
+                - text: →
+                - code [ref=e491]: Running
+                - text: ) instead of a snapshot.
+              - generic [ref=e493]:
+                - navigation [ref=e494]:
+                  - button "Copy to clipboard" [ref=e495] [cursor=pointer]
+                - code [ref=e496]:
+                  - generic [ref=e497]: kubectl get pods -n playground -w
+              - group [ref=e498]:
+                - generic "Expected output" [ref=e499] [cursor=pointer]
+            - listitem [ref=e500]:
+              - paragraph [ref=e501]: "Inspect the pod in detail:"
+              - paragraph [ref=e502]:
+                - emphasis [ref=e503]: "Why:"
+                - code [ref=e504]: describe
+                - text: is the diagnostic command — full spec, status, conditions, and the
+                - strong [ref=e505]: Events
+                - text: log of what the cluster
+                - emphasis [ref=e506]: did
+                - text: . It's the first thing to run whenever a pod misbehaves.
+              - generic [ref=e508]:
+                - navigation [ref=e509]:
+                  - button "Copy to clipboard" [ref=e510] [cursor=pointer]
+                - code [ref=e511]:
+                  - generic [ref=e512]: kubectl describe pod demo -n playground
+              - group [ref=e513]:
+                - generic "Expected output (trimmed)" [ref=e514] [cursor=pointer]
+            - listitem [ref=e515]:
+              - paragraph [ref=e516]: "Read the app's own logs:"
+              - paragraph [ref=e517]:
+                - emphasis [ref=e518]: "Why:"
+                - code [ref=e519]: describe
+                - text: tells you what
+                - emphasis [ref=e520]: Kubernetes
+                - text: did;
+                - code [ref=e521]: logs
+                - text: tells you what the
+                - emphasis [ref=e522]: application
+                - text: said. Knowing which to check is the core debugging split.
+              - generic [ref=e524]:
+                - navigation [ref=e525]:
+                  - button "Copy to clipboard" [ref=e526] [cursor=pointer]
+                - code [ref=e527]:
+                  - generic [ref=e528]: kubectl logs demo -n playground
+              - group [ref=e529]:
+                - generic "Expected output" [ref=e530] [cursor=pointer]
+            - listitem [ref=e531]:
+              - paragraph [ref=e532]: "Get a shell inside the container:"
+              - paragraph [ref=e533]:
+                - emphasis [ref=e534]: "Why:"
+                - code [ref=e535]: exec -it
+                - text: drops you into the container's own environment — run
+                - code [ref=e536]: ps
+                - text: ","
+                - code [ref=e537]: ls
+                - text: ","
+                - code [ref=e538]: wget localhost
+                - text: to verify the app as the cluster sees it.
+                - code [ref=e539]: "-i -t"
+                - text: makes it interactive;
+                - code [ref=e540]: "--"
+                - text: separates kubectl flags from the command.
+              - generic [ref=e542]:
+                - navigation [ref=e543]:
+                  - button "Copy to clipboard" [ref=e544] [cursor=pointer]
+                - code [ref=e545]:
+                  - generic [ref=e546]: kubectl exec -it demo -n playground -- /bin/sh
+              - group [ref=e547]:
+                - generic "Expected output" [ref=e548] [cursor=pointer]
+            - listitem [ref=e549]:
+              - paragraph [ref=e550]: "Look up field docs without leaving the terminal:"
+              - paragraph [ref=e551]:
+                - emphasis [ref=e552]: "Why:"
+                - code [ref=e553]: kubectl explain
+                - text: is the built-in API reference — it answers "what fields exist and what do they mean?" for any resource, which beats guessing YAML keys.
+              - generic [ref=e555]:
+                - navigation [ref=e556]:
+                  - button "Copy to clipboard" [ref=e557] [cursor=pointer]
+                - code [ref=e558]:
+                  - generic [ref=e559]: kubectl explain pod.spec.containers
+              - group [ref=e560]:
+                - generic "Expected output" [ref=e561] [cursor=pointer]
+            - listitem [ref=e562]:
+              - paragraph [ref=e563]: "Tear everything down:"
+              - paragraph [ref=e564]:
+                - emphasis [ref=e565]: "Why:"
+                - text: namespace deletion cascades — every object inside
+                - code [ref=e566]: playground
+                - text: dies with it. The fastest way to reset a scratch environment.
+              - generic [ref=e568]:
+                - navigation [ref=e569]:
+                  - button "Copy to clipboard" [ref=e570] [cursor=pointer]
+                - code [ref=e571]:
+                  - generic [ref=e572]: kubectl delete namespace playground
+              - group [ref=e573]:
+                - generic "Expected output" [ref=e574] [cursor=pointer]
+          - generic [ref=e575]:
+            - paragraph [ref=e576]: Verify
+            - paragraph [ref=e577]:
+              - text: You can explain the difference between
+              - code [ref=e578]: describe
+              - text: (what happened) and
+              - code [ref=e579]: logs
+              - text: (what the app said).
+      - button "Back to top"
+    - contentinfo [ref=e580]:
+      - navigation "Footer" [ref=e581]:
+        - 'link "Previous: Getting started" [ref=e582] [cursor=pointer]':
+          - /url: ../../getting-started/
+          - generic [ref=e586]:
+            - text: Previous
+            - generic [ref=e587]: Getting started
+        - 'link "Next: Phase 1 · DB Tier (PostgreSQL)" [ref=e588] [cursor=pointer]':
+          - /url: ../phase-1/
+          - generic [ref=e589]:
+            - text: Next
+            - generic [ref=e590]: Phase 1 · DB Tier (PostgreSQL)
+      - generic [ref=e596]:
+        - text: Made with
+        - link "Material for MkDocs" [ref=e597] [cursor=pointer]:
+          - /url: https://squidfunk.github.io/mkdocs-material/
