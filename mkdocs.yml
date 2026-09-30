@@ -1,0 +1,79 @@
+site_name: Kubernetes Three-Tier Tutorial
+site_description: >-
+  Hands-on Kubernetes tutorial — build, deploy, and operate a three-tier app
+  on a local Rancher Desktop (k3s) cluster.
+# Uncomment after pushing to GitHub (enables repo link + edit button):
+# repo_url: https://github.com/<you>/k8s-tutorial
+# edit_uri: edit/main/docs/
+
+theme:
+  name: material
+  language: en
+  palette:
+    - media: "(prefers-color-scheme)"
+      toggle:
+        icon: material/brightness-auto
+        name: Switch to light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      toggle:
+        icon: material/brightness-4
+        name: Switch to system preference
+  icon:
+    repo: fontawesome/brands/github
+  features:
+    - navigation.sections
+    - navigation.top
+    - navigation.indexes
+    - navigation.footer
+    - toc.follow
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+
+plugins:
+  - search
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.details
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+
+nav:
+  - Home: index.md
+  - Getting started: getting-started.md
+  - Steps:
+      - Phase 0 · Environment & Orientation: steps/phase-0.md
+      - Phase 1 · DB Tier (PostgreSQL): steps/phase-1.md
+      - Phase 2 · App Tier (FastAPI): steps/phase-2.md
+      - Phase 3 · Web Tier (nginx): steps/phase-3.md
+      - Phase 4 · Ingress & TLS: steps/phase-4.md
+      - Phase 5 · Helm-ify Everything: steps/phase-5.md
+      - Phase 6 · Security: steps/phase-6.md
+      - Phase 7 · Operations at Scale: steps/phase-7.md
+      - Phase 8 · Advanced / Optional: steps/phase-8.md
+  - Reference:
+      - Command cheat sheet: reference/cheatsheet.md
+      - Key concepts map: reference/concepts-map.md
