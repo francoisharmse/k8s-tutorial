@@ -420,6 +420,19 @@ StorageClass.
         kubectl get statefulset,pods,pvc -n tutorial
         ```
 
+    ??? note "Why doesn't `kubectl get all` show the PVC?"
+
+        `get all` is misleadingly named — it's a **fixed alias** for a subset
+        of workload types only:
+
+        `pods, services, daemonsets, deployments, replicasets, statefulsets, jobs, cronjobs`
+
+        PVCs, Secrets, ConfigMaps, Ingresses, Roles — everything else — are
+        silently excluded. There is no built-in "list literally everything";
+        you either name the types explicitly (as in this command) or query
+        `api-resources` for the full catalog. Rule: `get all` for a quick
+        workload overview, explicit types when you need storage/config/RBAC.
+
 9.  Trace where the data physically lives:
 
     ??? question "Why?"
