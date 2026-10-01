@@ -1,0 +1,12 @@
+# Overrides for the bitnami/postgresql Helm chart (tutorial step 1.2).
+# Every tunable key comes from: helm show values bitnami/postgresql
+auth:
+  # database created on first boot
+  database: tutorial
+  # read the admin password from our Secret (step 1.1) instead of generating one —
+  # the chart looks for a `postgres-password` key inside it by default
+  existingSecret: postgres-creds
+primary:
+  persistence:
+    # the 8Gi chart default is overkill for a local cluster
+    size: 1Gi

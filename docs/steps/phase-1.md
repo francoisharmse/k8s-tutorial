@@ -286,16 +286,45 @@ StorageClass.
             from step 1.1 instead of generating a random password.
         3.  We shrink `primary.persistence.size` to `1Gi` for a local cluster.
 
-6.  Install the chart into `tutorial` with your values file:
+6.  Create the values file:
+
+    *Why:* a values file is how you tell a chart *how* to install — your
+    overrides on top of its defaults. You don't have to know the keys: each
+    one below was picked straight out of the `helm show values` output above.
+    (The tutorial repo ships this file, so if you cloned it, it's already at
+    `deploy/manifests/db/values-db.yaml` — otherwise create it here.)
+
+    ```bash
+    cat > deploy/manifests/db/values-db.yaml <<'EOF'
+    auth:
+      database: tutorial
+      existingSecret: postgres-creds
+    primary:
+      persistence:
+        size: 1Gi
+    EOF
+    ```
+
+    ??? info "What each key does — and where it came from"
+
+        | Key | Effect | Found via |
+        |-----|--------|-----------|
+        | `auth.database` | database created on first boot | `helm show values` → `auth:` section |
+        | `auth.existingSecret` | read the admin password from the 1.1 Secret instead of generating a random one — the chart looks for a `postgres-password` key in it | `helm show values` → `auth.existingSecret` |
+        | `primary.persistence.size` | shrink the 8Gi default to 1Gi for a local cluster | `helm show values` → `primary.persistence` |
+
+        No file created? No problem — the same keys could be passed inline as
+        `--set auth.database=tutorial --set auth.existingSecret=postgres-creds …`,
+        but a file is repeatable, reviewable, and commit-able.
+
+7.  Install the chart into `tutorial` with your values file:
 
     *Why:* `helm install` creates a **release** (`pg`). Breaking the command
     down — `bitnami/postgresql` is `repo-alias/chart-name`: Helm looks up
     `bitnami` in the repo index you added (`helm repo add`) and refreshed
     (`helm repo update`), downloads the `.tgz`, then renders the chart's
     templates with three layers of values merged in order — chart defaults ←
-    `-f deploy/manifests/db/values-db.yaml` ← any `--set` flags. The file is
-    *ours* (part of the tutorial repo, under `deploy/manifests/db/`); the keys
-    inside it were chosen from the `helm show values` output above.
+    `-f deploy/manifests/db/values-db.yaml` ← any `--set` flags.
 
     ```bash
     helm install pg bitnami/postgresql -n tutorial -f deploy/manifests/db/values-db.yaml
@@ -317,7 +346,7 @@ StorageClass.
         2.  Every `helm upgrade` bumps `REVISION` — that's how Helm tracks
             release history for rollbacks.
 
-7.  Check what the chart actually created:
+8.  Check what the chart actually created:
 
     *Why:* the chart emits several object kinds at once — StatefulSet, pod,
     and PVC. Seeing all three side by side is the persistence story.
@@ -346,7 +375,7 @@ StorageClass.
         3.  `Bound` = a PersistentVolume was provisioned and attached. The
             claim name embeds the pod name — each replica gets its own volume.
 
-8.  Trace where the data physically lives:
+9.  Trace where the data physically lives:
 
     *Why:* the PVC is the pod's contract with storage. `describe` shows which
     volume and which provisioner satisfied it.
@@ -371,7 +400,7 @@ StorageClass.
         3.  k3s' built-in provisioner — it just makes a directory on the node.
             In the cloud this would be an EBS/GCE disk instead.
 
-9.  Check the release health from Helm's side:
+10. Check the release health from Helm's side:
 
     *Why:* kubectl shows objects; `helm status` shows the *release* — its
     state, revision, and the chart's post-install notes.
@@ -392,7 +421,7 @@ StorageClass.
         1.  The chart's own usage notes (connection strings, password hints).
             Read them — chart authors put important gotchas here.
 
-10. See your effective configuration:
+11. See your effective configuration:
 
     *Why:* shows what your `-f` file actually overrode vs the chart's hundreds
     of defaults.
