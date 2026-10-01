@@ -403,6 +403,23 @@ StorageClass.
         3.  `Bound` = a PersistentVolume was provisioned and attached. The
             claim name embeds the pod name — each replica gets its own volume.
 
+    ??? failure "Got `arguments in resource/name form must have a single resource and name`?"
+
+        You typed spaces after the commas:
+
+        ```bash
+        kubectl get statefulset, pods, pvc   # ✗ — `pods` and `pvc` are read
+                                           #    as NAMES of statefulsets
+        ```
+
+        Comma-separated resource types must be **one word** — spaces start a
+        new argument, and kubectl then thinks you asked for a statefulset
+        literally named `pods`. Correct form (no spaces):
+
+        ```bash
+        kubectl get statefulset,pods,pvc -n tutorial
+        ```
+
 9.  Trace where the data physically lives:
 
     ??? question "Why?"
