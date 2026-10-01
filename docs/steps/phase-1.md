@@ -588,9 +588,28 @@ rotation.
 
     ??? question "Why?"
 
-        `--dry-run=client -o yaml` renders the object locally and pipes it
-        to `apply` — the standard trick for updating secrets without rewriting a
-        manifest file.
+        **The purpose:** password rotation is routine ops — credentials leak,
+        expire, or policy forces periodic change. This drills the exact
+        workflow you'll use for real.
+
+        **Why this construction:** `kubectl create secret` alone would fail —
+        the Secret already exists (`AlreadyExists` error; `create` is not
+        idempotent). And `kubectl edit` means hand-juggling base64. The fix:
+
+        1. `--dry-run=client -o yaml` — render the Secret to YAML **locally**,
+           without touching the cluster (`--dry-run=server` would validate
+           against the API instead).
+        2. `| kubectl apply -f -` — apply does **create-or-update** (upsert):
+           creates if missing, patches if present. This is the
+           imperative→declarative bridge — `create` renders the spec,
+           `apply` persists it.
+        3. No manifest file needed — which matters, because Secrets shouldn't
+           sit in files or git anyway.
+
+        **Why step 4 follows:** pods snapshot secrets at startup — env vars
+        are baked at container start, and mounted secret volumes only refresh
+        lazily. `rollout restart` forces every pod to re-read the new value
+        deterministically.
 
     ```bash
     kubectl create secret generic postgres-creds \
