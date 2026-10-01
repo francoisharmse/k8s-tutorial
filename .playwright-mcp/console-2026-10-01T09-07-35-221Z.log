@@ -1,0 +1,9 @@
+[     159ms] [LOG] Enabled live reload @ http://127.0.0.1:8080/steps/phase-1/:1930
+[     447ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://api.github.com/repos/francoisharmse/k8s-tutorial/releases/latest:0
+[   37322ms] [LOG] Enabled live reload @ http://127.0.0.1:8080/steps/phase-1/:1930
+[  170190ms] [LOG] Enabled live reload @ http://127.0.0.1:8080/steps/phase-1/:1930
+[  170774ms] [LOG] Enabled live reload @ http://127.0.0.1:8080/steps/phase-1/:1930
+[  171179ms] [LOG] Enabled live reload @ http://127.0.0.1:8080/steps/phase-1/:1930
+[  171366ms] [LOG] Enabled live reload @ http://127.0.0.1:8080/steps/phase-1/:1930
+[  171679ms] [LOG] Enabled live reload @ http://127.0.0.1:8080/steps/phase-1/:1930
+[  171854ms] [LOG] Enabled live reload @ http://127.0.0.1:8080/steps/phase-1/:1930
