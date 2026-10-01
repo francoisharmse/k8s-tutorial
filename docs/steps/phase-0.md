@@ -417,7 +417,7 @@ Explore the difference yourself:
 
         `Context "rancher-desktop" modified.` — this fills the `NAMESPACE`
         column in `get-contexts`, so later commands can drop `-n playground`.
-        (Step [1.1](phase-1.md#11-namespace--secrets) uses exactly this trick.)
+        (Step [1.1](phase-1.md#11-namespace-secrets) uses exactly this trick.)
 
     ??? tip "How OpenShift handles this — Projects"
 
