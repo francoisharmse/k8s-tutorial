@@ -12,9 +12,11 @@ with yours — the `+` markers inside the output explain every column and status
 
 1.  Create the tutorial namespace:
 
-    *Why:* all three tiers live inside `tutorial` — isolating the app from
-    `default`/`kube-system` and letting you wipe everything with one
-    `delete namespace` later.
+    ??? question "Why?"
+
+        all three tiers live inside `tutorial` — isolating the app from
+        `default`/`kube-system` and letting you wipe everything with one
+        `delete namespace` later.
 
     ```bash
     kubectl create namespace tutorial
@@ -30,9 +32,11 @@ with yours — the `+` markers inside the output explain every column and status
 
 2.  Make it the default namespace for your context:
 
-    *Why:* from here on, plain `kubectl get pods` means *in `tutorial`* — no
-    `-n` on every command. (This is the `set-context` trick from step 0.2's
-    mental model.)
+    ??? question "Why?"
+
+        from here on, plain `kubectl get pods` means *in `tutorial`* — no
+        `-n` on every command. (This is the `set-context` trick from step 0.2's
+        mental model.)
 
     ```bash
     kubectl config set-context --current --namespace=tutorial
@@ -50,8 +54,10 @@ with yours — the `+` markers inside the output explain every column and status
 
 3.  Create the database credentials as a Secret:
 
-    *Why:* passwords must never live in a Pod spec or ConfigMap. A `Secret`
-    keeps them out of plain manifests and lets workloads mount them.
+    ??? question "Why?"
+
+        passwords must never live in a Pod spec or ConfigMap. A `Secret`
+        keeps them out of plain manifests and lets workloads mount them.
 
     ```bash
     kubectl create secret generic postgres-creds \
@@ -70,8 +76,10 @@ with yours — the `+` markers inside the output explain every column and status
 
 4.  Inspect the Secret as YAML:
 
-    *Why:* see how the cluster actually stores it — you'll notice the values
-    look scrambled. That's base64 **encoding**, not encryption.
+    ??? question "Why?"
+
+        see how the cluster actually stores it — you'll notice the values
+        look scrambled. That's base64 **encoding**, not encryption.
 
     ```bash
     kubectl get secret postgres-creds -o yaml
@@ -97,8 +105,10 @@ with yours — the `+` markers inside the output explain every column and status
 
 5.  Decode a secret value:
 
-    *Why:* proves the previous point — decoding is trivial, so RBAC (who may
-    `get` secrets) is the real protection, not the encoding.
+    ??? question "Why?"
+
+        proves the previous point — decoding is trivial, so RBAC (who may
+        `get` secrets) is the real protection, not the encoding.
 
     ```bash
     kubectl get secret postgres-creds -o jsonpath='{.data.postgres-password}' | base64 -d
@@ -115,8 +125,10 @@ with yours — the `+` markers inside the output explain every column and status
 
 6.  See how `describe` treats secrets:
 
-    *Why:* `describe` deliberately shows only key names and **sizes** — never
-    values. It's safe to paste into bug reports and chat.
+    ??? question "Why?"
+
+        `describe` deliberately shows only key names and **sizes** — never
+        values. It's safe to paste into bug reports and chat.
 
     ```bash
     kubectl describe secret postgres-creds
@@ -153,8 +165,10 @@ StorageClass.
 
 1.  Register the Bitnami chart repository:
 
-    *Why:* Helm installs come from chart **repos** (like apt/brew sources).
-    `add` only records the URL — nothing is fetched yet.
+    ??? question "Why?"
+
+        Helm installs come from chart **repos** (like apt/brew sources).
+        `add` only records the URL — nothing is fetched yet.
 
     ```bash
     helm repo add bitnami https://charts.bitnami.com/bitnami
@@ -171,8 +185,10 @@ StorageClass.
 
 2.  Fetch the repo index:
 
-    *Why:* updates the local cache of available charts/versions — like
-    `apt update`. Stale index = stale versions.
+    ??? question "Why?"
+
+        updates the local cache of available charts/versions — like
+        `apt update`. Stale index = stale versions.
 
     ```bash
     helm repo update
@@ -188,8 +204,10 @@ StorageClass.
 
 3.  See which chart versions exist:
 
-    *Why:* charts version independently of the app they install — check both
-    columns before picking one.
+    ??? question "Why?"
+
+        charts version independently of the app they install — check both
+        columns before picking one.
 
     ```bash
     helm search repo bitnami/postgresql --versions | head
@@ -209,9 +227,11 @@ StorageClass.
 
 4.  Inspect the chart metadata before installing:
 
-    *Why:* `helm show chart` prints the chart's `Chart.yaml` — the package
-    manifest. It tells you what you'll get (which app version, which images,
-    what it depends on) *without installing anything*.
+    ??? question "Why?"
+
+        `helm show chart` prints the chart's `Chart.yaml` — the package
+        manifest. It tells you what you'll get (which app version, which images,
+        what it depends on) *without installing anything*.
 
     ```bash
     helm show chart bitnami/postgresql
@@ -260,9 +280,11 @@ StorageClass.
 
 5.  Dump the chart's default values:
 
-    *Why:* this is how you **discover what `values-db.yaml` can override**.
-    `helm show values` prints every tunable key with the chart's defaults and
-    inline `@param` docs — your `-f` file is just a sparse subset of this.
+    ??? question "Why?"
+
+        this is how you **discover what `values-db.yaml` can override**.
+        `helm show values` prints every tunable key with the chart's defaults and
+        inline `@param` docs — your `-f` file is just a sparse subset of this.
 
     ```bash
     helm show values bitnami/postgresql | less
@@ -288,11 +310,13 @@ StorageClass.
 
 6.  Create the values file:
 
-    *Why:* a values file is how you tell a chart *how* to install — your
-    overrides on top of its defaults. You don't have to know the keys: each
-    one below was picked straight out of the `helm show values` output above.
-    (The tutorial repo ships this file, so if you cloned it, it's already at
-    `deploy/manifests/db/values-db.yaml` — otherwise create it here.)
+    ??? question "Why?"
+
+        a values file is how you tell a chart *how* to install — your
+        overrides on top of its defaults. You don't have to know the keys: each
+        one below was picked straight out of the `helm show values` output above.
+        (The tutorial repo ships this file, so if you cloned it, it's already at
+        `deploy/manifests/db/values-db.yaml` — otherwise create it here.)
 
     ```bash
     cat > deploy/manifests/db/values-db.yaml <<'EOF'
@@ -319,12 +343,14 @@ StorageClass.
 
 7.  Install the chart into `tutorial` with your values file:
 
-    *Why:* `helm install` creates a **release** (`pg`). Breaking the command
-    down — `bitnami/postgresql` is `repo-alias/chart-name`: Helm looks up
-    `bitnami` in the repo index you added (`helm repo add`) and refreshed
-    (`helm repo update`), downloads the `.tgz`, then renders the chart's
-    templates with three layers of values merged in order — chart defaults ←
-    `-f deploy/manifests/db/values-db.yaml` ← any `--set` flags.
+    ??? question "Why?"
+
+        `helm install` creates a **release** (`pg`). Breaking the command
+        down — `bitnami/postgresql` is `repo-alias/chart-name`: Helm looks up
+        `bitnami` in the repo index you added (`helm repo add`) and refreshed
+        (`helm repo update`), downloads the `.tgz`, then renders the chart's
+        templates with three layers of values merged in order — chart defaults ←
+        `-f deploy/manifests/db/values-db.yaml` ← any `--set` flags.
 
     ```bash
     helm install pg bitnami/postgresql -n tutorial -f deploy/manifests/db/values-db.yaml
@@ -348,8 +374,10 @@ StorageClass.
 
 8.  Check what the chart actually created:
 
-    *Why:* the chart emits several object kinds at once — StatefulSet, pod,
-    and PVC. Seeing all three side by side is the persistence story.
+    ??? question "Why?"
+
+        the chart emits several object kinds at once — StatefulSet, pod,
+        and PVC. Seeing all three side by side is the persistence story.
 
     ```bash
     kubectl get statefulset,pods,pvc -n tutorial
@@ -377,8 +405,10 @@ StorageClass.
 
 9.  Trace where the data physically lives:
 
-    *Why:* the PVC is the pod's contract with storage. `describe` shows which
-    volume and which provisioner satisfied it.
+    ??? question "Why?"
+
+        the PVC is the pod's contract with storage. `describe` shows which
+        volume and which provisioner satisfied it.
 
     ```bash
     kubectl describe pvc data-pg-postgresql-0
@@ -402,8 +432,10 @@ StorageClass.
 
 10. Check the release health from Helm's side:
 
-    *Why:* kubectl shows objects; `helm status` shows the *release* — its
-    state, revision, and the chart's post-install notes.
+    ??? question "Why?"
+
+        kubectl shows objects; `helm status` shows the *release* — its
+        state, revision, and the chart's post-install notes.
 
     ```bash
     helm status pg
@@ -423,8 +455,10 @@ StorageClass.
 
 11. See your effective configuration:
 
-    *Why:* shows what your `-f` file actually overrode vs the chart's hundreds
-    of defaults.
+    ??? question "Why?"
+
+        shows what your `-f` file actually overrode vs the chart's hundreds
+        of defaults.
 
     ```bash
     helm get values pg -n tutorial
@@ -460,8 +494,10 @@ rotation.
 
 1.  Open a psql shell inside the DB pod:
 
-    *Why:* the DB isn't exposed outside the cluster — `exec` is how you
-    administer it in place.
+    ??? question "Why?"
+
+        the DB isn't exposed outside the cluster — `exec` is how you
+        administer it in place.
 
     ```bash
     kubectl exec -it pg-postgresql-0 -- psql -U postgres -d tutorial
@@ -483,8 +519,10 @@ rotation.
 2.  Create the least-privilege app user and the `progress` table — paste this
     into the psql session:
 
-    *Why:* the app tier only needs to read/write one table. Superuser for the
-    app would make any app bug or SQL injection catastrophic.
+    ??? question "Why?"
+
+        the app tier only needs to read/write one table. Superuser for the
+        app would make any app bug or SQL injection catastrophic.
 
     ```sql
     CREATE USER app_user WITH PASSWORD 'AppPass456';
@@ -518,9 +556,11 @@ rotation.
 
 3.  Rotation drill — update the Secret in place:
 
-    *Why:* `--dry-run=client -o yaml` renders the object locally and pipes it
-    to `apply` — the standard trick for updating secrets without rewriting a
-    manifest file.
+    ??? question "Why?"
+
+        `--dry-run=client -o yaml` renders the object locally and pipes it
+        to `apply` — the standard trick for updating secrets without rewriting a
+        manifest file.
 
     ```bash
     kubectl create secret generic postgres-creds \
@@ -540,8 +580,10 @@ rotation.
 
 4.  Restart the DB so it picks up the new secret:
 
-    *Why:* pods read secrets at startup — existing pods don't see updates
-    until recreated. `rollout restart` cycles them safely.
+    ??? question "Why?"
+
+        pods read secrets at startup — existing pods don't see updates
+        until recreated. `rollout restart` cycles them safely.
 
     ```bash
     kubectl rollout restart statefulset/pg-postgresql
@@ -571,8 +613,10 @@ rotation.
 
 1.  List the services Helm created:
 
-    *Why:* the chart made two services — a normal ClusterIP and a headless
-    one. Seeing both is the point.
+    ??? question "Why?"
+
+        the chart made two services — a normal ClusterIP and a headless
+        one. Seeing both is the point.
 
     ```bash
     kubectl get svc -n tutorial
@@ -594,8 +638,10 @@ rotation.
 
 2.  Resolve the service name from inside the cluster:
 
-    *Why:* proves cluster DNS works — `nslookup` from a throwaway pod queries
-    the same CoreDNS every pod uses.
+    ??? question "Why?"
+
+        proves cluster DNS works — `nslookup` from a throwaway pod queries
+        the same CoreDNS every pod uses.
 
     ```bash
     kubectl run dnsutils --image=busybox:1.36 --rm -it --restart=Never -- \
@@ -620,8 +666,10 @@ rotation.
 
 3.  See which pods sit behind the service:
 
-    *Why:* a Service doesn't hold pods — it holds an **Endpoints** list that
-    controllers keep in sync with Ready pods. This is the wiring.
+    ??? question "Why?"
+
+        a Service doesn't hold pods — it holds an **Endpoints** list that
+        controllers keep in sync with Ready pods. This is the wiring.
 
     ```bash
     kubectl get endpoints pg-postgresql

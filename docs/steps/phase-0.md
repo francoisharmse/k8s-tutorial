@@ -118,9 +118,11 @@ with yours — the `+` markers inside the output explain every column and status
 
 1.  Check client + server versions:
 
-    *Why:* the cheapest end-to-end test — if kubectl can reach the API server,
-    this prints both versions. It also exposes version *skew* between your
-    client and the cluster.
+    ??? question "Why?"
+
+        the cheapest end-to-end test — if kubectl can reach the API server,
+        this prints both versions. It also exposes version *skew* between your
+        client and the cluster.
 
     ```bash
     kubectl version
@@ -139,9 +141,11 @@ with yours — the `+` markers inside the output explain every column and status
 
 2.  List the contexts in your kubeconfig:
 
-    *Why:* kubectl multiplexes clusters — the same binary can talk to a local
-    k3s, minikube, or a production cluster. Always confirm *which* cluster
-    you're about to touch before running anything.
+    ??? question "Why?"
+
+        kubectl multiplexes clusters — the same binary can talk to a local
+        k3s, minikube, or a production cluster. Always confirm *which* cluster
+        you're about to touch before running anything.
 
     ```bash
     kubectl config get-contexts
@@ -164,8 +168,10 @@ with yours — the `+` markers inside the output explain every column and status
 
 3.  Switch context — only needed if `*` wasn't on `rancher-desktop`:
 
-    *Why:* everything after this targets `rancher-desktop`. Getting contexts
-    wrong is how people accidentally run commands against the wrong cluster.
+    ??? question "Why?"
+
+        everything after this targets `rancher-desktop`. Getting contexts
+        wrong is how people accidentally run commands against the wrong cluster.
 
     ```bash
     kubectl config use-context rancher-desktop
@@ -178,9 +184,11 @@ with yours — the `+` markers inside the output explain every column and status
 
 4.  List the cluster's nodes:
 
-    *Why:* nodes are the machines your workloads land on. `get nodes` is the
-    cluster health check; `-o wide` adds IPs, OS, and container runtime —
-    the facts you reach for when pods won't schedule.
+    ??? question "Why?"
+
+        nodes are the machines your workloads land on. `get nodes` is the
+        cluster health check; `-o wide` adds IPs, OS, and container runtime —
+        the facts you reach for when pods won't schedule.
 
     ```bash
     kubectl get nodes -o wide
@@ -203,9 +211,11 @@ with yours — the `+` markers inside the output explain every column and status
 
 5.  List every pod in the cluster:
 
-    *Why:* `-A` (all namespaces) shows the system workloads too — it's both a
-    health check and a lesson: DNS, ingress, and storage are just pods in
-    `kube-system`, same as the ones you'll deploy.
+    ??? question "Why?"
+
+        `-A` (all namespaces) shows the system workloads too — it's both a
+        health check and a lesson: DNS, ingress, and storage are just pods in
+        `kube-system`, same as the ones you'll deploy.
 
     ```bash
     kubectl get pods -A
@@ -232,8 +242,10 @@ with yours — the `+` markers inside the output explain every column and status
 
 6.  Confirm helm is installed:
 
-    *Why:* you'll deploy PostgreSQL via a Helm chart in step 1.2 — better to
-    discover a missing install now than mid-step.
+    ??? question "Why?"
+
+        you'll deploy PostgreSQL via a Helm chart in step 1.2 — better to
+        discover a missing install now than mid-step.
 
     ```bash
     helm version
@@ -304,9 +316,11 @@ with yours — the `+` markers inside the output explain every column and status
 
 7.  Browse the API surface:
 
-    *Why:* this is the catalog of everything kubectl can manage — discoverable
-    instead of memorized. It answers "does `hpa` have a shortname?" and "is a
-    `clusterrole` namespaced?" without leaving the terminal.
+    ??? question "Why?"
+
+        this is the catalog of everything kubectl can manage — discoverable
+        instead of memorized. It answers "does `hpa` have a shortname?" and "is a
+        `clusterrole` namespaced?" without leaving the terminal.
 
     ```bash
     kubectl api-resources | head -30
@@ -349,8 +363,10 @@ Explore the difference yourself:
 
 1.  List the cluster connections kubectl knows:
 
-    *Why:* contexts point *at* clusters — this shows the API endpoints your
-    kubeconfig can reach.
+    ??? question "Why?"
+
+        contexts point *at* clusters — this shows the API endpoints your
+        kubeconfig can reach.
 
     ```bash
     kubectl config get-clusters
@@ -369,8 +385,10 @@ Explore the difference yourself:
 
 2.  List the namespaces inside the **current** cluster:
 
-    *Why:* namespaces are created *inside* a cluster and scope the objects in
-    it — they say nothing about connections.
+    ??? question "Why?"
+
+        namespaces are created *inside* a cluster and scope the objects in
+        it — they say nothing about connections.
 
     ```bash
     kubectl get namespaces
@@ -395,8 +413,10 @@ Explore the difference yourself:
 
 3.  Try switching context to a namespace — it fails on purpose:
 
-    *Why:* proves contexts and namespaces are different things — a context is
-    a kubeconfig entry; you can't `use-context` a namespace name.
+    ??? question "Why?"
+
+        proves contexts and namespaces are different things — a context is
+        a kubeconfig entry; you can't `use-context` a namespace name.
 
     ```bash
     kubectl config use-context playground
@@ -507,9 +527,11 @@ with yours — the `+` markers inside the output explain every column and status
 
 1.  Create a scratch namespace:
 
-    *Why:* namespaces scope everything that follows. A disposable `playground`
-    keeps experiments from polluting other namespaces — and deleting it at the
-    end cleans up in one shot.
+    ??? question "Why?"
+
+        namespaces scope everything that follows. A disposable `playground`
+        keeps experiments from polluting other namespaces — and deleting it at the
+        end cleans up in one shot.
 
     ```bash
     kubectl create namespace playground
@@ -526,9 +548,11 @@ with yours — the `+` markers inside the output explain every column and status
 
 2.  Run a pod imperatively:
 
-    *Why:* `kubectl run` is the fastest way to get a workload up without YAML —
-    good for experiments, debugging, and throwaway tools. (Real apps come from
-    Deployments, covered later.)
+    ??? question "Why?"
+
+        `kubectl run` is the fastest way to get a workload up without YAML —
+        good for experiments, debugging, and throwaway tools. (Real apps come from
+        Deployments, covered later.)
 
     ```bash
     kubectl run demo --image=nginx:1.27 -n playground
@@ -545,8 +569,10 @@ with yours — the `+` markers inside the output explain every column and status
 
 3.  Watch the pod lifecycle live:
 
-    *Why:* `-w` streams changes in real time — you see the full lifecycle
-    (`Pending` → `ContainerCreating` → `Running`) instead of a snapshot.
+    ??? question "Why?"
+
+        `-w` streams changes in real time — you see the full lifecycle
+        (`Pending` → `ContainerCreating` → `Running`) instead of a snapshot.
 
     ```bash
     kubectl get pods -n playground -w
@@ -572,9 +598,11 @@ with yours — the `+` markers inside the output explain every column and status
 
 4.  Inspect the pod in detail:
 
-    *Why:* `describe` is the diagnostic command — full spec, status,
-    conditions, and the **Events** log of what the cluster *did*. It's the
-    first thing to run whenever a pod misbehaves.
+    ??? question "Why?"
+
+        `describe` is the diagnostic command — full spec, status,
+        conditions, and the **Events** log of what the cluster *did*. It's the
+        first thing to run whenever a pod misbehaves.
 
     ```bash
     kubectl describe pod demo -n playground
@@ -614,8 +642,10 @@ with yours — the `+` markers inside the output explain every column and status
 
 5.  Read the app's own logs:
 
-    *Why:* `describe` tells you what *Kubernetes* did; `logs` tells you what
-    the *application* said. Knowing which to check is the core debugging split.
+    ??? question "Why?"
+
+        `describe` tells you what *Kubernetes* did; `logs` tells you what
+        the *application* said. Knowing which to check is the core debugging split.
 
     ```bash
     kubectl logs demo -n playground
@@ -634,9 +664,11 @@ with yours — the `+` markers inside the output explain every column and status
 
 6.  Get a shell inside the container:
 
-    *Why:* `exec -it` drops you into the container's own environment — run
-    `ps`, `ls`, `wget localhost` to verify the app as the cluster sees it.
-    `-i -t` makes it interactive; `--` separates kubectl flags from the command.
+    ??? question "Why?"
+
+        `exec -it` drops you into the container's own environment — run
+        `ps`, `ls`, `wget localhost` to verify the app as the cluster sees it.
+        `-i -t` makes it interactive; `--` separates kubectl flags from the command.
 
     ```bash
     kubectl exec -it demo -n playground -- /bin/sh
@@ -657,9 +689,11 @@ with yours — the `+` markers inside the output explain every column and status
 
 7.  Look up field docs without leaving the terminal:
 
-    *Why:* `kubectl explain` is the built-in API reference — it answers "what
-    fields exist and what do they mean?" for any resource, which beats
-    guessing YAML keys.
+    ??? question "Why?"
+
+        `kubectl explain` is the built-in API reference — it answers "what
+        fields exist and what do they mean?" for any resource, which beats
+        guessing YAML keys.
 
     ```bash
     kubectl explain pod.spec.containers
@@ -684,8 +718,10 @@ with yours — the `+` markers inside the output explain every column and status
 
 8.  Tear everything down:
 
-    *Why:* namespace deletion cascades — every object inside `playground`
-    dies with it. The fastest way to reset a scratch environment.
+    ??? question "Why?"
+
+        namespace deletion cascades — every object inside `playground`
+        dies with it. The fastest way to reset a scratch environment.
 
     ```bash
     kubectl delete namespace playground
