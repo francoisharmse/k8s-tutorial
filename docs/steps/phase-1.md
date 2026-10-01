@@ -621,11 +621,31 @@ rotation.
     ??? info "Expected output"
 
         ```bash
-        secret/postgres-creds configured          # (1)!
+        Warning: resource secrets/postgres-creds is missing the
+        kubectl.kubernetes.io/last-applied-configuration annotation ... # (1)!
+        The missing annotation will be patched automatically.
+        secret/postgres-creds configured          # (2)!
         ```
 
-        1.  `configured` (not `created`) = the object existed and was updated
+        1.  Expected on the **first** apply over an imperatively-created
+            object — see the warning dropdown below.
+        2.  `configured` (not `created`) = the object existed and was updated
             in place.
+
+    ??? warning "Why the `last-applied-configuration` warning?"
+
+        `kubectl apply` does a **three-way merge**: it diffs your input, the
+        live object, and the `last-applied-configuration` annotation — which
+        records what *you* last declared, so it can tell your changes apart
+        from defaults and other actors. Objects created imperatively (like
+        our step-1.1 `kubectl create secret`) have no such annotation, so
+        apply warns and writes it in for you.
+
+        Harmless — it only appears once. From now on the annotation exists
+        and subsequent applies merge cleanly. This is also why the rule
+        exists: *"only `apply` objects that were created declaratively"* —
+        mixing imperative writes with apply is exactly what produces this
+        class of warning.
 
 4.  Restart the DB so it picks up the new secret:
 
