@@ -492,52 +492,57 @@ StorageClass.
 
 10. Check the release health from Helm's side:
 
-    ??? question "Why?"
-
-        kubectl shows objects; `helm status` shows the *release* — its
-        state, revision, and the chart's post-install notes.
-
     ```bash
     helm status pg
     ```
 
-    ??? info "Expected output (trimmed)"
+    ??? info "INFO"
 
-        ```bash
-        NAME: pg
-        STATUS: deployed
-        REVISION: 1
-        NOTES: ...                                     # (1)!
-        ```
+        ??? question "Why?"
 
-        1.  The chart's own usage notes (connection strings, password hints).
-            Read them — chart authors put important gotchas here.
+            kubectl shows objects; `helm status` shows the *release* — its
+            state, revision, and the chart's post-install notes.
+
+        ??? info "Expected output (trimmed)"
+
+            ```bash
+            NAME: pg
+            STATUS: deployed
+            REVISION: 1
+            NOTES: ...                                     # (1)!
+            ```
+
+            1.  The chart's own usage notes (connection strings, password
+                hints). Read them — chart authors put important gotchas here.
 
 11. See your effective configuration:
-
-    ??? question "Why?"
-
-        shows what your `-f` file actually overrode vs the chart's hundreds
-        of defaults.
 
     ```bash
     helm get values pg -n tutorial
     ```
 
-    ??? info "Expected output"
+    ??? info "INFO"
 
-        ```yaml
-        USER-SUPPLIED VALUES:
-        auth:
-          database: tutorial
-          existingSecret: postgres-creds        # (1)!
-        primary:
-          persistence:
-            size: 1Gi
-        ```
+        ??? question "Why?"
 
-        1.  Tells the chart to read the password from your Secret instead of
-            generating one. Add `-a` to see *all* values including defaults.
+            shows what your `-f` file actually overrode vs the chart's
+            hundreds of defaults.
+
+        ??? info "Expected output"
+
+            ```yaml
+            USER-SUPPLIED VALUES:
+            auth:
+              database: tutorial
+              existingSecret: postgres-creds        # (1)!
+            primary:
+              persistence:
+                size: 1Gi
+            ```
+
+            1.  Tells the chart to read the password from your Secret instead
+                of generating one. Add `-a` to see *all* values including
+                defaults.
 
 !!! success "Verify"
     `pg-postgresql-0` is Running; PVC is `Bound`. Understand why a StatefulSet
