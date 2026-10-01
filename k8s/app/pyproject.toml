@@ -1,0 +1,12 @@
+[project]
+name = "k8s-tutorial-app"
+version = "0.1.0"
+description = "App tier for the Kubernetes three-tier tutorial — FastAPI middleware between nginx and Postgres"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.32",
+    "psycopg[binary]>=3.2",
+    "pydantic>=2.9",
+    "pydantic-settings>=2.6",
+]

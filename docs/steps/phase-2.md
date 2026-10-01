@@ -26,16 +26,92 @@ flowchart TB
 
 **Goals:** Build `app/main.py` — the middleware that talks to Postgres.
 
-**Concepts:** Environment-driven config, health vs readiness semantics.
+**Concepts:** Environment-driven config, health vs readiness semantics, `uv`
+project workflow.
+
+The app simulates the tutorial itself: it serves the curriculum as JSON and
+tracks per-step completion in the `progress` table — checking off a step in
+the web UI is the end-to-end proof all three tiers work. Dependencies are
+managed by **uv** (`pyproject.toml` + `uv.lock`): FastAPI, pydantic,
+pydantic-settings, psycopg.
 
 Endpoints:
 
 - `GET /healthz` — process alive (always 200)
 - `GET /readyz` — runs `SELECT 1` against Postgres; fails if DB unreachable
-- `GET /api/steps` — tutorial steps
+- `GET /api/steps` — tutorial steps joined with completion state
 - `GET /api/progress`, `POST /api/progress` — read/write the `progress` table
 
 Config via env: `DB_HOST`, `DB_NAME`, `DB_USER`, `DB_PASSWORD` (from Secret).
+
+The repo ships `app/main.py`, `pyproject.toml`, `uv.lock`, and a `Dockerfile`
+— try it locally first:
+
+1.  Install dependencies into a project venv:
+
+    ```bash
+    cd app && uv sync
+    ```
+
+    ??? info "INFO"
+
+        ??? question "Why?"
+
+            `uv sync` reads `uv.lock` and creates `.venv` with the exact
+            pinned versions — same dependency set the Dockerfile installs.
+
+        ??? info "Expected output"
+
+            ```bash
+            Resolved 25 packages ...
+            Installed 25 packages in ...        # (1)!
+            ```
+
+            1.  Reproducible — `uv.lock` pins every transitive dep, like
+                `Chart.lock` does for Helm.
+
+2.  Run the app locally:
+
+    ```bash
+    uv run uvicorn main:app --reload --port 8000
+    ```
+
+    ??? info "INFO"
+
+        ??? question "Why?"
+
+            `uv run` executes inside the project venv without activating it;
+            `--reload` restarts on file changes — the inner dev loop before
+            any image builds.
+
+        ??? info "Expected output"
+
+            ```bash
+            INFO:     Uvicorn running on http://127.0.0.1:8000   # (1)!
+            INFO:     Application startup complete.
+            ```
+
+            1.  Serving locally. `/healthz` works standalone; `/readyz` and
+                `/api/*` need Postgres — `kubectl port-forward
+                svc/pg-postgresql 5432:5432` and `DB_HOST=localhost` bridges
+                the running cluster DB to your local process.
+
+3.  Sanity-check it:
+
+    ```bash
+    curl localhost:8000/healthz
+    ```
+
+    ??? info "INFO"
+
+        ??? info "Expected output"
+
+            ```bash
+            {"status":"ok"}                         # (1)!
+            ```
+
+            1.  Same response shape the kubelet's liveness probe will check
+                in step 2.4.
 
 ---
 

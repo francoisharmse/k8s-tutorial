@@ -77,4 +77,5 @@ nav:
   - Reference:
       - Kubernetes architecture: reference/architecture.md
       - Command cheat sheet: reference/cheatsheet.md
+      - Terminology: reference/terminology.md
       - Key concepts map: reference/concepts-map.md
