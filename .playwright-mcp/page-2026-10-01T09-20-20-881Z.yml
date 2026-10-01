@@ -1,0 +1,480 @@
+- generic [active] [ref=e1]:
+  - link "Skip to content" [ref=e2] [cursor=pointer]:
+    - /url: "#phase-1-db-tier-postgresql"
+  - banner [ref=e3]:
+    - navigation "Header" [ref=e4]:
+      - link "Kubernetes Three-Tier Tutorial" [ref=e5] [cursor=pointer]:
+        - /url: ../..
+      - generic [ref=e9]:
+        - generic [ref=e10]: Kubernetes Three-Tier Tutorial
+        - generic: Phase 1 · DB Tier (PostgreSQL)
+      - generic [ref=e12]:
+        - radio "Switch to light mode"
+        - radio "Switch to dark mode"
+        - radio "Switch to system preference"
+        - generic "Switch to system preference" [ref=e13] [cursor=pointer]
+      - dialog [ref=e16]:
+        - search [ref=e17]:
+          - generic [ref=e18]:
+            - textbox "Search" [ref=e19]
+            - navigation "Search":
+              - button "Clear"
+          - generic: Type to start searching
+      - link [ref=e24] [cursor=pointer]:
+        - /url: https://github.com/francoisharmse/k8s-tutorial
+        - generic [ref=e28]:
+          - text: GitHub
+          - list [ref=e29]:
+            - listitem [ref=e30]: "0"
+            - listitem [ref=e31]: "0"
+  - generic [ref=e32]:
+    - main [ref=e33]:
+      - generic [ref=e34]:
+        - navigation "Navigation" [ref=e38]:
+          - generic [ref=e39]: Kubernetes Three-Tier Tutorial
+          - list [ref=e40]:
+            - listitem [ref=e41]:
+              - link "Home" [ref=e42] [cursor=pointer]:
+                - /url: ../..
+            - listitem [ref=e44]:
+              - link "Getting started" [ref=e45] [cursor=pointer]:
+                - /url: ../../getting-started/
+            - listitem [ref=e47]:
+              - generic: Steps
+              - navigation "Steps" [ref=e48]:
+                - list [ref=e49]:
+                  - listitem [ref=e50]:
+                    - link "Phase 0 · Environment & Orientation" [ref=e51] [cursor=pointer]:
+                      - /url: ../phase-0/
+                  - listitem [ref=e53]:
+                    - link "Phase 1 · DB Tier (PostgreSQL)" [ref=e54] [cursor=pointer]:
+                      - /url: ./
+                  - listitem [ref=e56]:
+                    - link "Phase 2 · App Tier (FastAPI)" [ref=e57] [cursor=pointer]:
+                      - /url: ../phase-2/
+                  - listitem [ref=e59]:
+                    - link "Phase 3 · Web Tier (nginx)" [ref=e60] [cursor=pointer]:
+                      - /url: ../phase-3/
+                  - listitem [ref=e62]:
+                    - link "Phase 4 · Ingress & TLS" [ref=e63] [cursor=pointer]:
+                      - /url: ../phase-4/
+                  - listitem [ref=e65]:
+                    - link "Phase 5 · Helm-ify Everything" [ref=e66] [cursor=pointer]:
+                      - /url: ../phase-5/
+                  - listitem [ref=e68]:
+                    - link "Phase 6 · Security" [ref=e69] [cursor=pointer]:
+                      - /url: ../phase-6/
+                  - listitem [ref=e71]:
+                    - link "Phase 7 · Operations at Scale" [ref=e72] [cursor=pointer]:
+                      - /url: ../phase-7/
+                  - listitem [ref=e74]:
+                    - link "Phase 8 · Advanced / Optional" [ref=e75] [cursor=pointer]:
+                      - /url: ../phase-8/
+            - listitem [ref=e77]:
+              - generic: Reference
+              - navigation "Reference" [ref=e78]:
+                - list [ref=e79]:
+                  - listitem [ref=e80]:
+                    - link "Kubernetes architecture" [ref=e81] [cursor=pointer]:
+                      - /url: ../../reference/architecture/
+                  - listitem [ref=e83]:
+                    - link "Command cheat sheet" [ref=e84] [cursor=pointer]:
+                      - /url: ../../reference/cheatsheet/
+                  - listitem [ref=e86]:
+                    - link "Key concepts map" [ref=e87] [cursor=pointer]:
+                      - /url: ../../reference/concepts-map/
+        - navigation "Table of contents" [ref=e92]:
+          - list [ref=e94]:
+            - listitem [ref=e95]:
+              - link "1.1 — Namespace + Secrets" [ref=e96] [cursor=pointer]:
+                - /url: "#11-namespace-secrets"
+            - listitem [ref=e98]:
+              - link "1.2 — Deploy PostgreSQL via Helm (Bitnami chart)" [ref=e99] [cursor=pointer]:
+                - /url: "#12-deploy-postgresql-via-helm-bitnami-chart"
+            - listitem [ref=e101]:
+              - link "1.3 — DB user & password management" [ref=e102] [cursor=pointer]:
+                - /url: "#13-db-user-password-management"
+            - listitem [ref=e104]:
+              - link "1.4 — Cluster DNS & Services" [ref=e105] [cursor=pointer]:
+                - /url: "#14-cluster-dns-services"
+        - article [ref=e108]:
+          - heading [level=1] [ref=e109]:
+            - text: Phase 1 — DB Tier (PostgreSQL)
+            - link "¶" [ref=e110] [cursor=pointer]:
+              - /url: "#phase-1-db-tier-postgresql"
+          - paragraph [ref=e111]: "What this phase builds: a namespace to hold everything, credentials as a Secret, then PostgreSQL deployed from the Bitnami Helm chart — configured by a values file — followed by password management and the DNS/service wiring other tiers will use."
+          - heading [level=2] [ref=e113]:
+            - text: 1.1 — Namespace + Secrets
+            - link "¶" [ref=e114] [cursor=pointer]:
+              - /url: "#11-namespace-secrets"
+          - paragraph [ref=e115]:
+            - strong [ref=e116]: "Goals:"
+            - text: Isolate tutorial resources; create and inspect Secrets.
+          - paragraph [ref=e117]:
+            - strong [ref=e118]: "Concepts:"
+            - text: Namespaces, Secrets,
+            - code [ref=e119]: data
+            - text: vs
+            - code [ref=e120]: stringData
+            - text: ", base64 (encoding ≠ encryption)."
+          - paragraph [ref=e121]:
+            - text: Run these in order. Expand
+            - strong [ref=e122]: ⓘ Expected output
+            - text: under each command to compare with yours — the
+            - code [ref=e123]: +
+            - text: markers inside the output explain every column and status.
+          - list [ref=e124]:
+            - listitem [ref=e125]:
+              - paragraph [ref=e126]: "Create the tutorial namespace:"
+              - generic [ref=e128]:
+                - navigation [ref=e129]:
+                  - button "Copy to clipboard" [ref=e130] [cursor=pointer]
+                - code [ref=e131]:
+                  - generic [ref=e132]: kubectl create namespace tutorial
+              - group [ref=e133]:
+                - generic "INFO" [ref=e134] [cursor=pointer]
+            - listitem [ref=e135]:
+              - paragraph [ref=e136]: "Make it the default namespace for your context:"
+              - generic [ref=e138]:
+                - navigation [ref=e139]:
+                  - button "Copy to clipboard" [ref=e140] [cursor=pointer]
+                - code [ref=e141]:
+                  - generic [ref=e142]: kubectl config set-context --current --namespace=tutorial
+              - group [ref=e143]:
+                - generic "INFO" [ref=e144] [cursor=pointer]
+            - listitem [ref=e145]:
+              - paragraph [ref=e146]: "Create the database credentials as a Secret:"
+              - generic [ref=e148]:
+                - navigation [ref=e149]:
+                  - button "Copy to clipboard" [ref=e150] [cursor=pointer]
+                - code [ref=e151]:
+                  - generic [ref=e152]: kubectl create secret generic postgres-creds \
+                  - generic [ref=e153]: "--from-literal=postgres-password='SuperSecret123' \\"
+                  - generic [ref=e154]: "--from-literal=app-password='AppPass456'"
+              - group [ref=e155]:
+                - generic "INFO" [ref=e156] [cursor=pointer]
+            - listitem [ref=e157]:
+              - paragraph [ref=e158]: "Inspect the Secret as YAML:"
+              - generic [ref=e160]:
+                - navigation [ref=e161]:
+                  - button "Copy to clipboard" [ref=e162] [cursor=pointer]
+                - code [ref=e163]:
+                  - generic [ref=e164]: kubectl get secret postgres-creds -o yaml
+              - group [ref=e165]:
+                - generic "INFO" [ref=e166] [cursor=pointer]
+            - listitem [ref=e167]:
+              - paragraph [ref=e168]: "Decode a secret value:"
+              - generic [ref=e170]:
+                - navigation [ref=e171]:
+                  - button "Copy to clipboard" [ref=e172] [cursor=pointer]
+                - code [ref=e173]:
+                  - generic [ref=e174]: "kubectl get secret postgres-creds -o jsonpath='{.data.postgres-password}' | base64 -d"
+              - group [ref=e175]:
+                - generic "INFO" [ref=e176] [cursor=pointer]
+            - listitem [ref=e177]:
+              - paragraph [ref=e178]:
+                - text: See how
+                - code [ref=e179]: describe
+                - text: "treats secrets:"
+              - generic [ref=e181]:
+                - navigation [ref=e182]:
+                  - button "Copy to clipboard" [ref=e183] [cursor=pointer]
+                - code [ref=e184]:
+                  - generic [ref=e185]: kubectl describe secret postgres-creds
+              - group [ref=e186]:
+                - generic "INFO" [ref=e187] [cursor=pointer]
+          - generic [ref=e188]:
+            - paragraph [ref=e189]: Verify
+            - paragraph [ref=e190]:
+              - text: You can decode the secret — that's the point. Step
+              - link "6.1" [ref=e191] [cursor=pointer]:
+                - /url: ../phase-6/#61-secrets-encryption-at-rest
+              - text: addresses real encryption at rest.
+          - separator [ref=e192]
+          - heading [level=2] [ref=e193]:
+            - text: 1.2 — Deploy PostgreSQL via Helm (Bitnami chart)
+            - link "¶" [ref=e194] [cursor=pointer]:
+              - /url: "#12-deploy-postgresql-via-helm-bitnami-chart"
+          - paragraph [ref=e195]:
+            - strong [ref=e196]: "Goals:"
+            - text: Deploy a production-grade chart; understand StatefulSets and persistence.
+          - paragraph [ref=e197]:
+            - strong [ref=e198]: "Concepts:"
+            - text: Helm repos/charts/values, StatefulSet vs Deployment, PV/PVC, StorageClass.
+          - list [ref=e199]:
+            - listitem [ref=e200]:
+              - paragraph [ref=e201]: "Register the Bitnami chart repository:"
+              - generic [ref=e203]:
+                - navigation [ref=e204]:
+                  - button "Copy to clipboard" [ref=e205] [cursor=pointer]
+                - code [ref=e206]:
+                  - generic [ref=e207]: helm repo add bitnami https://charts.bitnami.com/bitnami
+              - group [ref=e208]:
+                - generic "INFO" [ref=e209] [cursor=pointer]
+            - listitem [ref=e210]:
+              - paragraph [ref=e211]: "Fetch the repo index:"
+              - generic [ref=e213]:
+                - navigation [ref=e214]:
+                  - button "Copy to clipboard" [ref=e215] [cursor=pointer]
+                - code [ref=e216]:
+                  - generic [ref=e217]: helm repo update
+              - group [ref=e218]:
+                - generic "INFO" [ref=e219] [cursor=pointer]
+            - listitem [ref=e220]:
+              - paragraph [ref=e221]: "See which chart versions exist:"
+              - generic [ref=e223]:
+                - navigation [ref=e224]:
+                  - button "Copy to clipboard" [ref=e225] [cursor=pointer]
+                - code [ref=e226]:
+                  - generic [ref=e227]: helm search repo bitnami/postgresql --versions | head
+              - group [ref=e228]:
+                - generic "INFO" [ref=e229] [cursor=pointer]
+            - listitem [ref=e230]:
+              - paragraph [ref=e231]: "Inspect the chart metadata before installing:"
+              - generic [ref=e233]:
+                - navigation [ref=e234]:
+                  - button "Copy to clipboard" [ref=e235] [cursor=pointer]
+                - code [ref=e236]:
+                  - generic [ref=e237]: helm show chart bitnami/postgresql
+              - group [ref=e238]:
+                - generic "INFO" [ref=e239] [cursor=pointer]
+            - listitem [ref=e240]:
+              - paragraph [ref=e241]: "Dump the chart's default values:"
+              - generic [ref=e243]:
+                - navigation [ref=e244]:
+                  - button "Copy to clipboard" [ref=e245] [cursor=pointer]
+                - code [ref=e246]:
+                  - generic [ref=e247]: helm show values bitnami/postgresql | less
+              - group [ref=e248]:
+                - generic "INFO" [ref=e249] [cursor=pointer]
+            - listitem [ref=e250]:
+              - paragraph [ref=e251]: "Create the values file:"
+              - generic [ref=e253]:
+                - navigation [ref=e254]:
+                  - button "Copy to clipboard" [ref=e255] [cursor=pointer]
+                - code [ref=e256]:
+                  - generic [ref=e257]: cat > deploy/manifests/db/values-db.yaml <<'EOF'
+                  - generic [ref=e258]: "auth:"
+                  - generic [ref=e259]: "database: tutorial"
+                  - generic [ref=e260]: "existingSecret: postgres-creds"
+                  - generic [ref=e261]: "primary:"
+                  - generic [ref=e262]: "persistence:"
+                  - generic [ref=e263]: "size: 1Gi"
+                  - generic [ref=e264]: EOF
+              - group [ref=e265]:
+                - generic "INFO" [ref=e266] [cursor=pointer]
+            - listitem [ref=e267]:
+              - paragraph [ref=e268]:
+                - text: Install the chart into
+                - code [ref=e269]: tutorial
+                - text: "with your values file:"
+              - generic [ref=e271]:
+                - navigation [ref=e272]:
+                  - button "Copy to clipboard" [ref=e273] [cursor=pointer]
+                - code [ref=e274]:
+                  - generic [ref=e275]: helm install pg bitnami/postgresql -n tutorial -f deploy/manifests/db/values-db.yaml
+              - group [ref=e276]:
+                - generic "INFO" [ref=e277] [cursor=pointer]
+            - listitem [ref=e278]:
+              - paragraph [ref=e279]: "Check what the chart actually created:"
+              - generic [ref=e281]:
+                - navigation [ref=e282]:
+                  - button "Copy to clipboard" [ref=e283] [cursor=pointer]
+                - code [ref=e284]:
+                  - generic [ref=e285]: kubectl get statefulset,pods,pvc -n tutorial
+              - group [ref=e286]:
+                - generic "INFO" [ref=e287] [cursor=pointer]
+            - listitem [ref=e288]:
+              - paragraph [ref=e289]: "Trace where the data physically lives:"
+              - generic [ref=e291]:
+                - navigation [ref=e292]:
+                  - button "Copy to clipboard" [ref=e293] [cursor=pointer]
+                - code [ref=e294]:
+                  - generic [ref=e295]: kubectl describe pvc data-pg-postgresql-0
+              - group [ref=e296]:
+                - generic "INFO" [ref=e297] [cursor=pointer]
+            - listitem [ref=e298]:
+              - paragraph [ref=e299]: "Check the release health from Helm's side:"
+              - generic [ref=e301]:
+                - navigation [ref=e302]:
+                  - button "Copy to clipboard" [ref=e303] [cursor=pointer]
+                - code [ref=e304]:
+                  - generic [ref=e305]: helm status pg
+              - group [ref=e306]:
+                - generic "INFO" [ref=e307] [cursor=pointer]
+            - listitem [ref=e308]:
+              - paragraph [ref=e309]: "See your effective configuration:"
+              - generic [ref=e311]:
+                - navigation [ref=e312]:
+                  - button "Copy to clipboard" [ref=e313] [cursor=pointer]
+                - code [ref=e314]:
+                  - generic [ref=e315]: helm get values pg -n tutorial
+              - group [ref=e316]:
+                - generic "INFO" [ref=e317] [cursor=pointer]
+          - generic [ref=e318]:
+            - paragraph [ref=e319]: Verify
+            - paragraph [ref=e320]:
+              - code [ref=e321]: pg-postgresql-0
+              - text: is Running; PVC is
+              - code [ref=e322]: Bound
+              - text: . Understand why a StatefulSet (stable pod name, ordered startup, per-pod storage) instead of a Deployment.
+          - separator [ref=e323]
+          - heading [level=2] [ref=e324]:
+            - text: 1.3 — DB user & password management
+            - link "¶" [ref=e325] [cursor=pointer]:
+              - /url: "#13-db-user-password-management"
+          - paragraph [ref=e326]:
+            - strong [ref=e327]: "Goals:"
+            - text: Create a least-privilege app user; learn credential handling.
+          - paragraph [ref=e328]:
+            - strong [ref=e329]: "Concepts:"
+            - text: exec into pods, Postgres roles/grants, superuser vs app user, rotation.
+          - list [ref=e330]:
+            - listitem [ref=e331]:
+              - paragraph [ref=e332]: "Open a psql shell inside the DB pod:"
+              - generic [ref=e334]:
+                - navigation [ref=e335]:
+                  - button "Copy to clipboard" [ref=e336] [cursor=pointer]
+                - code [ref=e337]:
+                  - generic [ref=e338]: kubectl exec -it pg-postgresql-0 -- psql -U postgres -d tutorial
+              - group [ref=e339]:
+                - generic "INFO" [ref=e340] [cursor=pointer]
+            - listitem [ref=e341]:
+              - paragraph [ref=e342]:
+                - text: Create the least-privilege app user and the
+                - code [ref=e343]: progress
+                - text: "table — paste this into the psql session:"
+              - generic [ref=e345]:
+                - navigation [ref=e346]:
+                  - button "Copy to clipboard" [ref=e347] [cursor=pointer]
+                - code [ref=e348]:
+                  - generic [ref=e349]: CREATE USER app_user WITH PASSWORD 'AppPass456';
+                  - generic [ref=e350]: GRANT CONNECT ON DATABASE tutorial TO app_user;
+                  - generic [ref=e351]: GRANT USAGE ON SCHEMA public TO app_user;
+                  - generic [ref=e352]: CREATE TABLE progress (
+                  - generic [ref=e353]: step INT PRIMARY KEY,
+                  - generic [ref=e354]: done BOOLEAN DEFAULT false,
+                  - generic [ref=e355]: ts TIMESTAMPTZ DEFAULT now()
+                  - generic [ref=e356]: );
+                  - generic [ref=e357]: GRANT SELECT, INSERT, UPDATE ON progress TO app_user;
+                  - generic [ref=e358]: \l -- list databases
+                  - generic [ref=e359]: \du -- list users/roles
+                  - generic [ref=e360]: \dt -- list tables
+                  - generic [ref=e361]: \q
+              - group [ref=e362]:
+                - generic "INFO" [ref=e363] [cursor=pointer]
+            - listitem [ref=e364]:
+              - paragraph [ref=e365]:
+                - text: Rotation drill — change the password
+                - strong [ref=e366]: inside Postgres
+                - text: "first:"
+              - generic [ref=e368]:
+                - navigation [ref=e369]:
+                  - button "Copy to clipboard" [ref=e370] [cursor=pointer]
+                - code [ref=e371]:
+                  - generic [ref=e372]: kubectl exec -it pg-postgresql-0 -- psql -U postgres -d tutorial -c \
+                  - generic [ref=e373]: "\"ALTER USER postgres WITH PASSWORD 'NewSecret'; \\"
+                  - generic [ref=e374]: ALTER USER app_user WITH PASSWORD 'NewAppPass';"
+              - group [ref=e375]:
+                - generic "INFO" [ref=e376] [cursor=pointer]
+            - listitem [ref=e377]:
+              - paragraph [ref=e378]: "Sync the Secret to match the new passwords:"
+              - generic [ref=e380]:
+                - navigation [ref=e381]:
+                  - button "Copy to clipboard" [ref=e382] [cursor=pointer]
+                - code [ref=e383]:
+                  - generic [ref=e384]: kubectl create secret generic postgres-creds \
+                  - generic [ref=e385]: "--from-literal=postgres-password='NewSecret' \\"
+                  - generic [ref=e386]: "--from-literal=app-password='NewAppPass' \\"
+                  - generic [ref=e387]: "--dry-run=client -o yaml | kubectl apply -f -"
+              - group [ref=e388]:
+                - generic "INFO" [ref=e389] [cursor=pointer]
+            - listitem [ref=e390]:
+              - paragraph [ref=e391]: "Restart the DB pod:"
+              - generic [ref=e393]:
+                - navigation [ref=e394]:
+                  - button "Copy to clipboard" [ref=e395] [cursor=pointer]
+                - code [ref=e396]:
+                  - generic [ref=e397]: kubectl rollout restart statefulset/pg-postgresql
+              - group [ref=e398]:
+                - generic "INFO" [ref=e399] [cursor=pointer]
+          - generic [ref=e400]:
+            - paragraph [ref=e401]: Verify
+            - paragraph [ref=e402]:
+              - text: Connect as
+              - code [ref=e403]: app_user
+              - text: and confirm it can write
+              - code [ref=e404]: progress
+              - text: but not create tables. After the rotation drill,
+              - code [ref=e405]: psql -U postgres
+              - text: with the
+              - strong [ref=e406]: old
+              - text: password should fail and
+              - code [ref=e407]: NewSecret
+              - text: "should work — proof the rotation happened in the DB, not just the Secret. Rule:"
+              - strong [ref=e408]: the app tier never uses superuser credentials.
+          - separator [ref=e409]
+          - heading [level=2] [ref=e410]:
+            - text: 1.4 — Cluster DNS & Services
+            - link "¶" [ref=e411] [cursor=pointer]:
+              - /url: "#14-cluster-dns-services"
+          - paragraph [ref=e412]:
+            - strong [ref=e413]: "Goals:"
+            - text: Understand how pods find each other.
+          - paragraph [ref=e414]:
+            - strong [ref=e415]: "Concepts:"
+            - text: ClusterIP service types, DNS naming
+            - code [ref=e416]: svc.namespace.svc.cluster.local
+            - text: ", headless services."
+          - list [ref=e417]:
+            - listitem [ref=e418]:
+              - paragraph [ref=e419]: "List the services Helm created:"
+              - generic [ref=e421]:
+                - navigation [ref=e422]:
+                  - button "Copy to clipboard" [ref=e423] [cursor=pointer]
+                - code [ref=e424]:
+                  - generic [ref=e425]: kubectl get svc -n tutorial
+              - group [ref=e426]:
+                - generic "INFO" [ref=e427] [cursor=pointer]
+            - listitem [ref=e428]:
+              - paragraph [ref=e429]: "Resolve the service name from inside the cluster:"
+              - generic [ref=e431]:
+                - navigation [ref=e432]:
+                  - button "Copy to clipboard" [ref=e433] [cursor=pointer]
+                - code [ref=e434]:
+                  - generic [ref=e435]: kubectl run dnsutils --image=busybox:1.36 --rm -it --restart=Never -- \
+                  - generic [ref=e436]: nslookup pg-postgresql.tutorial.svc.cluster.local
+              - group [ref=e437]:
+                - generic "INFO" [ref=e438] [cursor=pointer]
+            - listitem [ref=e439]:
+              - paragraph [ref=e440]: "See which pods sit behind the service:"
+              - generic [ref=e442]:
+                - navigation [ref=e443]:
+                  - button "Copy to clipboard" [ref=e444] [cursor=pointer]
+                - code [ref=e445]:
+                  - generic [ref=e446]: kubectl get endpoints pg-postgresql
+              - group [ref=e447]:
+                - generic "INFO" [ref=e448] [cursor=pointer]
+          - generic [ref=e449]:
+            - paragraph [ref=e450]: Verify
+            - paragraph [ref=e451]:
+              - text: DNS resolves the service name; endpoints match the postgres pod IP (compare with
+              - code [ref=e452]: kubectl get pod pg-postgresql-0 -o wide
+              - text: ).
+      - button "Back to top"
+    - contentinfo [ref=e453]:
+      - navigation "Footer" [ref=e454]:
+        - 'link "Previous: Phase 0 · Environment & Orientation" [ref=e455] [cursor=pointer]':
+          - /url: ../phase-0/
+          - generic [ref=e459]:
+            - text: Previous
+            - generic [ref=e460]: Phase 0 · Environment & Orientation
+        - 'link "Next: Phase 2 · App Tier (FastAPI)" [ref=e461] [cursor=pointer]':
+          - /url: ../phase-2/
+          - generic [ref=e462]:
+            - text: Next
+            - generic [ref=e463]: Phase 2 · App Tier (FastAPI)
+      - generic [ref=e469]:
+        - text: Made with
+        - link "Material for MkDocs" [ref=e470] [cursor=pointer]:
+          - /url: https://squidfunk.github.io/mkdocs-material/

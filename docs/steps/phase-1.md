@@ -1,5 +1,28 @@
 # Phase 1 — DB Tier (PostgreSQL)
 
+What this phase builds: a namespace to hold everything, credentials as a
+Secret, then PostgreSQL deployed from the Bitnami Helm chart — configured by a
+values file — followed by password management and the DNS/service wiring other
+tiers will use.
+
+```mermaid
+flowchart TB
+    ns["<b>1.1</b> Create namespace<br/><code>tutorial</code>"]
+    sec["<b>1.1</b> Create Secrets<br/><code>postgres-creds</code><br/><i>app + db passwords</i>"]
+    repo["<b>1.2</b> helm repo add bitnami<br/><i>register + update chart repo</i>"]
+    vals["<b>1.2</b> values-db.yaml<br/><i>manifest for variable overrides</i>"]
+    dep["<b>1.2</b> helm install pg bitnami/postgresql<br/>→ StatefulSet · PVC · Services"]
+    mgmt["<b>1.3</b> DB user &amp; password mgmt<br/><i>app_user · ALTER USER rotation</i>"]
+    dns["<b>1.4</b> Cluster DNS &amp; Services<br/><code>pg-postgresql.tutorial.svc.cluster.local</code>"]
+
+    ns --> sec
+    sec -- "existingSecret<br/>postgres-creds" --> dep
+    repo --> vals
+    vals -- "-f values-db.yaml" --> dep
+    dep --> mgmt
+    dep --> dns
+```
+
 ## 1.1 — Namespace + Secrets
 
 **Goals:** Isolate tutorial resources; create and inspect Secrets.
