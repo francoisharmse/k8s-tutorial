@@ -890,6 +890,27 @@ rotation.
             The FQDN is only needed when the caller lives in a *different*
             namespace — which is exactly the web/app tiers' case later.
 
+        ??? failure "Got `timed out waiting for the condition` + pod deleted?"
+
+            Two likely causes — check your command first:
+
+            1. **Missing `--` on `--restart=Never`** — typing `restart=Never`
+               without dashes makes kubectl treat it as a bare argument, so
+               the pod gets the default `restartPolicy: Always`. busybox runs
+               `nslookup`, exits, restarts, `CrashLoopBackOff` — and
+               `--rm -it` never gets a running container to attach to:
+               timeout, then the pod is deleted.
+            2. **Slow image pull** — the first `busybox:1.36` pull can exceed
+               the attach timeout. Retry the command (image is cached now),
+               or watch `kubectl get pods -w` to see `ContainerCreating`.
+
+            Corrected form:
+
+            ```bash
+            kubectl run dnsutils --image=busybox:1.36 --rm -it \
+              --restart=Never -- nslookup pg-postgresql.tutorial.svc.cluster.local
+            ```
+
 3.  See which pods sit behind the service:
 
     ```bash
