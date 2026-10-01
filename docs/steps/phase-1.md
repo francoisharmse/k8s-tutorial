@@ -600,11 +600,10 @@ rotation.
         "password differs from the one persisted" warning when they diverge.
 
         So a real rotation starts where the password actually lives — inside
-        the database. `-c` runs SQL non-interactively, no `exec -it` session
-        needed.
+        the database.
 
     ```bash
-    kubectl exec pg-postgresql-0 -- psql -U postgres -d tutorial -c \
+    kubectl exec -it pg-postgresql-0 -- psql -U postgres -d tutorial -c \
       "ALTER USER postgres WITH PASSWORD 'NewSecret'; \
        ALTER USER app_user WITH PASSWORD 'NewAppPass';"
     ```
@@ -612,12 +611,37 @@ rotation.
     ??? info "Expected output"
 
         ```bash
-        ALTER ROLE                                  # (1)!
+        Password for user postgres:                  # (1)!
+        ALTER ROLE                                   # (2)!
         ALTER ROLE
         ```
 
-        1.  One `ALTER ROLE` per user — the password hashes in `pg_authid`
+        1.  psql prompts for the **current** password — the pod enforces
+            auth even on the local socket. `-it` is what lets the prompt
+            reach your terminal; type `SuperSecret123` (nothing echoes).
+        2.  One `ALTER ROLE` per user — the password hashes in `pg_authid`
             are updated. Old passwords stop working **immediately**.
+
+    ??? failure "Got `fe_sendauth: no password supplied`?"
+
+        You ran `exec` **without `-it`** — psql tried to prompt for the
+        password, but with no terminal attached it can't read one:
+
+        ```bash
+        kubectl exec pg-postgresql-0 -- psql -U postgres ...   # ✗
+        ```
+
+        Two fixes: keep `-it` and answer the prompt, or pass it
+        non-interactively through the container's own env var:
+
+        ```bash
+        kubectl exec pg-postgresql-0 -- sh -c \
+          'PGPASSWORD="$POSTGRES_PASSWORD" psql -U postgres -d tutorial -c "ALTER ..."'
+        ```
+
+        (Mind the trap: once the Secret is updated *and* the pod restarted,
+        `$POSTGRES_PASSWORD` already holds the new password — authenticate
+        with whatever the DB currently holds.)
 
 4.  Sync the Secret to match the new passwords:
 
