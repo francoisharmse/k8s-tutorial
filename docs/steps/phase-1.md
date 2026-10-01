@@ -584,7 +584,7 @@ rotation.
         2.  Then `\l` lists `tutorial`, `\du` shows both `postgres` and
             `app_user`, `\dt` shows `progress`. `\q` exits.
 
-3.  Rotation drill — update the Secret in place:
+3.  Rotation drill — change the password **inside Postgres** first:
 
     ??? question "Why?"
 
@@ -592,8 +592,45 @@ rotation.
         expire, or policy forces periodic change. This drills the exact
         workflow you'll use for real.
 
+        **The subtlety:** the Secret's `postgres-password` only *seeds* the
+        database on **first boot** (when the PVC/data dir is empty). Postgres
+        stores real credentials in its own catalog (`pg_authid`) — a Secret
+        update does **not** change them. Restarting the pod with a new env
+        var value won't rotate the DB password; Bitnami even logs a
+        "password differs from the one persisted" warning when they diverge.
+
+        So a real rotation starts where the password actually lives — inside
+        the database. `-c` runs SQL non-interactively, no `exec -it` session
+        needed.
+
+    ```bash
+    kubectl exec pg-postgresql-0 -- psql -U postgres -d tutorial -c \
+      "ALTER USER postgres WITH PASSWORD 'NewSecret'; \
+       ALTER USER app_user WITH PASSWORD 'NewAppPass';"
+    ```
+
+    ??? info "Expected output"
+
+        ```bash
+        ALTER ROLE                                  # (1)!
+        ALTER ROLE
+        ```
+
+        1.  One `ALTER ROLE` per user — the password hashes in `pg_authid`
+            are updated. Old passwords stop working **immediately**.
+
+4.  Sync the Secret to match the new passwords:
+
+    ??? question "Why?"
+
+        The Secret is still the *declared* state — the chart and any future
+        pod specs read from it. If it stays stale, the next fresh install
+        (empty PVC) seeds the old password, and the env vars handed to the
+        pod diverge from the DB — a confusing drift. Update the spec to
+        match reality.
+
         **Why this construction:** `kubectl create secret` alone would fail —
-        the Secret already exists (`AlreadyExists` error; `create` is not
+        the Secret already exists (`AlreadyExists`; `create` isn't
         idempotent). And `kubectl edit` means hand-juggling base64. The fix:
 
         1. `--dry-run=client -o yaml` — render the Secret to YAML **locally**,
@@ -605,11 +642,6 @@ rotation.
            `apply` persists it.
         3. No manifest file needed — which matters, because Secrets shouldn't
            sit in files or git anyway.
-
-        **Why step 4 follows:** pods snapshot secrets at startup — env vars
-        are baked at container start, and mounted secret volumes only refresh
-        lazily. `rollout restart` forces every pod to re-read the new value
-        deterministically.
 
     ```bash
     kubectl create secret generic postgres-creds \
@@ -647,12 +679,16 @@ rotation.
         mixing imperative writes with apply is exactly what produces this
         class of warning.
 
-4.  Restart the DB so it picks up the new secret:
+5.  Restart the DB pod:
 
     ??? question "Why?"
 
-        pods read secrets at startup — existing pods don't see updates
-        until recreated. `rollout restart` cycles them safely.
+        Pods snapshot env-var secrets at startup — the running pod still has
+        the *old* `POSTGRES_PASSWORD` in its environment. `rollout restart`
+        cycles it so spec and runtime agree. Because you already rotated the
+        password *inside* Postgres (step 3), nothing breaks — whereas
+        restarting with a mismatched env var is exactly when the Bitnami
+        "passwords diverge" warning would appear in the pod logs.
 
     ```bash
     kubectl rollout restart statefulset/pg-postgresql
@@ -669,7 +705,10 @@ rotation.
 
 !!! success "Verify"
     Connect as `app_user` and confirm it can write `progress` but not create
-    tables. Rule: **the app tier never uses superuser credentials.**
+    tables. After the rotation drill, `psql -U postgres` with the **old**
+    password should fail and `NewSecret` should work — proof the rotation
+    happened in the DB, not just the Secret. Rule: **the app tier never uses
+    superuser credentials.**
 
 ---
 
