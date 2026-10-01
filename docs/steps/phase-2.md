@@ -1,5 +1,27 @@
 # Phase 2 — App Tier (Python / FastAPI)
 
+What this phase builds: the FastAPI middleware that sits between the web tier
+and Postgres — written, built into a local image, deployed declaratively with
+config and secrets wired in, then hardened with probes and resource limits.
+
+```mermaid
+flowchart TB
+    code["<b>2.1</b> Write the app<br/><code>app/main.py</code><br/><i>healthz · readyz · /api/*</i>"]
+    img["<b>2.2</b> Build the image<br/><code>nerdctl --namespace k8s.io build</code><br/><i>containerd — visible to k3s</i>"]
+    dep["<b>2.3</b> Deploy declaratively<br/><code>Deployment + Service</code>"]
+    cfg["<b>2.3</b> ConfigMap<br/><i>DB_HOST · DB_NAME · DB_USER</i>"]
+    scrt["<b>1.1</b> Secret<br/><code>postgres-creds</code><br/><i>secretKeyRef → app-password</i>"]
+    pf["<b>2.3</b> port-forward + curl /readyz<br/><i>proves app ↔ db link</i>"]
+    probe["<b>2.4</b> Probes &amp; self-healing<br/><i>kill pg pod → app NotReady → recovers</i>"]
+    res["<b>2.5</b> Resources &amp; metrics<br/><i>requests/limits · QoS · OOMKill</i>"]
+
+    code --> img --> dep
+    cfg --> dep
+    scrt --> dep
+    dep --> pf
+    dep --> probe --> res
+```
+
 ## 2.1 — Write the app
 
 **Goals:** Build `app/main.py` — the middleware that talks to Postgres.
