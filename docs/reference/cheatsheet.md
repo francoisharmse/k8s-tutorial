@@ -18,6 +18,12 @@ kubectl exec -it <p> -- <cmd>
 kubectl port-forward svc/<s> <local>:<remote>
 kubectl debug -it <p> --image=<img> --target=<container>
 
+# Throwaway pod — spin up, run a command, auto-delete on exit
+kubectl run <name> --image=<img> --rm -it --restart=Never -- <cmd>
+kubectl run randomstuff --image=busybox:1.36 --rm -it --restart=Never -- env
+#   --rm = delete pod on exit · -it = interactive tty ·
+#   --restart=Never = run once (required for one-shot cmds) · -- separates the pod's command
+
 # Auth & security
 kubectl auth can-i <verb> <resource> --as=<identity>
 kubectl create secret generic|tls ...
