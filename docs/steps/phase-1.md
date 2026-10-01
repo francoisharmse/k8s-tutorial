@@ -864,10 +864,31 @@ rotation.
             ```
 
             1.  `10.43.0.10` — CoreDNS, the cluster's DNS server.
-            2.  Resolves to the service's ClusterIP. The full name is
-                `service.namespace.svc.cluster.local` — short forms like
-                `pg-postgresql.tutorial` also work.
+            2.  Resolves to the service's ClusterIP.
             3.  `--rm` deletes the pod on exit — nothing left to clean up.
+
+        ??? note "Where does that DNS name come from?"
+
+            You don't look it up — you **construct** it from a fixed pattern:
+
+            ```text
+            <service>.<namespace>.svc.cluster.local
+            └─ item 1    └─ you created   └─ same for every cluster
+              output       it (1.1)
+            ```
+
+            - **`<service>`** — the `NAME` column from step 1:
+              `kubectl get svc -n tutorial` → `pg-postgresql`
+            - **`<namespace>`** — `tutorial`, where the service lives
+            - **`.svc.cluster.local`** — the cluster's baked-in DNS suffix;
+              `svc` marks it as a Service record
+
+            And you rarely need the full form — every pod's
+            `/etc/resolv.conf` (written by kubelet) carries `search` domains,
+            so inside a pod `pg-postgresql` (same namespace) or
+            `pg-postgresql.tutorial` (cross-namespace) resolve automatically.
+            The FQDN is only needed when the caller lives in a *different*
+            namespace — which is exactly the web/app tiers' case later.
 
 3.  See which pods sit behind the service:
 
