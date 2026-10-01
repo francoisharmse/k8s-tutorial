@@ -1,0 +1,5 @@
+[     108ms] [LOG] Enabled live reload @ http://127.0.0.1:8080/reference/architecture/:1259
+[     457ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://api.github.com/repos/francoisharmse/k8s-tutorial/releases/latest:0
+[   33004ms] [LOG] Enabled live reload @ http://127.0.0.1:8080/reference/architecture/:1259
+[   38760ms] [LOG] Enabled live reload @ http://127.0.0.1:8080/reference/cheatsheet/:1024
+[   43347ms] [LOG] Enabled live reload @ http://127.0.0.1:8080/reference/concepts-map/:1025

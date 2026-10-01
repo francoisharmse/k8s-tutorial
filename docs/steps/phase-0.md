@@ -481,6 +481,23 @@ Explore the difference yourself:
 
 ## 0.3 — Imperative playground
 
+!!! info "Imperative vs declarative — two ways to drive kubectl"
+
+    **Imperative** = tell the cluster *what to do*, one action at a time:
+    `kubectl create`, `kubectl run`, `kubectl delete`, `kubectl scale`. You're
+    the control loop — nothing is written down, so there's no record of intent
+    and no easy way to repeat or diff the result.
+
+    **Declarative** = describe the *desired end state* in a YAML manifest and
+    let `kubectl apply` reconcile it. The spec becomes the source of truth:
+    it's repeatable, diffable, versionable in git, and controllers keep
+    reality converging toward it.
+
+    Rule of thumb: imperative for **learning, debugging, and throwaway
+    experiments** (this step) — declarative for **anything that should
+    survive past the terminal session** (every manifest phase from
+    [Phase 1](phase-1.md) onward).
+
 **Goals:** Learn the core objects hands-on before declarative YAML.
 
 **Concepts:** Pods, namespaces, describe/logs/exec, `kubectl explain`.
