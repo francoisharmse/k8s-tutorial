@@ -742,7 +742,7 @@ Applies the three manifests written in 2.3.
 1.  See the probes the Deployment defines:
 
     ```bash
-    kubectl describe pod -l tier=app | grep -A5 -i probes
+    kubectl describe pod -l tier=app | grep -B2 -A8 -Ei 'liveness|readiness'
     ```
 
     ??? info "INFO"
@@ -751,18 +751,37 @@ Applies the three manifests written in 2.3.
 
             probes are declared in the pod spec — `describe` shows what
             kubelet checks (readiness gates Service traffic; liveness
-            restarts the container).
+            restarts the container). The grep pattern keys off the field
+            names — the spec lines say `Liveness:`/`Readiness:`, not the
+            word "probe".
 
         ??? info "Expected output (trimmed)"
 
             ```bash
-            Liveness:   http-get /healthz delay=…  period=10s   # (1)!
-            Readiness:  http-get /readyz  delay=…  period=5s    # (2)!
+            Liveness:   http-get http://:8000/healthz delay=0s period=10s  # (1)!
+            Readiness:  http-get http://:8000/readyz  delay=0s period=5s   # (2)!
+            ...
+            Events:
+              Warning  Unhealthy  28m (x2 over 28m)  kubelet  Readiness probe failed:
+                Get "http://10.42.0.20:8000/readyz": dial tcp …: connect: connection refused  # (3)!
             ```
 
             1.  Liveness failing → kubelet *restarts* the container.
             2.  Readiness failing → pod drops out of Service endpoints but
                 keeps running — the distinction the next commands exploit.
+            3.  **Benign if old/bounded** — `x2 over 28m` means the probe
+                fired before uvicorn had bound port 8000. That's a startup
+                race, fixed in real deployments with `initialDelaySeconds`
+                or a `startupProbe`. Worry only if it's recent *and* the pod
+                isn't `1/1 Running` — then it's a wrong port/path or a dead
+                app.
+
+        ??? failure "Pod stuck `0/1` with ongoing `connection refused`?"
+
+            Then it's not a startup race — the app isn't listening where the
+            probe looks. Check `kubectl logs deploy/app` for a crash or a
+            different bind port, and confirm `containerPort`/`targetPort`
+            match the app's actual port (8000).
 
 2.  Chaos test — kill the database pod:
 
