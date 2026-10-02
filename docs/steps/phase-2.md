@@ -245,6 +245,24 @@ ConfigMap, Deployment, Service.
 Each file goes under `deploy/manifests/app/`. The repo ships them already —
 if you're building the tree yourself, create each one here.
 
+```mermaid
+flowchart TB
+    subgraph manifests["deploy/manifests/app/"]
+        cm["configmap.yaml<br/><b>ConfigMap</b> app-config<br/><i>non-secret env: DB_HOST · DB_NAME · DB_USER</i>"]
+        dp["deployment.yaml<br/><b>Deployment</b> app<br/><i>2 replicas · probes · resources</i>"]
+        sv["service.yaml<br/><b>Service</b> app<br/><i>ClusterIP :8000 · stable DNS</i>"]
+    end
+    sc["<b>Secret</b> postgres-creds<br/><i>from step 1.1 — secretKeyRef → DB_PASSWORD</i>"]
+    pods["Pods <code>app-…</code><br/><i>env vars injected at start</i>"]
+    ep["Endpoints<br/><i>pods matching selector</i>"]
+
+    cm -- "envFrom: configMapRef" --> dp
+    sc -- "secretKeyRef: app-password" --> dp
+    dp --> pods
+    sv -- "selector: tier=app" --> ep
+    pods -. "labels match" .-> ep
+```
+
 1.  Create `deploy/manifests/app/configmap.yaml`:
 
     ```bash
