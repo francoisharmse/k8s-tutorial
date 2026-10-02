@@ -288,6 +288,32 @@ flowchart TB
             them here means changing env config = one manifest edit, not a
             code change + rebuild.
 
+        ??? info "The manifest, annotated"
+
+            ```yaml
+            apiVersion: v1                              # (1)!
+            kind: ConfigMap                             # (2)!
+            metadata:
+              name: app-config                          # (3)!
+              labels: {app: k8s-tutorial, tier: app}    # (4)!
+            data:
+              DB_HOST: pg-postgresql                    # (5)!
+              DB_NAME: tutorial
+              DB_USER: app_user                         # (6)!
+            ```
+
+            1.  `v1` = the **core** API group — no group prefix needed
+                (contrast with `apps/v1` on the Deployment).
+            2.  The object kind — determines which fields `spec`/`data` accept.
+            3.  The name the Deployment references in `envFrom.configMapRef` —
+                they must match.
+            4.  Labels are metadata for selection/organization — the Service
+                and `-l tier=app` filters key off `tier: app`.
+            5.  The Service DNS name from 1.4 — this string is what makes the
+                app tier *find* Postgres.
+            6.  Every `data` key becomes an env var in the pod —
+                `DB_USER: app_user` = the least-privilege role from 1.3.
+
 2.  Create `deploy/manifests/app/deployment.yaml`:
 
     ```bash
@@ -341,6 +367,56 @@ flowchart TB
             `readinessProbe`/`livenessProbe` are exercised in 2.5;
             `resources` produces QoS class *Burstable*, inspected in 2.6.
 
+        ??? info "The manifest, annotated"
+
+            ```yaml
+            spec:
+              replicas: 2                                    # (1)!
+              selector:
+                matchLabels: {app: k8s-tutorial, tier: app}  # (2)!
+              template:                                      # (3)!
+                spec:
+                  containers:
+                    - name: app
+                      image: k8s-tutorial-app:0.1.0          # (4)!
+                      imagePullPolicy: IfNotPresent          # (5)!
+                      ports:
+                        - containerPort: 8000
+                      envFrom:
+                        - configMapRef: {name: app-config}   # (6)!
+                      env:
+                        - name: DB_PASSWORD
+                          valueFrom:
+                            secretKeyRef: {name: postgres-creds, key: app-password}  # (7)!
+                      readinessProbe:
+                        httpGet: {path: /readyz, port: 8000} # (8)!
+                      livenessProbe:
+                        httpGet: {path: /healthz, port: 8000}
+                      resources:
+                        requests: {cpu: 50m, memory: 64Mi}   # (9)!
+                        limits: {cpu: 250m, memory: 256Mi}
+            ```
+
+            1.  Desired pod count — the Deployment controller keeps exactly
+                this many running.
+            2.  Which pods the Deployment owns — **must match**
+                `template.metadata.labels` or the API rejects the manifest.
+            3.  `template` is a **pod spec embedded in the Deployment** —
+                everything under it is stamped onto each replica.
+            4.  The tag you built in 2.2 — must match exactly or you'll get
+                `ErrImagePull`.
+            5.  `IfNotPresent` = use the node-local image (no registry pull).
+                `Always` would try a registry that doesn't have it.
+            6.  Injects **every** ConfigMap key as an env var —
+                `DB_HOST`/`DB_NAME`/`DB_USER` appear in the container env.
+            7.  Granular secret injection — only the `app-password` key of
+                `postgres-creds`, as `DB_PASSWORD`. The app never sees the
+                superuser password.
+            8.  `/readyz` does the real `SELECT 1` — failing it drops the pod
+                from Service endpoints without restarting (2.5's chaos test).
+            9.  Requests reserve, limits cap — unequal values → QoS
+                `Burstable` (2.6 inspects this).
+
 3.  Create `deploy/manifests/app/service.yaml`:
 
     ```bash
@@ -366,6 +442,28 @@ flowchart TB
             ClusterIP + `app` DNS name = the stable internal address the web
             tier proxies to in Phase 3. The `selector` must match the pod
             template's labels — that's how endpoints get populated.
+
+        ??? info "The manifest, annotated"
+
+            ```yaml
+            spec:
+              type: ClusterIP                                # (1)!
+              selector: {app: k8s-tutorial, tier: app}       # (2)!
+              ports:
+                - port: 8000                                 # (3)!
+                  targetPort: 8000                           # (4)!
+            ```
+
+            1.  Internal-only VIP — no external exposure. NodePort/
+                LoadBalancer would be for direct outside access.
+            2.  Selects which pods receive traffic — identical to the pod
+                template labels in `deployment.yaml`. A mismatch silently
+                yields an empty Endpoints list.
+            3.  The port the **Service** listens on — what callers dial
+                (`app:8000`).
+            4.  The port kube-proxy forwards to **on the pod** — uvicorn's
+                `containerPort`. `port` and `targetPort` can differ
+                (e.g. svc :80 → pod :8000).
 
 ---
 
