@@ -1,0 +1,1883 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Hands-on Kubernetes tutorial — build, deploy, and operate a three-tier app on a local Rancher Desktop (k3s) cluster.">
+      
+      
+      
+      
+        <link rel="prev" href="../../getting-started/">
+      
+      
+        <link rel="next" href="../phase-1/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Phase 0 · Environment & Orientation - Kubernetes Three-Tier Tutorial</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#phase-0-environment-cluster-orientation" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Kubernetes Three-Tier Tutorial" class="md-header__button md-logo" aria-label="Kubernetes Three-Tier Tutorial" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Kubernetes Three-Tier Tutorial
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Phase 0 · Environment & Orientation
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m14.3 16-.7-2h-3.2l-.7 2H7.8L11 7h2l3.2 9zM20 8.69V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12zm-9.15 3.96h2.3L12 9z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to system preference"  type="radio" name="__palette" id="__palette_2">
+    
+      <label class="md-header__button md-icon" title="Switch to system preference" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/francoisharmse/k8s-tutorial" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Kubernetes Three-Tier Tutorial" class="md-nav__button md-logo" aria-label="Kubernetes Three-Tier Tutorial" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Kubernetes Three-Tier Tutorial
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/francoisharmse/k8s-tutorial" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting started
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Steps
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Steps
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 0 · Environment & Orientation
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 0 · Environment & Orientation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#01-scaffold-the-project-directory" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        0.1 — Scaffold the project directory
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#02-verify-cluster-access" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        0.2 — Verify cluster access
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="0.2 — Verify cluster access">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#mental-model-clusters-contexts-namespaces" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Mental model — clusters, contexts, namespaces
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#03-imperative-playground" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        0.3 — Imperative playground
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../phase-1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 1 · DB Tier (PostgreSQL)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../phase-2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 2 · App Tier (FastAPI)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../phase-3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 3 · Web Tier (nginx)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../phase-4/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 4 · Ingress & TLS
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../phase-5/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 5 · Helm-ify Everything
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../phase-6/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 6 · Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../phase-7/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 7 · Operations at Scale
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../phase-8/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 8 · Advanced / Optional
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kubernetes architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/cheatsheet/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Command cheat sheet
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/terminology/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Terminology
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/concepts-map/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Key concepts map
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#01-scaffold-the-project-directory" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        0.1 — Scaffold the project directory
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#02-verify-cluster-access" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        0.2 — Verify cluster access
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="0.2 — Verify cluster access">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#mental-model-clusters-contexts-namespaces" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Mental model — clusters, contexts, namespaces
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#03-imperative-playground" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        0.3 — Imperative playground
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="phase-0-environment-cluster-orientation">Phase 0 — Environment &amp; Cluster Orientation<a class="headerlink" href="#phase-0-environment-cluster-orientation" title="Permanent link">&para;</a></h1>
+<h2 id="01-scaffold-the-project-directory">0.1 — Scaffold the project directory<a class="headerlink" href="#01-scaffold-the-project-directory" title="Permanent link">&para;</a></h2>
+<p><strong>Goals:</strong> Create the directory layout you'll work in for the whole tutorial.</p>
+<p><strong>Concepts:</strong> Project layout conventions; optional single-branch + tag workflow
+if you choose to track your work in git.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>mkdir<span class="w"> </span>k8s<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">cd</span><span class="w"> </span>k8s<span class="w">                                        </span><span class="c1"># (1)</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>mkdir<span class="w"> </span>-p<span class="w"> </span>steps<span class="w"> </span>app<span class="w"> </span>static<span class="w"> </span>db<span class="w"> </span>scripts<span class="w"> </span><span class="se">\ </span><span class="w">                    </span><span class="c1"># (2)</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">  </span>deploy/manifests/<span class="o">{</span>app,db,ingress,netpol,web<span class="o">}</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">  </span>deploy/charts
+</span></code></pre></div>
+<ol>
+<li>Creates the working dir and enters it — silence means success.</li>
+<li><code>mkdir -p</code> builds the whole tree in one shot; <code>{a,b,c}</code> brace expansion
+    creates the five manifest dirs at once. No output on success.</li>
+</ol>
+<div class="admonition info">
+<p class="admonition-title">Git tracking is optional</p>
+<p>Everything in this tutorial works on a plain directory of files — the
+cluster never sees git. The git commands below are <strong>only needed if you
+want to commit and track your progress in a repo</strong> (checkpoint tags,
+<code>git checkout</code> savepoints). If you prefer to work completely locally
+without git, skip them — nothing else in the tutorial depends on them.</p>
+</div>
+<p>If you do want git tracking (recommended — it gives you savepoints):</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>git<span class="w"> </span>init<span class="w"> </span>-b<span class="w"> </span>main<span class="w">                                           </span><span class="c1"># (1)</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="c1"># git doesn't track empty dirs — placeholders keep the skeleton visible:</span>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>find<span class="w"> </span>.<span class="w"> </span>-type<span class="w"> </span>d<span class="w"> </span>-empty<span class="w"> </span>-exec<span class="w"> </span>touch<span class="w"> </span><span class="o">{}</span>/.gitkeep<span class="w"> </span><span class="se">\;</span><span class="w">           </span><span class="c1"># (2)</span>
+</span></code></pre></div>
+<ol>
+<li><code>Initialized empty Git repository in …/k8s/.git/</code> — <code>-b main</code> names the
+    default branch <code>main</code>.</li>
+<li>No output — drops an empty <code>.gitkeep</code> file into every directory that has
+    no content yet, so the skeleton survives the commit.</li>
+</ol>
+<p>Then add a <code>.gitignore</code> covering your editor/OS noise plus these
+tutorial-specific rules — real Secrets never get committed (reinforced in
+<a href="../phase-6/#61-secrets-encryption-at-rest">step 6.1</a>):</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>secrets.yaml            # secrets.example.yaml stays tracked
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>*-key.pem               # mkcert/openssl private keys (step 4.2)
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>dump.sql                # pg_dump output (step 7.4)
+</span></code></pre></div>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>git<span class="w"> </span>add<span class="w"> </span>-A<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">"Scaffold tutorial repo"</span><span class="w">       </span><span class="c1"># (1)</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>git<span class="w"> </span>tag<span class="w"> </span>phase-0<span class="w">                                            </span><span class="c1"># (2)</span>
+</span></code></pre></div>
+<ol>
+<li><code>[main (root-commit) &lt;hash&gt;] Scaffold tutorial repo</code> — followed by a
+    file/insertion count summary.</li>
+<li>No output — the <code>phase-0</code> tag now marks this commit as a savepoint.</li>
+</ol>
+<div class="admonition success">
+<p class="admonition-title">Verify</p>
+<p><code>find . -type d</code> shows the
+<a href="../../getting-started/#repo-layout">repo layout</a>. If you're using git:
+<code>git log --oneline</code> shows the scaffold commit — from here on, tag at each
+phase boundary (<code>git tag phase-1</code>, …) per
+<a href="../../getting-started/#git-strategy-checkpoint-tags-not-branches">Git strategy</a>.</p>
+</div>
+<hr />
+<h2 id="02-verify-cluster-access">0.2 — Verify cluster access<a class="headerlink" href="#02-verify-cluster-access" title="Permanent link">&para;</a></h2>
+<p><strong>Goals:</strong> Confirm kubectl talks to the local cluster; understand contexts.</p>
+<p><strong>Concepts:</strong> kubeconfig, contexts, control plane vs worker nodes.</p>
+<div class="admonition tip">
+<p class="admonition-title">Optional: alias <code>kubectl</code> → <code>k</code></p>
+<p>Every command in this tutorial spells out <code>kubectl</code> for clarity — but most
+people alias it to <code>k</code> and never look back. One-time setup, per shell:</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="1:5"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><input id="__tabbed_1_3" name="__tabbed_1" type="radio" /><input id="__tabbed_1_4" name="__tabbed_1" type="radio" /><input id="__tabbed_1_5" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">zsh (macOS default)</label><label for="__tabbed_1_2">bash</label><label for="__tabbed_1_3">fish</label><label for="__tabbed_1_4">PowerShell (Windows)</label><label for="__tabbed_1_5">CMD (Windows)</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="nb">echo</span><span class="w"> </span><span class="s1">'alias k=kubectl'</span><span class="w"> </span>&gt;&gt;<span class="w"> </span>~/.zshrc<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">source</span><span class="w"> </span>~/.zshrc
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="c1"># keep tab-completion working on the alias:</span>
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="nb">echo</span><span class="w"> </span><span class="s1">'source &lt;(kubectl completion zsh)'</span><span class="w"> </span>&gt;&gt;<span class="w"> </span>~/.zshrc
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="nb">echo</span><span class="w"> </span><span class="s1">'compdef k=kubectl'</span><span class="w"> </span>&gt;&gt;<span class="w"> </span>~/.zshrc
+</span></code></pre></div>
+</div>
+<div class="tabbed-block">
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="nb">echo</span><span class="w"> </span><span class="s1">'alias k=kubectl'</span><span class="w"> </span>&gt;&gt;<span class="w"> </span>~/.bashrc<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">source</span><span class="w"> </span>~/.bashrc
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="c1"># on macOS the login file is ~/.bash_profile instead</span>
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="c1"># completion: complete -o default -F __start_kubectl k</span>
+</span></code></pre></div>
+</div>
+<div class="tabbed-block">
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="nb">echo</span><span class="w"> </span><span class="s1">'alias k=kubectl'</span><span class="w"> </span>&gt;&gt;<span class="w"> </span>~/.config/fish/config.fish
+</span></code></pre></div>
+</div>
+<div class="tabbed-block">
+<div class="language-powershell highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="nb">Set-Alias</span> <span class="n">k</span> <span class="n">kubectl</span>                                <span class="c"># current session</span>
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="nb">Add-Content</span> <span class="nv">$PROFILE</span> <span class="s1">'Set-Alias k kubectl'</span>         <span class="c"># persist</span>
+</span></code></pre></div>
+</div>
+<div class="tabbed-block">
+<div class="language-bat highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>doskey k=kubectl $*    :: current session only
+</span></code></pre></div>
+</div>
+</div>
+</div>
+</div>
+<p>Run these in order. Expand <strong>ⓘ Expected output</strong> under each command to compare
+with yours — the <code>+</code> markers inside the output explain every column and status.</p>
+<ol>
+<li>
+<p>Check client + server versions:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>kubectl<span class="w"> </span>version
+</span></code></pre></div>
+<details class="info">
+<summary>INFO</summary>
+<details class="question">
+<summary>Why?</summary>
+<p>the cheapest end-to-end test — if kubectl can reach the API server,
+this prints both versions. It also exposes version <em>skew</em> between your
+client and the cluster.</p>
+</details>
+<details class="info">
+<summary>Expected output</summary>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>Client<span class="w"> </span>Version:<span class="w"> </span>v1.34.x
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>Kustomize<span class="w"> </span>Version:<span class="w"> </span>v5.x.x
+</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>Server<span class="w"> </span>Version:<span class="w"> </span>v1.32.x+k3s1<span class="w">      </span><span class="c1"># (1)!</span>
+</span></code></pre></div>
+<ol>
+<li><code>Server Version</code> is what the cluster runs — the <code>+k3s1</code> suffix
+    means it's <strong>k3s</strong>, Rancher Desktop's bundled distribution.</li>
+</ol>
+</details>
+</details>
+</li>
+<li>
+<p>List the contexts in your kubeconfig:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>kubectl<span class="w"> </span>config<span class="w"> </span>get-contexts
+</span></code></pre></div>
+<details class="info">
+<summary>INFO</summary>
+<details class="question">
+<summary>Why?</summary>
+<p>kubectl multiplexes clusters — the same binary can talk to a local
+k3s, minikube, or a production cluster. Always confirm <em>which</em> cluster
+you're about to touch before running anything.</p>
+</details>
+<details class="info">
+<summary>Expected output</summary>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>CURRENT<span class="w">   </span>NAME<span class="w">              </span>CLUSTER<span class="w">           </span>AUTHINFO<span class="w">          </span>NAMESPACE<span class="w">   </span><span class="c1"># (1)!</span>
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="w">          </span>minikube<span class="w">          </span>minikube<span class="w">          </span>minikube<span class="w">          </span>default
+</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>*<span class="w">         </span>rancher-desktop<span class="w">   </span>rancher-desktop<span class="w">   </span>rancher-desktop<span class="w">               </span><span class="c1"># (2)!</span>
+</span></code></pre></div>
+<ol>
+<li>Columns — <code>CURRENT</code>: <code>*</code> marks the active context · <code>NAME</code>: the
+    alias you pass to <code>--context</code> · <code>CLUSTER</code>: which cluster entry it
+    targets · <code>AUTHINFO</code>: which credentials it uses · <code>NAMESPACE</code>:
+    default namespace for commands (empty = cluster default).</li>
+<li><code>*</code> on <code>rancher-desktop</code> — already active, so the next command is
+    a no-op for you.</li>
+</ol>
+</details>
+</details>
+</li>
+<li>
+<p>Switch context — only needed if <code>*</code> wasn't on <code>rancher-desktop</code>:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>kubectl<span class="w"> </span>config<span class="w"> </span>use-context<span class="w"> </span>rancher-desktop
+</span></code></pre></div>
+<details class="info">
+<summary>INFO</summary>
+<details class="question">
+<summary>Why?</summary>
+<p>everything after this targets <code>rancher-desktop</code>. Getting contexts
+wrong is how people accidentally run commands against the wrong cluster.</p>
+</details>
+<details class="info">
+<summary>Expected output</summary>
+<p><code>Switched to context "rancher-desktop".</code> — every command from here on
+targets this context unless you override it with <code>--context</code>.</p>
+</details>
+</details>
+</li>
+<li>
+<p>List the cluster's nodes:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>kubectl<span class="w"> </span>get<span class="w"> </span>nodes<span class="w"> </span>-o<span class="w"> </span>wide
+</span></code></pre></div>
+<details class="info">
+<summary>INFO</summary>
+<details class="question">
+<summary>Why?</summary>
+<p>nodes are the machines your workloads land on. <code>get nodes</code> is the
+cluster health check; <code>-o wide</code> adds IPs, OS, and container runtime —
+the facts you reach for when pods won't schedule.</p>
+</details>
+<details class="info">
+<summary>Expected output</summary>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>NAME<span class="w">                   </span>STATUS<span class="w">   </span>ROLES<span class="w">                  </span>AGE<span class="w">   </span>VERSION<span class="w">       </span><span class="c1"># (1)!</span>
+</span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a>lima-rancher-desktop<span class="w">   </span>Ready<span class="w">    </span>control-plane,master<span class="w">   </span>37s<span class="w">   </span>v1.32.3+k3s1<span class="w">  </span><span class="c1"># (2)!</span>
+</span></code></pre></div>
+<ol>
+<li>Columns — <code>NAME</code>: node name · <code>STATUS</code>: <code>Ready</code> = kubelet healthy
+    (<code>NotReady</code> under pressure/network loss) · <code>ROLES</code>: <code>control-plane</code>
+    means it runs the API server + etcd · <code>AGE</code>: time since the node
+    joined · <code>VERSION</code>: kubelet version. <code>-o wide</code> adds
+    <code>INTERNAL-IP</code>, <code>OS-IMAGE</code>, <code>KERNEL</code>, <code>RUNTIME</code>.</li>
+<li>Single node — Rancher Desktop runs a one-node k3s cluster;
+    <code>lima-</code> is the Lima VM it lives in.</li>
+</ol>
+</details>
+</details>
+</li>
+<li>
+<p>List every pod in the cluster:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>kubectl<span class="w"> </span>get<span class="w"> </span>pods<span class="w"> </span>-A
+</span></code></pre></div>
+<details class="info">
+<summary>INFO</summary>
+<details class="question">
+<summary>Why?</summary>
+<p><code>-A</code> (all namespaces) shows the system workloads too — it's both a
+health check and a lesson: DNS, ingress, and storage are just pods in
+<code>kube-system</code>, same as the ones you'll deploy.</p>
+</details>
+<details class="info">
+<summary>Expected output</summary>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a>NAMESPACE<span class="w">     </span>NAME<span class="w">                              </span>READY<span class="w">   </span>STATUS<span class="w">      </span>RESTARTS<span class="w">   </span>AGE<span class="w">   </span><span class="c1"># (1)!</span>
+</span><span id="__span-17-2"><a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a>kube-system<span class="w">   </span>coredns-…<span class="w">                         </span><span class="m">1</span>/1<span class="w">     </span>Running<span class="w">     </span><span class="m">0</span><span class="w">          </span>2m
+</span><span id="__span-17-3"><a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a>kube-system<span class="w">   </span>helm-install-traefik-…<span class="w">            </span><span class="m">0</span>/1<span class="w">     </span>Completed<span class="w">   </span><span class="m">0</span><span class="w">          </span>2m
+</span><span id="__span-17-4"><a id="__codelineno-17-4" name="__codelineno-17-4" href="#__codelineno-17-4"></a>kube-system<span class="w">   </span>local-path-provisioner-…<span class="w">          </span><span class="m">1</span>/1<span class="w">     </span>Running<span class="w">     </span><span class="m">0</span><span class="w">          </span>2m
+</span><span id="__span-17-5"><a id="__codelineno-17-5" name="__codelineno-17-5" href="#__codelineno-17-5"></a>kube-system<span class="w">   </span>metrics-server-…<span class="w">                  </span><span class="m">1</span>/1<span class="w">     </span>Running<span class="w">     </span><span class="m">0</span><span class="w">          </span>2m
+</span><span id="__span-17-6"><a id="__codelineno-17-6" name="__codelineno-17-6" href="#__codelineno-17-6"></a>kube-system<span class="w">   </span>traefik-…<span class="w">                         </span><span class="m">1</span>/1<span class="w">     </span>Running<span class="w">     </span><span class="m">0</span><span class="w">          </span>2m<span class="w">    </span><span class="c1"># (2)!</span>
+</span></code></pre></div>
+<ol>
+<li>Columns — <code>NAMESPACE</code>: owning namespace · <code>READY</code>: containers
+    ready / total · <code>STATUS</code>: lifecycle state (<code>Running</code>,
+    <code>Completed</code>, <code>CrashLoopBackOff</code>, <code>ImagePullBackOff</code>, …) ·
+    <code>RESTARTS</code>: container restart count · <code>AGE</code>: time since scheduled.</li>
+<li>A healthy k3s baseline — everything lives in <code>kube-system</code>: DNS
+    (<code>coredns</code>), ingress (<code>traefik</code>), storage (<code>local-path-provisioner</code>),
+    <code>kubectl top</code> data (<code>metrics-server</code>).</li>
+</ol>
+</details>
+</details>
+</li>
+<li>
+<p>Confirm helm is installed:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a>helm<span class="w"> </span>version
+</span></code></pre></div>
+<details class="info">
+<summary>INFO</summary>
+<details class="question">
+<summary>Why?</summary>
+<p>you'll deploy PostgreSQL via a Helm chart in step 1.2 — better to
+discover a missing install now than mid-step.</p>
+</details>
+<details class="info">
+<summary>Expected output</summary>
+<p><code>version.BuildInfo{Version:"v3.x.x", GitCommit:"…", GoVersion:"…"}</code> —
+just proves helm works; the version prints inside <code>BuildInfo</code>.</p>
+</details>
+<details class="tip">
+<summary>helm: command not found? Install it</summary>
+<div class="tabbed-set tabbed-alternate" data-tabs="2:8"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><input id="__tabbed_2_2" name="__tabbed_2" type="radio" /><input id="__tabbed_2_3" name="__tabbed_2" type="radio" /><input id="__tabbed_2_4" name="__tabbed_2" type="radio" /><input id="__tabbed_2_5" name="__tabbed_2" type="radio" /><input id="__tabbed_2_6" name="__tabbed_2" type="radio" /><input id="__tabbed_2_7" name="__tabbed_2" type="radio" /><input id="__tabbed_2_8" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1">macOS — Homebrew</label><label for="__tabbed_2_2">Windows — winget</label><label for="__tabbed_2_3">Windows — Chocolatey</label><label for="__tabbed_2_4">Windows — Scoop</label><label for="__tabbed_2_5">Debian/Ubuntu — apt</label><label for="__tabbed_2_6">Fedora — dnf</label><label for="__tabbed_2_7">Linux — Snap</label><label for="__tabbed_2_8">Any OS — official script</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a>brew<span class="w"> </span>install<span class="w"> </span>helm
+</span></code></pre></div>
+</div>
+<div class="tabbed-block">
+<div class="language-powershell highlight"><pre><span></span><code><span id="__span-20-1"><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a><span class="n">winget</span> <span class="n">install</span> <span class="n">Helm</span><span class="p">.</span><span class="n">Helm</span>
+</span></code></pre></div>
+</div>
+<div class="tabbed-block">
+<div class="language-powershell highlight"><pre><span></span><code><span id="__span-21-1"><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a><span class="n">choco</span> <span class="n">install</span> <span class="n">kubernetes-helm</span>
+</span></code></pre></div>
+</div>
+<div class="tabbed-block">
+<div class="language-powershell highlight"><pre><span></span><code><span id="__span-22-1"><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a><span class="n">scoop</span> <span class="n">install</span> <span class="n">helm</span>
+</span></code></pre></div>
+</div>
+<div class="tabbed-block">
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-23-1"><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a>curl<span class="w"> </span>https://baltocdn.com/helm/signing.asc<span class="w"> </span><span class="p">|</span><span class="w"> </span>gpg<span class="w"> </span>--dearmor<span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-23-2"><a id="__codelineno-23-2" name="__codelineno-23-2" href="#__codelineno-23-2"></a><span class="w">  </span>sudo<span class="w"> </span>tee<span class="w"> </span>/usr/share/keyrings/helm.gpg<span class="w"> </span>&gt;<span class="w"> </span>/dev/null
+</span><span id="__span-23-3"><a id="__codelineno-23-3" name="__codelineno-23-3" href="#__codelineno-23-3"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">"deb [signed-by=/usr/share/keyrings/helm.gpg] \</span>
+</span><span id="__span-23-4"><a id="__codelineno-23-4" name="__codelineno-23-4" href="#__codelineno-23-4"></a><span class="s2">  https://baltocdn.com/helm/stable/debian/ all main"</span><span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-23-5"><a id="__codelineno-23-5" name="__codelineno-23-5" href="#__codelineno-23-5"></a><span class="w">  </span>sudo<span class="w"> </span>tee<span class="w"> </span>/etc/apt/sources.list.d/helm-stable-debian.list
+</span><span id="__span-23-6"><a id="__codelineno-23-6" name="__codelineno-23-6" href="#__codelineno-23-6"></a>sudo<span class="w"> </span>apt<span class="w"> </span>update<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>helm
+</span></code></pre></div>
+</div>
+<div class="tabbed-block">
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-24-1"><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a>sudo<span class="w"> </span>dnf<span class="w"> </span>install<span class="w"> </span>helm
+</span></code></pre></div>
+</div>
+<div class="tabbed-block">
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-25-1"><a id="__codelineno-25-1" name="__codelineno-25-1" href="#__codelineno-25-1"></a>sudo<span class="w"> </span>snap<span class="w"> </span>install<span class="w"> </span>helm<span class="w"> </span>--classic
+</span></code></pre></div>
+</div>
+<div class="tabbed-block">
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-26-1"><a id="__codelineno-26-1" name="__codelineno-26-1" href="#__codelineno-26-1"></a>curl<span class="w"> </span>https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3<span class="w"> </span><span class="p">|</span><span class="w"> </span>bash
+</span></code></pre></div>
+</div>
+</div>
+</div>
+<p>All of these install the <code>helm</code> binary on your <code>PATH</code> — re-run
+<code>helm version</code> afterwards to confirm.</p>
+</details>
+</details>
+</li>
+<li>
+<p>Browse the API surface:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-27-1"><a id="__codelineno-27-1" name="__codelineno-27-1" href="#__codelineno-27-1"></a>kubectl<span class="w"> </span>api-resources<span class="w"> </span><span class="p">|</span><span class="w"> </span>head<span class="w"> </span>-30
+</span></code></pre></div>
+<details class="info">
+<summary>INFO</summary>
+<details class="question">
+<summary>Why?</summary>
+<p>this is the catalog of everything kubectl can manage — discoverable
+instead of memorized. It answers "does <code>hpa</code> have a shortname?" and "is a
+<code>clusterrole</code> namespaced?" without leaving the terminal.</p>
+</details>
+<details class="info">
+<summary>Expected output</summary>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-28-1"><a id="__codelineno-28-1" name="__codelineno-28-1" href="#__codelineno-28-1"></a>NAME<span class="w">                    </span>SHORTNAMES<span class="w">   </span>APIVERSION<span class="w">   </span>NAMESPACED<span class="w">   </span>KIND<span class="w">      </span><span class="c1"># (1)!</span>
+</span><span id="__span-28-2"><a id="__codelineno-28-2" name="__codelineno-28-2" href="#__codelineno-28-2"></a>bindings<span class="w">                             </span>v1<span class="w">           </span><span class="nb">true</span><span class="w">         </span>Binding
+</span><span id="__span-28-3"><a id="__codelineno-28-3" name="__codelineno-28-3" href="#__codelineno-28-3"></a>componentstatuses<span class="w">       </span>cs<span class="w">           </span>v1<span class="w">           </span><span class="nb">false</span><span class="w">        </span>ComponentStatus
+</span><span id="__span-28-4"><a id="__codelineno-28-4" name="__codelineno-28-4" href="#__codelineno-28-4"></a>configmaps<span class="w">              </span>cm<span class="w">           </span>v1<span class="w">           </span><span class="nb">true</span><span class="w">         </span>ConfigMap
+</span><span id="__span-28-5"><a id="__codelineno-28-5" name="__codelineno-28-5" href="#__codelineno-28-5"></a>endpoints<span class="w">               </span>ep<span class="w">           </span>v1<span class="w">           </span><span class="nb">true</span><span class="w">         </span>Endpoints
+</span><span id="__span-28-6"><a id="__codelineno-28-6" name="__codelineno-28-6" href="#__codelineno-28-6"></a>namespaces<span class="w">              </span>ns<span class="w">           </span>v1<span class="w">           </span><span class="nb">false</span><span class="w">        </span>Namespace
+</span><span id="__span-28-7"><a id="__codelineno-28-7" name="__codelineno-28-7" href="#__codelineno-28-7"></a>nodes<span class="w">                   </span>no<span class="w">           </span>v1<span class="w">           </span><span class="nb">false</span><span class="w">        </span>Node
+</span><span id="__span-28-8"><a id="__codelineno-28-8" name="__codelineno-28-8" href="#__codelineno-28-8"></a>pods<span class="w">                    </span>po<span class="w">           </span>v1<span class="w">           </span><span class="nb">true</span><span class="w">         </span>Pod<span class="w">        </span><span class="c1"># (2)!</span>
+</span><span id="__span-28-9"><a id="__codelineno-28-9" name="__codelineno-28-9" href="#__codelineno-28-9"></a>services<span class="w">                </span>svc<span class="w">          </span>v1<span class="w">           </span><span class="nb">true</span><span class="w">         </span>Service<span class="w">    </span><span class="c1"># (3)!</span>
+</span></code></pre></div>
+<ol>
+<li>Columns — <code>NAME</code>: plural resource name for <code>kubectl get</code> ·
+    <code>SHORTNAMES</code>: aliases you can type instead · <code>APIVERSION</code>: API
+    group/version · <code>NAMESPACED</code>: whether objects live inside a
+    namespace · <code>KIND</code>: the type name for YAML <code>kind:</code> fields.</li>
+<li><code>po</code> works anywhere <code>pods</code> does: <code>kubectl get po</code>.</li>
+<li><code>NAMESPACED: false</code> resources (nodes, namespaces, PVs) don't take
+    <code>-n</code> — they're cluster-scoped.</li>
+</ol>
+</details>
+</details>
+</li>
+</ol>
+<h4 id="mental-model-clusters-contexts-namespaces">Mental model — clusters, contexts, namespaces<a class="headerlink" href="#mental-model-clusters-contexts-namespaces" title="Permanent link">&para;</a></h4>
+<p>These three words sound alike but live in different places — a classic early
+confusion:</p>
+<table>
+<thead>
+<tr>
+<th>Concept</th>
+<th>Where it lives</th>
+<th>List it with</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Cluster</strong></td>
+<td>kubeconfig — an API endpoint + CA cert</td>
+<td><code>kubectl config get-clusters</code></td>
+</tr>
+<tr>
+<td><strong>Context</strong></td>
+<td>kubeconfig — cluster + credentials + default namespace</td>
+<td><code>kubectl config get-contexts</code></td>
+</tr>
+<tr>
+<td><strong>Namespace</strong></td>
+<td><em>inside</em> a cluster — scopes your objects</td>
+<td><code>kubectl get namespaces</code></td>
+</tr>
+</tbody>
+</table>
+<p>Explore the difference yourself:</p>
+<ol>
+<li>
+<p>List the cluster connections kubectl knows:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-29-1"><a id="__codelineno-29-1" name="__codelineno-29-1" href="#__codelineno-29-1"></a>kubectl<span class="w"> </span>config<span class="w"> </span>get-clusters
+</span></code></pre></div>
+<details class="info">
+<summary>INFO</summary>
+<details class="question">
+<summary>Why?</summary>
+<p>contexts point <em>at</em> clusters — this shows the API endpoints your
+kubeconfig can reach.</p>
+</details>
+<details class="info">
+<summary>Expected output</summary>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-30-1"><a id="__codelineno-30-1" name="__codelineno-30-1" href="#__codelineno-30-1"></a>NAME
+</span><span id="__span-30-2"><a id="__codelineno-30-2" name="__codelineno-30-2" href="#__codelineno-30-2"></a>rancher-desktop
+</span><span id="__span-30-3"><a id="__codelineno-30-3" name="__codelineno-30-3" href="#__codelineno-30-3"></a>minikube<span class="w">              </span><span class="c1"># (1)!</span>
+</span></code></pre></div>
+<ol>
+<li>These are kubeconfig <em>entries</em>, not running machines — <code>minikube</code>
+    lists even if that cluster is stopped or deleted.</li>
+</ol>
+</details>
+</details>
+</li>
+<li>
+<p>List the namespaces inside the <strong>current</strong> cluster:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-31-1"><a id="__codelineno-31-1" name="__codelineno-31-1" href="#__codelineno-31-1"></a>kubectl<span class="w"> </span>get<span class="w"> </span>namespaces
+</span></code></pre></div>
+<details class="info">
+<summary>INFO</summary>
+<details class="question">
+<summary>Why?</summary>
+<p>namespaces are created <em>inside</em> a cluster and scope the objects in
+it — they say nothing about connections.</p>
+</details>
+<details class="info">
+<summary>Expected output</summary>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-32-1"><a id="__codelineno-32-1" name="__codelineno-32-1" href="#__codelineno-32-1"></a>NAME<span class="w">              </span>STATUS<span class="w">   </span>AGE<span class="w">   </span><span class="c1"># (1)!</span>
+</span><span id="__span-32-2"><a id="__codelineno-32-2" name="__codelineno-32-2" href="#__codelineno-32-2"></a>default<span class="w">           </span>Active<span class="w">   </span>31m
+</span><span id="__span-32-3"><a id="__codelineno-32-3" name="__codelineno-32-3" href="#__codelineno-32-3"></a>kube-node-lease<span class="w">   </span>Active<span class="w">   </span>31m
+</span><span id="__span-32-4"><a id="__codelineno-32-4" name="__codelineno-32-4" href="#__codelineno-32-4"></a>kube-public<span class="w">       </span>Active<span class="w">   </span>31m
+</span><span id="__span-32-5"><a id="__codelineno-32-5" name="__codelineno-32-5" href="#__codelineno-32-5"></a>kube-system<span class="w">       </span>Active<span class="w">   </span>31m
+</span><span id="__span-32-6"><a id="__codelineno-32-6" name="__codelineno-32-6" href="#__codelineno-32-6"></a>playground<span class="w">        </span>Active<span class="w">   </span>16s<span class="w">   </span><span class="c1"># (2)!</span>
+</span></code></pre></div>
+<ol>
+<li>Columns — <code>STATUS</code>: <code>Active</code> or <code>Terminating</code> · <code>AGE</code>: time since
+    created.</li>
+<li><code>playground</code> exists if you ran step 0.3. The other four ship with
+    every cluster: <code>kube-system</code> holds cluster services, <code>default</code> is
+    where un-namespaced commands land.</li>
+</ol>
+</details>
+</details>
+</li>
+<li>
+<p>Try switching context to a namespace — it fails on purpose:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-33-1"><a id="__codelineno-33-1" name="__codelineno-33-1" href="#__codelineno-33-1"></a>kubectl<span class="w"> </span>config<span class="w"> </span>use-context<span class="w"> </span>playground
+</span></code></pre></div>
+<p>What you probably meant — default the <strong>current context</strong> to a namespace:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-34-1"><a id="__codelineno-34-1" name="__codelineno-34-1" href="#__codelineno-34-1"></a>kubectl<span class="w"> </span>config<span class="w"> </span>set-context<span class="w"> </span>--current<span class="w"> </span>--namespace<span class="o">=</span>playground
+</span></code></pre></div>
+<details class="info">
+<summary>INFO</summary>
+<details class="question">
+<summary>Why?</summary>
+<p>proves contexts and namespaces are different things — a context is
+a kubeconfig entry; you can't <code>use-context</code> a namespace name.</p>
+</details>
+<details class="failure">
+<summary>Expected output</summary>
+<p><code>error: no context exists with the name: "playground"</code> — <code>playground</code>
+is a <em>namespace</em> inside the cluster, not a kubeconfig context.</p>
+</details>
+<details class="info">
+<summary>Expected output</summary>
+<p><code>Context "rancher-desktop" modified.</code> — this fills the <code>NAMESPACE</code>
+column in <code>get-contexts</code>, so later commands can drop <code>-n playground</code>.
+(Step <a href="../phase-1/#11-namespace-secrets">1.1</a> uses exactly this trick.)</p>
+</details>
+<details class="tip">
+<summary>How OpenShift handles this — Projects</summary>
+<p>OpenShift (Red Hat's Kubernetes distribution) calls namespaces
+<strong>Projects</strong>. A <code>Project</code> <em>is</em> a namespace — same object underneath —
+with extra metadata (display name, description) and default RBAC
+wiring on top.</p>
+<p>Two differences you'd notice:</p>
+<ul>
+<li><strong>Creation:</strong> <code>oc new-project playground</code> instead of
+  <code>kubectl create namespace</code> — and it's <em>self-service</em>: users can
+  request projects subject to admin-set quotas, where raw
+  <code>kubectl create ns</code> typically needs elevated rights.</li>
+<li><strong>Switching:</strong> the <code>oc</code> CLI (kubectl + OpenShift verbs) makes
+  project switching first-class:</li>
+</ul>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-35-1"><a id="__codelineno-35-1" name="__codelineno-35-1" href="#__codelineno-35-1"></a>oc<span class="w"> </span>project<span class="w"> </span>playground
+</span></code></pre></div>
+<p>→ <code>Now using project "playground" on server "https://…".</code></p>
+<p>This works where <code>kubectl config use-context playground</code> failed —
+  under the hood it does exactly what
+  <code>kubectl config set-context --current --namespace=playground</code> does:
+  edits the current context's namespace field. Related verbs:
+  <code>oc projects</code> lists what you can access, <code>oc project</code> (no args)
+  shows the current one.</p>
+<p>Same mental model — context still holds cluster + creds + namespace;
+OpenShift just gives the namespace-switch a dedicated verb.</p>
+</details>
+</details>
+</li>
+</ol>
+<details class="warning">
+<summary>Common errors &amp; fixes</summary>
+<p><strong><code>error: unknown flag: --short</code></strong> — the <code>--short</code> flag was deprecated in
+kubectl 1.28 and <strong>removed in 1.30</strong>. Run plain <code>kubectl version</code> — it
+prints client and server versions. For detail: <code>kubectl version -o json</code>.</p>
+<p><strong><code>The connection to the server localhost:8080 was refused</code></strong> — the cluster
+isn't running. Start Rancher Desktop and confirm <em>Preferences → Kubernetes →
+Enable Kubernetes</em> is checked.</p>
+<p><strong><code>error: no context exists with the name "…"</code></strong> — two causes. If the name
+is <code>rancher-desktop</code>: your kubeconfig is missing it — enable Kubernetes in
+Rancher Desktop (it writes <code>~/.kube/config</code>) and re-run
+<code>kubectl config get-contexts</code>. If the name is a <em>namespace</em> (e.g.
+<code>playground</code>): contexts aren't namespaces — use
+<code>kubectl config set-context --current --namespace=&lt;ns&gt;</code> instead.</p>
+<p><strong><code>error: invalid resource name ".": may not be '.'</code></strong> — a stray <code>.</code> slipped
+in (e.g., <code>kubectl get nodes .</code>). kubectl reads it as a resource name —
+drop it.</p>
+<p><strong><code>helm: command not found</code></strong> — see the <em>Install it</em> dropdown under
+command 6 above (<code>brew install helm</code> on macOS).</p>
+</details>
+<div class="admonition success">
+<p class="admonition-title">Verify</p>
+<p>Node shows <code>Ready</code>; <code>kube-system</code> pods <code>Running</code>.</p>
+</div>
+<hr />
+<h2 id="03-imperative-playground">0.3 — Imperative playground<a class="headerlink" href="#03-imperative-playground" title="Permanent link">&para;</a></h2>
+<div class="admonition info">
+<p class="admonition-title">Imperative vs declarative — two ways to drive kubectl</p>
+<p><strong>Imperative</strong> = tell the cluster <em>what to do</em>, one action at a time:
+<code>kubectl create</code>, <code>kubectl run</code>, <code>kubectl delete</code>, <code>kubectl scale</code>. You're
+the control loop — nothing is written down, so there's no record of intent
+and no easy way to repeat or diff the result.</p>
+<p><strong>Declarative</strong> = describe the <em>desired end state</em> in a YAML manifest and
+let <code>kubectl apply</code> reconcile it. The spec becomes the source of truth:
+it's repeatable, diffable, versionable in git, and controllers keep
+reality converging toward it.</p>
+<p>Rule of thumb: imperative for <strong>learning, debugging, and throwaway
+experiments</strong> (this step) — declarative for <strong>anything that should
+survive past the terminal session</strong> (every manifest phase from
+<a href="../phase-1/">Phase 1</a> onward).</p>
+</div>
+<p><strong>Goals:</strong> Learn the core objects hands-on before declarative YAML.</p>
+<p><strong>Concepts:</strong> Pods, namespaces, describe/logs/exec, <code>kubectl explain</code>.</p>
+<p>Run these in order. Expand <strong>ⓘ Expected output</strong> under each command to compare
+with yours — the <code>+</code> markers inside the output explain every column and status.</p>
+<ol>
+<li>
+<p>Create a scratch namespace:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-36-1"><a id="__codelineno-36-1" name="__codelineno-36-1" href="#__codelineno-36-1"></a>kubectl<span class="w"> </span>create<span class="w"> </span>namespace<span class="w"> </span>playground
+</span></code></pre></div>
+<details class="info">
+<summary>INFO</summary>
+<details class="question">
+<summary>Why?</summary>
+<p>namespaces scope everything that follows. A disposable <code>playground</code>
+keeps experiments from polluting other namespaces — and deleting it at the
+end cleans up in one shot.</p>
+</details>
+<details class="info">
+<summary>Expected output</summary>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-37-1"><a id="__codelineno-37-1" name="__codelineno-37-1" href="#__codelineno-37-1"></a>namespace/playground<span class="w"> </span>created<span class="w">      </span><span class="c1"># (1)!</span>
+</span></code></pre></div>
+<ol>
+<li>kubectl confirms creation as <code>resource/name created</code> — that exact
+    pattern is how you'll address it later (<code>kubectl get ns playground</code>).</li>
+</ol>
+</details>
+</details>
+</li>
+<li>
+<p>Run a pod imperatively:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-38-1"><a id="__codelineno-38-1" name="__codelineno-38-1" href="#__codelineno-38-1"></a>kubectl<span class="w"> </span>run<span class="w"> </span>demo<span class="w"> </span>--image<span class="o">=</span>nginx:1.27<span class="w"> </span>-n<span class="w"> </span>playground
+</span></code></pre></div>
+<details class="info">
+<summary>INFO</summary>
+<details class="question">
+<summary>Why?</summary>
+<p><code>kubectl run</code> is the fastest way to get a workload up without YAML —
+good for experiments, debugging, and throwaway tools. (Real apps come from
+Deployments, covered later.)</p>
+</details>
+<details class="info">
+<summary>Expected output</summary>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-39-1"><a id="__codelineno-39-1" name="__codelineno-39-1" href="#__codelineno-39-1"></a>pod/demo<span class="w"> </span>created<span class="w">                  </span><span class="c1"># (1)!</span>
+</span></code></pre></div>
+<ol>
+<li>The pod object exists — but the image still has to be <em>pulled</em> in
+    the background. The pod won't be <code>Running</code> until that finishes.</li>
+</ol>
+</details>
+</details>
+</li>
+<li>
+<p>Watch the pod lifecycle live:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-40-1"><a id="__codelineno-40-1" name="__codelineno-40-1" href="#__codelineno-40-1"></a>kubectl<span class="w"> </span>get<span class="w"> </span>pods<span class="w"> </span>-n<span class="w"> </span>playground<span class="w"> </span>-w
+</span></code></pre></div>
+<details class="info">
+<summary>INFO</summary>
+<details class="question">
+<summary>Why?</summary>
+<p><code>-w</code> streams changes in real time — you see the full lifecycle
+(<code>Pending</code> → <code>ContainerCreating</code> → <code>Running</code>) instead of a snapshot.</p>
+</details>
+<details class="info">
+<summary>Expected output</summary>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-41-1"><a id="__codelineno-41-1" name="__codelineno-41-1" href="#__codelineno-41-1"></a>NAME<span class="w">   </span>READY<span class="w">   </span>STATUS<span class="w">              </span>RESTARTS<span class="w">   </span>AGE<span class="w">     </span><span class="c1"># (1)!</span>
+</span><span id="__span-41-2"><a id="__codelineno-41-2" name="__codelineno-41-2" href="#__codelineno-41-2"></a>demo<span class="w">   </span><span class="m">0</span>/1<span class="w">     </span>Pending<span class="w">             </span><span class="m">0</span><span class="w">          </span>2s
+</span><span id="__span-41-3"><a id="__codelineno-41-3" name="__codelineno-41-3" href="#__codelineno-41-3"></a>demo<span class="w">   </span><span class="m">0</span>/1<span class="w">     </span>ContainerCreating<span class="w">   </span><span class="m">0</span><span class="w">          </span>4s<span class="w">      </span><span class="c1"># (2)!</span>
+</span><span id="__span-41-4"><a id="__codelineno-41-4" name="__codelineno-41-4" href="#__codelineno-41-4"></a>demo<span class="w">   </span><span class="m">1</span>/1<span class="w">     </span>Running<span class="w">             </span><span class="m">0</span><span class="w">          </span>15s<span class="w">     </span><span class="c1"># (3)!</span>
+</span></code></pre></div>
+<ol>
+<li>Columns — <code>READY</code>: containers ready / total · <code>STATUS</code>: lifecycle
+    phase · <code>RESTARTS</code>: container restart count · <code>AGE</code>: time since
+    the pod was scheduled.</li>
+<li><code>ContainerCreating</code> = image pulling + container starting. The most
+    common stall point — slow pulls or a bad image name (typo →
+    <code>ErrImagePull</code>/<code>ImagePullBackOff</code> appears here).</li>
+<li><code>1/1 Running</code> — all containers up. Ctrl+C exits the <em>watch</em>; the
+    pod keeps running.</li>
+</ol>
+</details>
+</details>
+</li>
+<li>
+<p>Inspect the pod in detail:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-42-1"><a id="__codelineno-42-1" name="__codelineno-42-1" href="#__codelineno-42-1"></a>kubectl<span class="w"> </span>describe<span class="w"> </span>pod<span class="w"> </span>demo<span class="w"> </span>-n<span class="w"> </span>playground
+</span></code></pre></div>
+<details class="info">
+<summary>INFO</summary>
+<details class="question">
+<summary>Why?</summary>
+<p><code>describe</code> is the diagnostic command — full spec, status,
+conditions, and the <strong>Events</strong> log of what the cluster <em>did</em>. It's the
+first thing to run whenever a pod misbehaves.</p>
+</details>
+<details class="info">
+<summary>Expected output (trimmed)</summary>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-43-1"><a id="__codelineno-43-1" name="__codelineno-43-1" href="#__codelineno-43-1"></a>Name:<span class="w">         </span>demo
+</span><span id="__span-43-2"><a id="__codelineno-43-2" name="__codelineno-43-2" href="#__codelineno-43-2"></a>Namespace:<span class="w">    </span>playground
+</span><span id="__span-43-3"><a id="__codelineno-43-3" name="__codelineno-43-3" href="#__codelineno-43-3"></a>Status:<span class="w">       </span>Running
+</span><span id="__span-43-4"><a id="__codelineno-43-4" name="__codelineno-43-4" href="#__codelineno-43-4"></a>Containers:
+</span><span id="__span-43-5"><a id="__codelineno-43-5" name="__codelineno-43-5" href="#__codelineno-43-5"></a><span class="w">  </span>demo:
+</span><span id="__span-43-6"><a id="__codelineno-43-6" name="__codelineno-43-6" href="#__codelineno-43-6"></a><span class="w">    </span>Image:<span class="w">    </span>nginx:1.27
+</span><span id="__span-43-7"><a id="__codelineno-43-7" name="__codelineno-43-7" href="#__codelineno-43-7"></a><span class="w">    </span>State:<span class="w">    </span>Running
+</span><span id="__span-43-8"><a id="__codelineno-43-8" name="__codelineno-43-8" href="#__codelineno-43-8"></a><span class="w">    </span>Ready:<span class="w">    </span>True
+</span><span id="__span-43-9"><a id="__codelineno-43-9" name="__codelineno-43-9" href="#__codelineno-43-9"></a>Conditions:
+</span><span id="__span-43-10"><a id="__codelineno-43-10" name="__codelineno-43-10" href="#__codelineno-43-10"></a><span class="w">  </span>Type<span class="w">            </span>Status
+</span><span id="__span-43-11"><a id="__codelineno-43-11" name="__codelineno-43-11" href="#__codelineno-43-11"></a><span class="w">  </span>Ready<span class="w">           </span>True<span class="w">                                   </span><span class="c1"># (1)!</span>
+</span><span id="__span-43-12"><a id="__codelineno-43-12" name="__codelineno-43-12" href="#__codelineno-43-12"></a>Events:
+</span><span id="__span-43-13"><a id="__codelineno-43-13" name="__codelineno-43-13" href="#__codelineno-43-13"></a><span class="w">  </span>Type<span class="w">    </span>Reason<span class="w">     </span>Age<span class="w">   </span>From<span class="w">               </span>Message
+</span><span id="__span-43-14"><a id="__codelineno-43-14" name="__codelineno-43-14" href="#__codelineno-43-14"></a><span class="w">  </span>----<span class="w">    </span>------<span class="w">   </span>----<span class="w">  </span>----<span class="w">               </span>-------
+</span><span id="__span-43-15"><a id="__codelineno-43-15" name="__codelineno-43-15" href="#__codelineno-43-15"></a><span class="w">  </span>Normal<span class="w">  </span>Scheduled<span class="w">  </span>2m<span class="w">   </span>default-scheduler<span class="w">  </span>Successfully<span class="w"> </span>assigned<span class="w"> </span>playground/demo<span class="w"> </span>to<span class="w"> </span>lima-rancher-desktop<span class="w">  </span><span class="c1"># (2)!</span>
+</span><span id="__span-43-16"><a id="__codelineno-43-16" name="__codelineno-43-16" href="#__codelineno-43-16"></a><span class="w">  </span>Normal<span class="w">  </span>Pulling<span class="w">    </span>2m<span class="w">   </span>kubelet<span class="w">            </span>Pulling<span class="w"> </span>image<span class="w"> </span><span class="s2">"nginx:1.27"</span><span class="w">                                   </span><span class="c1"># (3)!</span>
+</span><span id="__span-43-17"><a id="__codelineno-43-17" name="__codelineno-43-17" href="#__codelineno-43-17"></a><span class="w">  </span>Normal<span class="w">  </span>Pulled<span class="w">     </span>1m<span class="w">   </span>kubelet<span class="w">            </span>Successfully<span class="w"> </span>pulled<span class="w"> </span>image<span class="w"> </span><span class="s2">"nginx:1.27"</span>
+</span><span id="__span-43-18"><a id="__codelineno-43-18" name="__codelineno-43-18" href="#__codelineno-43-18"></a><span class="w">  </span>Normal<span class="w">  </span>Started<span class="w">    </span>1m<span class="w">   </span>kubelet<span class="w">            </span>Started<span class="w"> </span>container<span class="w"> </span>demo<span class="w">                                        </span><span class="c1"># (4)!</span>
+</span></code></pre></div>
+<ol>
+<li><code>Conditions</code> = health gates the pod must pass — <code>Ready</code> is what
+    Services check before routing traffic.</li>
+<li>The scheduler's decision — which node got the pod. <code>FailedScheduling</code>
+    here = no node fits (resources, taints).</li>
+<li>Image pull starts — a common failure point
+    (<code>ErrImagePull</code>/<code>ImagePullBackOff</code> events).</li>
+<li>Events are the story of <em>what Kubernetes did</em> — read them
+    bottom-up when triaging.</li>
+</ol>
+</details>
+</details>
+</li>
+<li>
+<p>Read the app's own logs:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-44-1"><a id="__codelineno-44-1" name="__codelineno-44-1" href="#__codelineno-44-1"></a>kubectl<span class="w"> </span>logs<span class="w"> </span>demo<span class="w"> </span>-n<span class="w"> </span>playground
+</span></code></pre></div>
+<details class="info">
+<summary>INFO</summary>
+<details class="question">
+<summary>Why?</summary>
+<p><code>describe</code> tells you what <em>Kubernetes</em> did; <code>logs</code> tells you what
+the <em>application</em> said. Knowing which to check is the core debugging split.</p>
+</details>
+<details class="info">
+<summary>Expected output</summary>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-45-1"><a id="__codelineno-45-1" name="__codelineno-45-1" href="#__codelineno-45-1"></a>/docker-entrypoint.sh:<span class="w"> </span>Configuration<span class="w"> </span>complete<span class="p">;</span><span class="w"> </span>ready<span class="w"> </span><span class="k">for</span><span class="w"> </span>start<span class="w"> </span>up
+</span><span id="__span-45-2"><a id="__codelineno-45-2" name="__codelineno-45-2" href="#__codelineno-45-2"></a><span class="m">2026</span>/09/30<span class="w"> </span><span class="m">10</span>:00:00<span class="w"> </span><span class="o">[</span>notice<span class="o">]</span><span class="w"> </span><span class="m">1</span><span class="c1">#1: nginx/1.27.x             # (1)!</span>
+</span></code></pre></div>
+<ol>
+<li>nginx startup lines on stdout — you'll also see access-log entries
+    here once requests hit it. Empty output isn't an error, just means
+    the app has been quiet.</li>
+</ol>
+</details>
+</details>
+</li>
+<li>
+<p>Get a shell inside the container:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-46-1"><a id="__codelineno-46-1" name="__codelineno-46-1" href="#__codelineno-46-1"></a>kubectl<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-it<span class="w"> </span>demo<span class="w"> </span>-n<span class="w"> </span>playground<span class="w"> </span>--<span class="w"> </span>/bin/sh
+</span></code></pre></div>
+<details class="info">
+<summary>INFO</summary>
+<details class="question">
+<summary>Why?</summary>
+<p><code>exec -it</code> drops you into the container's own environment — run
+<code>ps</code>, <code>ls</code>, <code>wget localhost</code> to verify the app as the cluster sees it.
+<code>-i -t</code> makes it interactive; <code>--</code> separates kubectl flags from the command.</p>
+</details>
+<details class="info">
+<summary>Expected output</summary>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-47-1"><a id="__codelineno-47-1" name="__codelineno-47-1" href="#__codelineno-47-1"></a>/<span class="w"> </span><span class="c1"># hostname</span>
+</span><span id="__span-47-2"><a id="__codelineno-47-2" name="__codelineno-47-2" href="#__codelineno-47-2"></a>demo<span class="w">                                      </span><span class="c1"># (1)!</span>
+</span><span id="__span-47-3"><a id="__codelineno-47-3" name="__codelineno-47-3" href="#__codelineno-47-3"></a>/<span class="w"> </span><span class="c1"># exit                                  # (2)!</span>
+</span></code></pre></div>
+<ol>
+<li>Inside the container, <code>hostname</code> = the pod name — a quick proof
+    you're inside it.</li>
+<li><code>exit</code> leaves the shell; the pod keeps running. If <code>/bin/sh</code>
+    doesn't exist in the image, try <code>/bin/bash</code>.</li>
+</ol>
+</details>
+</details>
+</li>
+<li>
+<p>Look up field docs without leaving the terminal:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-48-1"><a id="__codelineno-48-1" name="__codelineno-48-1" href="#__codelineno-48-1"></a>kubectl<span class="w"> </span>explain<span class="w"> </span>pod.spec.containers
+</span></code></pre></div>
+<details class="info">
+<summary>INFO</summary>
+<details class="question">
+<summary>Why?</summary>
+<p><code>kubectl explain</code> is the built-in API reference — it answers "what
+fields exist and what do they mean?" for any resource, which beats
+guessing YAML keys.</p>
+</details>
+<details class="info">
+<summary>Expected output</summary>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-49-1"><a id="__codelineno-49-1" name="__codelineno-49-1" href="#__codelineno-49-1"></a>KIND:<span class="w">     </span>Pod
+</span><span id="__span-49-2"><a id="__codelineno-49-2" name="__codelineno-49-2" href="#__codelineno-49-2"></a>VERSION:<span class="w">  </span>v1
+</span><span id="__span-49-3"><a id="__codelineno-49-3" name="__codelineno-49-3" href="#__codelineno-49-3"></a>
+</span><span id="__span-49-4"><a id="__codelineno-49-4" name="__codelineno-49-4" href="#__codelineno-49-4"></a>FIELD:<span class="w">    </span>containers<span class="w"> </span>&lt;<span class="o">[]</span>Container&gt;<span class="w">                        </span><span class="c1"># (1)!</span>
+</span><span id="__span-49-5"><a id="__codelineno-49-5" name="__codelineno-49-5" href="#__codelineno-49-5"></a>
+</span><span id="__span-49-6"><a id="__codelineno-49-6" name="__codelineno-49-6" href="#__codelineno-49-6"></a>DESCRIPTION:
+</span><span id="__span-49-7"><a id="__codelineno-49-7" name="__codelineno-49-7" href="#__codelineno-49-7"></a><span class="w">    </span>List<span class="w"> </span>of<span class="w"> </span>containers<span class="w"> </span>belonging<span class="w"> </span>to<span class="w"> </span>the<span class="w"> </span>pod.<span class="w"> </span>...<span class="w">          </span><span class="c1"># (2)!</span>
+</span></code></pre></div>
+<ol>
+<li><code>&lt;[]Container&gt;</code> = a <strong>list</strong> of container objects — that's why
+    <code>containers:</code> takes <code>- name:</code> items in YAML.</li>
+<li>Keep drilling: <code>pod.spec.containers.image</code>,
+    <code>pod.spec.containers.resources</code>, …</li>
+</ol>
+</details>
+</details>
+</li>
+<li>
+<p>Tear everything down:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-50-1"><a id="__codelineno-50-1" name="__codelineno-50-1" href="#__codelineno-50-1"></a>kubectl<span class="w"> </span>delete<span class="w"> </span>namespace<span class="w"> </span>playground
+</span></code></pre></div>
+<details class="info">
+<summary>INFO</summary>
+<details class="question">
+<summary>Why?</summary>
+<p>namespace deletion cascades — every object inside <code>playground</code>
+dies with it. The fastest way to reset a scratch environment.</p>
+</details>
+<details class="info">
+<summary>Expected output</summary>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-51-1"><a id="__codelineno-51-1" name="__codelineno-51-1" href="#__codelineno-51-1"></a>namespace<span class="w"> </span><span class="s2">"playground"</span><span class="w"> </span>deleted<span class="w">      </span><span class="c1"># (1)!</span>
+</span></code></pre></div>
+<ol>
+<li>The <code>demo</code> pod goes with it — no separate <code>delete pod</code> needed.
+    Deletion takes a few seconds while children terminate.</li>
+</ol>
+</details>
+</details>
+</li>
+</ol>
+<div class="admonition success">
+<p class="admonition-title">Verify</p>
+<p>You can explain the difference between <code>describe</code> (what happened) and
+<code>logs</code> (what the app said).</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../../getting-started/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Getting started">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Getting started
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../phase-1/" class="md-footer__link md-footer__link--next" aria-label="Next: Phase 1 · DB Tier (PostgreSQL)">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                Phase 1 · DB Tier (PostgreSQL)
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.sections", "navigation.top", "navigation.indexes", "navigation.footer", "toc.follow", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>
