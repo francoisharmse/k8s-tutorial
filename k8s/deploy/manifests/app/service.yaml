@@ -1,0 +1,16 @@
+# ClusterIP — internal-only front for the app pods.
+apiVersion: v1
+kind: Service
+metadata:
+  name: app
+  labels:
+    app: k8s-tutorial
+    tier: app
+spec:
+  type: ClusterIP
+  selector:               # must match the pod template's labels
+    app: k8s-tutorial
+    tier: app
+  ports:
+    - port: 8000
+      targetPort: 8000    # uvicorn's port in the container

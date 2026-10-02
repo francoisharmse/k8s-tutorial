@@ -8,16 +8,15 @@ config and secrets wired in, then hardened with probes and resource limits.
 flowchart TB
     code["<b>2.1</b> Write the app<br/><code>app/main.py</code><br/><i>healthz · readyz · /api/*</i>"]
     img["<b>2.2</b> Build the image<br/><code>nerdctl --namespace k8s.io build</code><br/><i>containerd — visible to k3s</i>"]
-    dep["<b>2.3</b> Deploy declaratively<br/><code>Deployment + Service</code>"]
-    cfg["<b>2.3</b> ConfigMap<br/><i>DB_HOST · DB_NAME · DB_USER</i>"]
+    mani["<b>2.3</b> Write the manifests<br/><code>configmap · deployment · service</code>"]
+    dep["<b>2.4</b> Deploy declaratively<br/><code>kubectl apply -f app/</code>"]
     scrt["<b>1.1</b> Secret<br/><code>postgres-creds</code><br/><i>secretKeyRef → app-password</i>"]
-    pf["<b>2.3</b> port-forward + curl /readyz<br/><i>proves app ↔ db link</i>"]
-    probe["<b>2.4</b> Probes &amp; self-healing<br/><i>kill pg pod → app NotReady → recovers</i>"]
-    res["<b>2.5</b> Resources &amp; metrics<br/><i>requests/limits · QoS · OOMKill</i>"]
+    pf["<b>2.4</b> port-forward + curl /readyz<br/><i>proves app ↔ db link</i>"]
+    probe["<b>2.5</b> Probes &amp; self-healing<br/><i>kill pg pod → app NotReady → recovers</i>"]
+    res["<b>2.6</b> Resources &amp; metrics<br/><i>requests/limits · QoS · OOMKill</i>"]
 
-    code --> img --> dep
-    cfg --> dep
-    scrt --> dep
+    code --> img --> mani --> dep
+    scrt --> mani
     dep --> pf
     dep --> probe --> res
 ```
@@ -111,7 +110,7 @@ The repo ships `app/main.py`, `pyproject.toml`, `uv.lock`, and a `Dockerfile`
             ```
 
             1.  Same response shape the kubelet's liveness probe will check
-                in step 2.4.
+                in step 2.5.
 
 ---
 
@@ -235,7 +234,124 @@ expected output — the `+` markers explain every column and status.
 
 ---
 
-## 2.3 — Deployment + ConfigMap + Secret wiring
+## 2.3 — Write the app manifests
+
+**Goals:** Author the three YAML manifests the Deployment step applies —
+ConfigMap, Deployment, Service.
+
+**Concepts:** manifest anatomy (`apiVersion`/`kind`/`metadata`/`spec`), labels
+& selectors, `envFrom`/`secretKeyRef`, probes, resource requests/limits.
+
+Each file goes under `deploy/manifests/app/`. The repo ships them already —
+if you're building the tree yourself, create each one here.
+
+1.  Create `deploy/manifests/app/configmap.yaml`:
+
+    ```bash
+    cat > deploy/manifests/app/configmap.yaml <<'EOF'
+    apiVersion: v1
+    kind: ConfigMap
+    metadata:
+      name: app-config
+      labels: {app: k8s-tutorial, tier: app}
+    data:
+      DB_HOST: pg-postgresql
+      DB_NAME: tutorial
+      DB_USER: app_user
+    EOF
+    ```
+
+    ??? info "INFO"
+
+        ??? question "Why?"
+
+            non-secret config lives in a ConfigMap — `DB_HOST` is the service
+            DNS name from 1.4, `DB_NAME`/`DB_USER` the ones from 1.3. Keeping
+            them here means changing env config = one manifest edit, not a
+            code change + rebuild.
+
+2.  Create `deploy/manifests/app/deployment.yaml`:
+
+    ```bash
+    cat > deploy/manifests/app/deployment.yaml <<'EOF'
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: app
+      labels: {app: k8s-tutorial, tier: app}
+    spec:
+      replicas: 2
+      selector:
+        matchLabels: {app: k8s-tutorial, tier: app}
+      template:
+        metadata:
+          labels: {app: k8s-tutorial, tier: app}
+        spec:
+          containers:
+            - name: app
+              image: k8s-tutorial-app:0.1.0
+              imagePullPolicy: IfNotPresent
+              ports:
+                - containerPort: 8000
+              envFrom:
+                - configMapRef: {name: app-config}
+              env:
+                - name: DB_PASSWORD
+                  valueFrom:
+                    secretKeyRef: {name: postgres-creds, key: app-password}
+              readinessProbe:
+                httpGet: {path: /readyz, port: 8000}
+                periodSeconds: 5
+              livenessProbe:
+                httpGet: {path: /healthz, port: 8000}
+                periodSeconds: 10
+              resources:
+                requests: {cpu: 50m, memory: 64Mi}
+                limits: {cpu: 250m, memory: 256Mi}
+    EOF
+    ```
+
+    ??? info "INFO"
+
+        ??? question "Why?"
+
+            the interesting fields — `image` is the tag you built in 2.2
+            (`IfNotPresent` resolves it locally); `envFrom.configMapRef`
+            injects **every** ConfigMap key as an env var while
+            `secretKeyRef` injects just `app-password` from the 1.1 Secret
+            (secrets stay granular — only what the container needs);
+            `readinessProbe`/`livenessProbe` are exercised in 2.5;
+            `resources` produces QoS class *Burstable*, inspected in 2.6.
+
+3.  Create `deploy/manifests/app/service.yaml`:
+
+    ```bash
+    cat > deploy/manifests/app/service.yaml <<'EOF'
+    apiVersion: v1
+    kind: Service
+    metadata:
+      name: app
+      labels: {app: k8s-tutorial, tier: app}
+    spec:
+      type: ClusterIP
+      selector: {app: k8s-tutorial, tier: app}
+      ports:
+        - port: 8000
+          targetPort: 8000
+    EOF
+    ```
+
+    ??? info "INFO"
+
+        ??? question "Why?"
+
+            ClusterIP + `app` DNS name = the stable internal address the web
+            tier proxies to in Phase 3. The `selector` must match the pod
+            template's labels — that's how endpoints get populated.
+
+---
+
+## 2.4 — Deploy + ConfigMap + Secret wiring
 
 **Goals:** Deploy the app tier declaratively; separate config from code from
 secrets.
@@ -243,13 +359,7 @@ secrets.
 **Concepts:** Deployment/ReplicaSet/pod hierarchy, `envFrom`/`secretKeyRef`,
 `kubectl apply`, labels/selectors.
 
-This step applies three manifests:
-
-```yaml
-# deploy/manifests/app/configmap.yaml:   DB_HOST=pg-postgresql, DB_NAME=tutorial, DB_USER=app_user
-# deploy/manifests/app/deployment.yaml:  env secretKeyRef → postgres-creds / app-password
-# deploy/manifests/app/service.yaml:     ClusterIP :8000
-```
+Applies the three manifests written in 2.3.
 
 1.  Apply the app manifests:
 
@@ -426,7 +536,7 @@ This step applies three manifests:
 
 ---
 
-## 2.4 — Probes & self-healing
+## 2.5 — Probes & self-healing
 
 **Goals:** Make k8s detect and route around failure.
 
@@ -540,7 +650,7 @@ This step applies three manifests:
 
 ---
 
-## 2.5 — Resources & metrics
+## 2.6 — Resources & metrics
 
 **Goals:** Right-size workloads; observe actual usage.
 

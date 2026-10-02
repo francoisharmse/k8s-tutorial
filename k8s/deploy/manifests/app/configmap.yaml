@@ -1,0 +1,12 @@
+# Non-secret app config — injected into the pod as env vars via envFrom.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-config
+  labels:
+    app: k8s-tutorial
+    tier: app
+data:
+  DB_HOST: pg-postgresql   # service DNS name from step 1.4
+  DB_NAME: tutorial
+  DB_USER: app_user
