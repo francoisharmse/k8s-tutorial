@@ -230,7 +230,72 @@ expected output — the `+` markers explain every column and status.
 
 !!! success "Verify"
     `imagePullPolicy: IfNotPresent` + local tag → k8s uses the node-local image.
-    Later: `docker push` to Docker Hub/GHCR for the real registry flow.
+
+### Optional — publish the image to a registry
+
+*Why bother:* a node-local build only exists on **your** machine. The moment
+the cluster grows past one node — or CI/CD and teammates enter the picture —
+pods must *pull* the image from somewhere shared. The real-world flow is:
+**CI builds → tags → pushes to a registry → the cluster pulls.** This is
+optional here (one node, local tag), but do it once to learn the pattern.
+
+**Registry options:**
+
+| Registry | Notes |
+|----------|-------|
+| **Docker Hub** | Simplest public option; pull rate limits apply. |
+| **GHCR** (`ghcr.io`) | Free with GitHub — pairs naturally with Actions CI; `docker login ghcr.io` uses a PAT. |
+| **ECR** | AWS's private registry — IAM-integrated; standard for EKS. |
+| **ACR / GAR** | Azure Container Registry / Google Artifact Registry — the same role on AKS/GKE. |
+| **Harbor** | Self-hosted open-source registry — RBAC, image scanning, replication; runs on k8s itself. |
+| **GitLab CR / Quay** | GitLab's built-in registry / Red Hat's Quay.io (or self-hosted Quay). |
+
+1.  Tag the image for the registry (GHCR shown — swap the prefix for yours):
+
+    ```bash
+    docker tag k8s-tutorial-app:0.1.0 ghcr.io/<your-user>/k8s-tutorial-app:0.1.0
+    ```
+
+2.  Log in and push:
+
+    ```bash
+    echo $GHCR_PAT | docker login ghcr.io -u <your-user> --password-stdin
+    docker push ghcr.io/<your-user>/k8s-tutorial-app:0.1.0
+    ```
+
+    ??? info "INFO"
+
+        ??? question "Why?"
+
+            `docker login` stores registry credentials in
+            `~/.docker/config.json`; `push` uploads the layers. Tag
+            convention matters in CI — pin a version or git SHA
+            (`:0.1.0`, `:sha-abc123`) rather than `latest`, so deploys are
+            reproducible and rollbacks possible.
+
+        ??? note "On nerdctl/containerd"
+
+            Equivalent: `nerdctl login ghcr.io`, `nerdctl tag`,
+            `nerdctl push` — same flow.
+
+3.  Point the Deployment at the registry image:
+
+    ```yaml
+    # deploy/manifests/app/deployment.yaml
+    image: ghcr.io/<your-user>/k8s-tutorial-app:0.1.0
+    ```
+
+    For **private** registries the cluster needs pull credentials:
+
+    ```bash
+    kubectl create secret docker-registry regcred \
+      --docker-server=ghcr.io --docker-username=<you> \
+      --docker-password=$GHCR_PAT
+    ```
+
+    then reference `imagePullSecrets: [{name: regcred}]` in the pod spec.
+    (Managed platforms wire this automatically — EKS/GKE/AKS pull from their
+    own registries via node IAM.)
 
 ---
 
