@@ -121,6 +121,22 @@ The repo ships `app/main.py`, `pyproject.toml`, `uv.lock`, and a `Dockerfile`
 **Concepts:** Image build/push/pull lifecycle, `imagePullPolicy`, runtime
 namespaces.
 
+```mermaid
+flowchart LR
+    code["Local code<br/><code>app/main.py</code> + <code>Dockerfile</code>"]
+    build["<b>Build</b><br/><code>nerdctl --namespace k8s.io build</code><br/>or <code>docker build</code>"]
+    store["Node-local image store<br/><i>containerd k8s.io ns / docker</i>"]
+    pod["k3s pod runs it<br/><i>imagePullPolicy: IfNotPresent</i>"]
+    reg[/"<b>Optional:</b> push to registry<br/>GHCR · Docker Hub · ECR · Harbor"/]
+    pull["Other nodes / CI / teammates<br/><i>pull the tagged image</i>"]
+
+    code --> build --> store --> pod
+    store -. "docker push (optional step)" .-> reg -. "cluster pulls" .-> pull
+```
+
+The solid path is what this tutorial uses — one node, local image. The dotted
+path is what teams and CI/CD do — publish once, let every cluster pull it.
+
 Run these in order. Expand **ⓘ INFO** under each command for the rationale and
 expected output — the `+` markers explain every column and status.
 

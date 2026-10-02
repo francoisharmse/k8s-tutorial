@@ -84,6 +84,24 @@ marked ★ appear somewhere in this tutorial.
 | **OCI registry (charts/images)** | Container registries also store charts/images as artifacts — `oci://…`. |
 | **Artifact Hub** | The public index for Helm charts (and operators, OPA policies…). |
 
+## Image registries
+
+| Registry / term | What it is |
+|-----------------|-----------|
+| **Registry** ★ | The service that stores and serves container images — what `docker push`/`pull` talk to. |
+| **Docker Hub** | The default public registry — `nginx:1.27` style references imply it. Pull rate limits apply. |
+| **GHCR** (`ghcr.io`) ★ | GitHub Container Registry — free, pairs with Actions CI; auth via PAT. |
+| **ECR** | AWS Elastic Container Registry — private, IAM-integrated; the default for EKS. |
+| **ACR** | Azure Container Registry — same role on AKS. |
+| **GAR / GCR** | Google Artifact Registry (supersedes `gcr.io`) — same role on GKE. |
+| **Harbor** | Self-hosted open-source registry — RBAC, image scanning, replication. |
+| **Quay** | Red Hat's registry — `quay.io` hosted or self-hosted. |
+| **GitLab Container Registry** | Built into GitLab — per-project image storage alongside CI. |
+| **Image tag** ★ | Mutable label on an image (`:0.1.0`) — pin versions or git SHAs, never `latest` in CI. |
+| **Image digest** | Immutable content hash (`sha256:…`) — the truly unambiguous image reference. |
+| **imagePullSecrets** ★ | Secret on a pod spec giving kubelet credentials to pull from private registries. |
+| **docker config.json** | Where `docker login` stores registry credentials — what `create secret docker-registry` wraps. |
+
 ## GitOps & delivery
 
 | Tool | What it is |
