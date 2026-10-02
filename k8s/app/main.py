@@ -51,9 +51,12 @@ STEPS = [
     Step(step=7, ref="1.4", phase=1, title="Cluster DNS & Services"),
     Step(step=8, ref="2.1", phase=2, title="Write the app"),
     Step(step=9, ref="2.2", phase=2, title="Build the image"),
-    Step(step=10, ref="2.3", phase=2, title="Deployment + ConfigMap + Secret wiring"),
-    Step(step=11, ref="2.4", phase=2, title="Probes & self-healing"),
-    Step(step=12, ref="2.5", phase=2, title="Resources & metrics"),
+    Step(step=10, ref="2.3", phase=2, title="Write the app manifests"),
+    Step(step=11, ref="2.4", phase=2, title="Deploy declaratively"),
+    Step(step=12, ref="2.5", phase=2, title="Probes & self-healing"),
+    Step(step=13, ref="2.6", phase=2, title="Resources & metrics"),
+    Step(step=14, ref="3.1", phase=3, title="nginx deployment"),
+    Step(step=15, ref="3.2", phase=3, title="Config rollout without rebuild"),
 ]
 
 app = FastAPI(title="k8s-tutorial", version="0.1.0")

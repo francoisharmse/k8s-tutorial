@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: web
+  labels:
+    app: k8s-tutorial
+    tier: web
+spec:
+  type: ClusterIP
+  selector:
+    app: k8s-tutorial
+    tier: web
+  ports:
+    - port: 80         # service port (kubectl port-forward svc/web 8080:80)
+      targetPort: 80   # nginx containerPort

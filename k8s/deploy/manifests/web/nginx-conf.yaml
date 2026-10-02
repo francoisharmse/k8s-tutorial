@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-conf
+  labels:
+    app: k8s-tutorial
+    tier: web
+data:
+  # mounted over /etc/nginx/conf.d/ — update this file, apply, then
+  # `kubectl rollout restart deploy/web` to pick up changes
+  default.conf: |
+    server {
+        listen 80;
+        server_name _;
+
+        root /usr/share/nginx/html;
+        index index.html;
+
+        # SPA fallback — client-side routes resolve to index.html
+        location / {
+            try_files $uri $uri/ /index.html;
+        }
+
+        # API calls reverse-proxied to the app tier (ClusterIP service)
+        location /api/ {
+            proxy_pass http://app.tutorial.svc.cluster.local:8000;
+        }
+    }

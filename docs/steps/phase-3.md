@@ -6,6 +6,21 @@
 
 **Concepts:** ConfigMap-mounted config, reverse proxy, multi-tier request flow.
 
+`static/` is a **Vite + React + Material UI** app — a progress-checklist UI
+that reads `GET /api/steps` and toggles steps via `POST /api/progress`. The
+Dockerfile is multi-stage: `node` builds `dist/`, `nginx` serves it and
+proxies `/api` to the app Service.
+
+??? tip "Local dev mode"
+
+    ```bash
+    cd static && npm run dev
+    ```
+
+    Vite serves the UI on `localhost:5173` and proxies `/api` to
+    `localhost:8000` — pair with `kubectl port-forward svc/app 8000:8000`
+    to develop against the in-cluster app + DB without rebuilding the image.
+
 Run these in order. Expand **ⓘ INFO** under each command for the rationale and
 expected output — the `+` markers explain every column and status.
 

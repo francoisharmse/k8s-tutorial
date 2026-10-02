@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web
+  labels:
+    app: k8s-tutorial
+    tier: web
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: k8s-tutorial
+      tier: web
+  template:
+    metadata:
+      labels:
+        app: k8s-tutorial
+        tier: web
+    spec:
+      containers:
+        - name: nginx
+          image: k8s-tutorial-web:0.1.0
+          imagePullPolicy: IfNotPresent   # local build, no registry pull
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: nginx-conf
+              mountPath: /etc/nginx/conf.d   # ConfigMap-mounted config
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 2
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 5
+            periodSeconds: 15
+          resources:
+            requests:
+              cpu: 25m
+              memory: 32Mi
+            limits:
+              cpu: 100m
+              memory: 64Mi
+      volumes:
+        - name: nginx-conf
+          configMap:
+            name: nginx-conf
