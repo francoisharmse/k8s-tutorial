@@ -125,51 +125,90 @@ namespaces.
 Run these in order. Expand **ⓘ INFO** under each command for the rationale and
 expected output — the `+` markers explain every column and status.
 
-1.  Build the app image into the **containerd** namespace k3s uses:
+1.  Build the app image — pick the tab matching your Rancher Desktop engine:
 
-    ```bash
-    nerdctl --namespace k8s.io build -t k8s-tutorial-app:0.1.0 ./app
-    ```
+    === "containerd — nerdctl (default)"
+
+        ```bash
+        nerdctl --namespace k8s.io build -t k8s-tutorial-app:0.1.0 ./app
+        ```
+
+    === "dockerd (moby) — docker"
+
+        ```bash
+        docker build -t k8s-tutorial-app:0.1.0 ./app
+        ```
 
     ??? info "INFO"
 
-        ??? question "Why?"
+        ??? question "Why two different commands?"
 
-            Rancher Desktop's default runtime is **containerd**, which keeps
-            images per-namespace — k3s reads the `k8s.io` namespace.
-            `docker build` (or even `nerdctl` without `--namespace`) builds
-            into a different store, so the cluster would never see the image
-            and pods would hit `ImagePullBackOff`. `--namespace k8s.io` puts
-            the build where the cluster actually looks.
+            k3s stores images in containerd's **`k8s.io` namespace**. With
+            Rancher Desktop on the default **containerd** engine, `nerdctl`
+            must target that namespace explicitly — a plain `docker build`
+            or unnamespaced `nerdctl` lands in a different store, and the
+            cluster would hit `ImagePullBackOff` never seeing the image.
+
+            On the **dockerd (moby)** engine, docker's image store *is*
+            shared with k3s, so a normal `docker build` is all you need.
+            (Check which engine you're on: Rancher Desktop → Settings →
+            *Container Engine*.)
 
         ??? info "Expected output (trimmed)"
 
             ```bash
+            # nerdctl (containerd)
             [+] Building 12.3s (10/10) FINISHED             # (1)!
              => exporting to oci image format
             unpackaging linux/arm64/v8 ...                   # (2)!
+
+            # docker build (moby)
+            [+] Building 12.3s (10/10) FINISHED
+            => writing image sha256:…                        # (3)!
             ```
 
             1.  Buildkit progress — layers cached on rebuilds, so second runs
                 are near-instant.
             2.  `unpackaging …` = the image landing in containerd's `k8s.io`
                 namespace — the step that makes it visible to k3s.
+            3.  Dockerd loads it into its own store — shared with k3s when
+                the engine is moby.
 
-        ??? note "On the moby/dockerd runtime instead?"
+        ??? failure "Got `no buildkit host is available` / `buildkitd` socket errors?"
 
-            If Rancher Desktop is set to **dockerd (moby)** instead of
-            containerd, build normally — docker images are shared with k3s in
-            that mode:
+            `nerdctl` builds via **buildkitd**, which lives inside Rancher
+            Desktop's Lima VM — those `unix:///run/buildkit-*/buildkitd.sock`
+            paths are *in the VM*, and this error means the daemon isn't
+            answering. Check in order:
 
-            ```bash
-            docker build -t k8s-tutorial-app:0.1.0 ./app
-            ```
+            1. **Engine choice** — Rancher Desktop → Settings → *Container
+               Engine*. If it's set to **dockerd (moby)**, buildkit for
+               nerdctl isn't running: use the docker tab above, or switch the
+               engine to **containerd**.
+            2. **buildkitd state in the VM:**
+
+               ```bash
+               rdctl shell sudo systemctl status buildkit     # inspect
+               rdctl shell sudo systemctl restart buildkit    # bounce it
+               ```
+
+            3. **Still starting / wedged** — if Kubernetes was just enabled,
+               give the VM a minute; otherwise quit and relaunch Rancher
+               Desktop (or update it — older builds had buildkit bugs).
 
 2.  Confirm the image landed where the cluster can see it:
 
-    ```bash
-    nerdctl --namespace k8s.io images | grep k8s-tutorial
-    ```
+    === "containerd — nerdctl (default)"
+
+        ```bash
+        nerdctl --namespace k8s.io images | grep k8s-tutorial
+        ```
+
+    === "dockerd (moby) — docker"
+
+        ```bash
+        docker images | grep k8s-tutorial
+        ```
 
     ??? info "INFO"
 
@@ -178,6 +217,7 @@ expected output — the `+` markers explain every column and status.
             sanity-checks the previous step before Kubernetes gets involved —
             if the tag shows here, `imagePullPolicy: IfNotPresent` in the
             Deployment will resolve it locally without touching a registry.
+            Same check, whichever engine you used.
 
         ??? info "Expected output"
 
@@ -185,8 +225,9 @@ expected output — the `+` markers explain every column and status.
             k8s-tutorial-app    0.1.0    <image-id>    <size>   # (1)!
             ```
 
-            1.  Image tagged `0.1.0` inside the `k8s.io` namespace. Empty
-                output = wrong namespace or the build didn't finish.
+            1.  Image tagged `0.1.0` — in containerd's `k8s.io` namespace
+                (nerdctl) or the shared docker store (moby). Empty output =
+                wrong namespace/engine or the build didn't finish.
 
 !!! success "Verify"
     `imagePullPolicy: IfNotPresent` + local tag → k8s uses the node-local image.
