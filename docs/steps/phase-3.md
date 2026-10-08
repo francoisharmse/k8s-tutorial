@@ -1,5 +1,24 @@
 # Phase 3 — Web Tier (nginx)
 
+```mermaid
+flowchart TD
+    CODE["static/<br/>React + Vite + MUI<br/>+ nginx.conf"]
+    BUILD["docker / nerdctl build<br/>k8s-tutorial-web:0.1.0"]
+    LOCAL["node-local image<br/>(containerd k8s.io /<br/>docker store)"]
+    WEB["Deployment web<br/>nginx pods"]
+    NGINX["nginx listens :80<br/>serves dist/ +<br/>proxy_pass /api → app"]
+    UI["Browser — localhost:8080<br/>port-forward svc/web"]
+    APP["app Service :8000"] --> DB[("pg-postgresql<br/>postgres")]
+
+    CODE --> BUILD --> LOCAL
+    LOCAL -. "optional: push" .-> REG["remote registry<br/>GHCR · Hub · ECR · Harbor"]
+    REG -.->|"other nodes/CI pull"| WEB
+    LOCAL -->|"IfNotPresent — local"| WEB
+    CM["ConfigMap nginx-conf"] -. "mounted /etc/nginx/conf.d" .-> WEB
+    WEB --> NGINX --> UI
+    NGINX -->|"/api/*"| APP
+```
+
 ## 3.1 — nginx deployment
 
 **Goals:** Serve the tutorial UI; reverse-proxy API calls to the app tier.
