@@ -34,3 +34,5 @@ secrets.yaml            # secrets.example.yaml stays tracked
 *.local.pem             # mkcert certs
 dump.sql                # pg_dump output
 *.kubeconfig            # exported kubeconfigs
+
+.playwright-mcp/
