@@ -110,6 +110,25 @@ itself — API server, etcd, scheduler, controller manager, and the kubelets on
 each node. See [Kubernetes architecture](reference/architecture.md) for how the
 control plane works and what happens when you `kubectl create`.
 
+# Kubernetes Core components
+
+The eight building blocks every workload is assembled from — each is exercised
+hands-on at the phase noted:
+
+| Component | What it is | Used for | In this tutorial |
+|-----------|-----------|----------|------------------|
+| **Pod** | Smallest deployable unit — one or more containers sharing a network namespace and storage | Where your code actually runs; ephemeral — always managed by a higher-level workload, never created bare | Every phase — `kubectl get pods` is your daily view |
+| **Deployment** | Controller that keeps *N* identical Pods running via a ReplicaSet | Stateless workloads — rolling updates, rollbacks, self-healing restarts | Web and app tiers (`web`, `app`) — Phases 2–3 |
+| **StatefulSet** | Like a Deployment but with stable identity: ordered names (`pg-postgresql-0`), stable DNS, per-pod storage | Stateful workloads — databases, queues, anything that can't be freely interchanged | PostgreSQL — Phase 1 |
+| **Service** | Stable virtual IP + DNS name fronting a set of Pods selected by labels | Load-balancing and service discovery — Pods die and get new IPs; Services don't | `web`, `app`, `pg-postgresql` — Phase 1.4 onward |
+| **Ingress** | L7 routing rules: hostname/path → Service, handled by an ingress controller | One external entry point for many Services; TLS termination; virtual hosting | Phase 4 — replaces `port-forward` |
+| **ConfigMap** | Non-secret key/value config, consumable as env vars or mounted files | Decoupling config from images — change config without rebuilding | `app-config` env, `nginx-conf` file — Phases 2.4, 3.2 |
+| **Secret** | Same mechanics as a ConfigMap but for sensitive values (base64, tighter access controls) | Passwords, tokens, certs — injected as env vars or files; never committed | `postgres-creds` — Phase 1.1 |
+| **Volume / PVC** | Storage attachable to a Pod — `emptyDir` (ephemeral) or a `PersistentVolumeClaim` binding to real disk | Data that must outlive the Pod; a PVC survives deletes and reschedules | `pg-postgresql` data — Phase 1.2 |
+
+See [Terminology](reference/terminology.md) for the wider vocabulary —
+operators, probes, RBAC, Helm, and the managed platforms these run on.
+
 ## Assumptions
 
 - **Rancher Desktop on macOS** — k3s under the hood, Traefik ingress controller,
