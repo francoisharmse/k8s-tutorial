@@ -1,0 +1,2049 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Hands-on Kubernetes tutorial — build, deploy, and operate a three-tier app on a local Rancher Desktop (k3s) cluster.">
+      
+      
+      
+      
+        <link rel="prev" href="../phase-0/">
+      
+      
+        <link rel="next" href="../phase-2/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Phase 1 · DB Tier (PostgreSQL) - Kubernetes Three-Tier Tutorial</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#phase-1-db-tier-postgresql" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Kubernetes Three-Tier Tutorial" class="md-header__button md-logo" aria-label="Kubernetes Three-Tier Tutorial" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Kubernetes Three-Tier Tutorial
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Phase 1 · DB Tier (PostgreSQL)
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m14.3 16-.7-2h-3.2l-.7 2H7.8L11 7h2l3.2 9zM20 8.69V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12zm-9.15 3.96h2.3L12 9z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to system preference"  type="radio" name="__palette" id="__palette_2">
+    
+      <label class="md-header__button md-icon" title="Switch to system preference" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/francoisharmse/k8s-tutorial" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Kubernetes Three-Tier Tutorial" class="md-nav__button md-logo" aria-label="Kubernetes Three-Tier Tutorial" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Kubernetes Three-Tier Tutorial
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/francoisharmse/k8s-tutorial" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting started
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Steps
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Steps
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../phase-0/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 0 · Environment & Orientation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 1 · DB Tier (PostgreSQL)
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 1 · DB Tier (PostgreSQL)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#11-namespace-secrets" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 — Namespace + Secrets
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#12-deploy-postgresql-via-helm-bitnami-chart" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 — Deploy PostgreSQL via Helm (Bitnami chart)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#13-db-user-password-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.3 — DB user &amp; password management
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#14-cluster-dns-services" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.4 — Cluster DNS &amp; Services
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../phase-2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 2 · App Tier (FastAPI)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../phase-3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 3 · Web Tier (nginx)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../phase-4/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 4 · Ingress & TLS
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../phase-5/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 5 · Helm-ify Everything
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../phase-6/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 6 · Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../phase-7/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 7 · Operations at Scale
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../phase-8/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 8 · Advanced / Optional
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kubernetes architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/cheatsheet/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Command cheat sheet
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/terminology/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Terminology
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/concepts-map/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Key concepts map
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#11-namespace-secrets" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 — Namespace + Secrets
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#12-deploy-postgresql-via-helm-bitnami-chart" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 — Deploy PostgreSQL via Helm (Bitnami chart)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#13-db-user-password-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.3 — DB user &amp; password management
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#14-cluster-dns-services" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.4 — Cluster DNS &amp; Services
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="phase-1-db-tier-postgresql">Phase 1 — DB Tier (PostgreSQL)<a class="headerlink" href="#phase-1-db-tier-postgresql" title="Permanent link">&para;</a></h1>
+<p>What this phase builds: a namespace to hold everything, credentials as a
+Secret, then PostgreSQL deployed from the Bitnami Helm chart — configured by a
+values file — followed by password management and the DNS/service wiring other
+tiers will use.</p>
+<pre class="mermaid"><code>flowchart TB
+    ns["&lt;b&gt;1.1&lt;/b&gt; Create namespace&lt;br/&gt;&lt;code&gt;tutorial&lt;/code&gt;"]
+    sec["&lt;b&gt;1.1&lt;/b&gt; Create Secrets&lt;br/&gt;&lt;code&gt;postgres-creds&lt;/code&gt;&lt;br/&gt;&lt;i&gt;app + db passwords&lt;/i&gt;"]
+    repo["&lt;b&gt;1.2&lt;/b&gt; helm repo add bitnami&lt;br/&gt;&lt;i&gt;register + update chart repo&lt;/i&gt;"]
+    vals["&lt;b&gt;1.2&lt;/b&gt; values-db.yaml&lt;br/&gt;&lt;i&gt;manifest for variable overrides&lt;/i&gt;"]
+    dep["&lt;b&gt;1.2&lt;/b&gt; helm install pg bitnami/postgresql&lt;br/&gt;→ StatefulSet · PVC · Services"]
+    mgmt["&lt;b&gt;1.3&lt;/b&gt; DB user &amp;amp; password mgmt&lt;br/&gt;&lt;i&gt;app_user · ALTER USER rotation&lt;/i&gt;"]
+    dns["&lt;b&gt;1.4&lt;/b&gt; Cluster DNS &amp;amp; Services&lt;br/&gt;&lt;code&gt;pg-postgresql.tutorial.svc.cluster.local&lt;/code&gt;"]
+
+    ns --&gt; sec
+    sec -- "existingSecret&lt;br/&gt;postgres-creds" --&gt; dep
+    repo --&gt; vals
+    vals -- "-f values-db.yaml" --&gt; dep
+    dep --&gt; mgmt
+    dep --&gt; dns</code></pre>
+<h2 id="11-namespace-secrets">1.1 — Namespace + Secrets<a class="headerlink" href="#11-namespace-secrets" title="Permanent link">&para;</a></h2>
+<p><strong>Goals:</strong> Isolate tutorial resources; create and inspect Secrets.</p>
+<p><strong>Concepts:</strong> Namespaces, Secrets, <code>data</code> vs <code>stringData</code>, base64
+(encoding ≠ encryption).</p>
+<p>Run these in order. Expand <strong>ⓘ Expected output</strong> under each command to compare
+with yours — the <code>+</code> markers inside the output explain every column and status.</p>
+<ol>
+<li>
+<p>Create the tutorial namespace:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>kubectl<span class="w"> </span>create<span class="w"> </span>namespace<span class="w"> </span>tutorial
+</span></code></pre></div>
+<details class="info">
+<summary>INFO</summary>
+<details class="question">
+<summary>Why?</summary>
+<p>all three tiers live inside <code>tutorial</code> — isolating the app from
+<code>default</code>/<code>kube-system</code> and letting you wipe everything with one
+<code>delete namespace</code> later.</p>
+</details>
+<details class="info">
+<summary>Expected output</summary>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>namespace/tutorial<span class="w"> </span>created<span class="w">          </span><span class="c1"># (1)!</span>
+</span></code></pre></div>
+<ol>
+<li>Same <code>resource/name created</code> confirmation pattern as 0.3.</li>
+</ol>
+</details>
+</details>
+</li>
+<li>
+<p>Make it the default namespace for your context:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>kubectl<span class="w"> </span>config<span class="w"> </span>set-context<span class="w"> </span>--current<span class="w"> </span>--namespace<span class="o">=</span>tutorial
+</span></code></pre></div>
+<details class="info">
+<summary>INFO</summary>
+<details class="question">
+<summary>Why?</summary>
+<p>from here on, plain <code>kubectl get pods</code> means <em>in <code>tutorial</code></em> — no
+<code>-n</code> on every command. (This is the <code>set-context</code> trick from step 0.2's
+mental model.)</p>
+</details>
+<details class="info">
+<summary>Expected output</summary>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>Context<span class="w"> </span><span class="s2">"rancher-desktop"</span><span class="w"> </span>modified.<span class="w">     </span><span class="c1"># (1)!</span>
+</span></code></pre></div>
+<ol>
+<li>The <code>NAMESPACE</code> column in <code>kubectl config get-contexts</code> now shows
+    <code>tutorial</code>. To undo later:
+    <code>kubectl config set-context --current --namespace=default</code>.</li>
+</ol>
+</details>
+</details>
+</li>
+<li>
+<p>Create the database credentials as a Secret:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>kubectl<span class="w"> </span>create<span class="w"> </span>secret<span class="w"> </span>generic<span class="w"> </span>postgres-creds<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="w">  </span>--from-literal<span class="o">=</span>postgres-password<span class="o">=</span><span class="s1">'SuperSecret123'</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="w">  </span>--from-literal<span class="o">=</span>app-password<span class="o">=</span><span class="s1">'AppPass456'</span>
+</span></code></pre></div>
+<details class="info">
+<summary>INFO</summary>
+<details class="question">
+<summary>Why?</summary>
+<p>passwords must never live in a Pod spec or ConfigMap. A <code>Secret</code>
+keeps them out of plain manifests and lets workloads mount them.</p>
+</details>
+<details class="info">
+<summary>Expected output</summary>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>secret/postgres-creds<span class="w"> </span>created<span class="w">         </span><span class="c1"># (1)!</span>
+</span></code></pre></div>
+<ol>
+<li><code>generic</code> = arbitrary key/value secrets (vs <code>tls</code> or
+    <code>docker-registry</code> types). Each <code>--from-literal</code> becomes one key.</li>
+</ol>
+</details>
+</details>
+</li>
+<li>
+<p>Inspect the Secret as YAML:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>kubectl<span class="w"> </span>get<span class="w"> </span>secret<span class="w"> </span>postgres-creds<span class="w"> </span>-o<span class="w"> </span>yaml
+</span></code></pre></div>
+<details class="info">
+<summary>INFO</summary>
+<details class="question">
+<summary>Why?</summary>
+<p>see how the cluster actually stores it — you'll notice the values
+look scrambled. That's base64 <strong>encoding</strong>, not encryption.</p>
+</details>
+<details class="info">
+<summary>Expected output (trimmed)</summary>
+<div class="language-yaml highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span>
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="nt">data</span><span class="p">:</span>
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="w">  </span><span class="nt">app-password</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">QXBwUGFzczQ1Ng==</span><span class="w">          </span><span class="c1"># (1)!</span>
+</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="w">  </span><span class="nt">postgres-password</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">U3VwZXJTZWNyZXQxMjM=</span>
+</span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Secret</span>
+</span><span id="__span-7-6"><a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a><span class="nt">metadata</span><span class="p">:</span>
+</span><span id="__span-7-7"><a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">postgres-creds</span>
+</span><span id="__span-7-8"><a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a><span class="w">  </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tutorial</span>
+</span><span id="__span-7-9"><a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Opaque</span><span class="w">                              </span><span class="c1"># (2)!</span>
+</span></code></pre></div>
+<ol>
+<li>Base64-encoded value — <code>QXBwUGFzczQ1Ng==</code> is <code>AppPass456</code> run
+    through <code>base64</code>, readable by anyone with <code>get secret</code> rights.</li>
+<li><code>Opaque</code> = generic key/value data — the default Secret type.</li>
+</ol>
+</details>
+</details>
+</li>
+<li>
+<p>Decode a secret value:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>kubectl<span class="w"> </span>get<span class="w"> </span>secret<span class="w"> </span>postgres-creds<span class="w"> </span>-o<span class="w"> </span><span class="nv">jsonpath</span><span class="o">=</span><span class="s1">'{.data.postgres-password}'</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>base64<span class="w"> </span>-d
+</span></code></pre></div>
+<details class="info">
+<summary>INFO</summary>
+<details class="question">
+<summary>Why?</summary>
+<p>proves the previous point — decoding is trivial, so RBAC (who may
+<code>get</code> secrets) is the real protection, not the encoding.</p>
+</details>
+<details class="info">
+<summary>Expected output</summary>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>SuperSecret123<span class="w">                          </span><span class="c1"># (1)!</span>
+</span></code></pre></div>
+<ol>
+<li>The plaintext password. <code>jsonpath</code> extracts one field; <code>base64 -d</code>
+    decodes it.</li>
+</ol>
+</details>
+</details>
+</li>
+<li>
+<p>See how <code>describe</code> treats secrets:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>kubectl<span class="w"> </span>describe<span class="w"> </span>secret<span class="w"> </span>postgres-creds
+</span></code></pre></div>
+<details class="info">
+<summary>INFO</summary>
+<details class="question">
+<summary>Why?</summary>
+<p><code>describe</code> deliberately shows only key names and <strong>sizes</strong> — never
+values. It's safe to paste into bug reports and chat.</p>
+</details>
+<details class="info">
+<summary>Expected output</summary>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>Name:<span class="w">         </span>postgres-creds
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>Namespace:<span class="w">    </span>tutorial
+</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a>Type:<span class="w">         </span>Opaque
+</span><span id="__span-11-4"><a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a><span class="nv">Data</span>
+</span><span id="__span-11-5"><a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a><span class="o">====</span>
+</span><span id="__span-11-6"><a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a>postgres-password:<span class="w">  </span><span class="m">14</span><span class="w"> </span>bytes<span class="w">             </span><span class="c1"># (1)!</span>
+</span><span id="__span-11-7"><a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a>app-password:<span class="w">       </span><span class="m">10</span><span class="w"> </span>bytes
+</span></code></pre></div>
+<ol>
+<li>Byte counts only — contents stay hidden, unlike <code>-o yaml</code>.</li>
+</ol>
+</details>
+</details>
+</li>
+</ol>
+<div class="admonition success">
+<p class="admonition-title">Verify</p>
+<p>You can decode the secret — that's the point.
+Step <a href="../phase-6/#61-secrets-encryption-at-rest">6.1</a> addresses real
+encryption at rest.</p>
+</div>
+<hr />
+<h2 id="12-deploy-postgresql-via-helm-bitnami-chart">1.2 — Deploy PostgreSQL via Helm (Bitnami chart)<a class="headerlink" href="#12-deploy-postgresql-via-helm-bitnami-chart" title="Permanent link">&para;</a></h2>
+<p><strong>Goals:</strong> Deploy a production-grade chart; understand StatefulSets and
+persistence.</p>
+<p><strong>Concepts:</strong> Helm repos/charts/values, StatefulSet vs Deployment, PV/PVC,
+StorageClass.</p>
+<ol>
+<li>
+<p>Register the Bitnami chart repository:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>helm<span class="w"> </span>repo<span class="w"> </span>add<span class="w"> </span>bitnami<span class="w"> </span>https://charts.bitnami.com/bitnami
+</span></code></pre></div>
+<details class="info">
+<summary>INFO</summary>
+<details class="question">
+<summary>Why?</summary>
+<p>Helm installs come from chart <strong>repos</strong> (like apt/brew sources).
+<code>add</code> only records the URL — nothing is fetched yet.</p>
+</details>
+<details class="info">
+<summary>Expected output</summary>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="s2">"bitnami"</span><span class="w"> </span>has<span class="w"> </span>been<span class="w"> </span>added<span class="w"> </span>to<span class="w"> </span>your<span class="w"> </span>repositories<span class="w">     </span><span class="c1"># (1)!</span>
+</span></code></pre></div>
+<ol>
+<li><code>helm repo list</code> now shows it. <code>bitnami</code> is just the local alias —
+    the name you chose is how you'll reference it.</li>
+</ol>
+</details>
+</details>
+</li>
+<li>
+<p>Fetch the repo index:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>helm<span class="w"> </span>repo<span class="w"> </span>update
+</span></code></pre></div>
+<details class="info">
+<summary>INFO</summary>
+<details class="question">
+<summary>Why?</summary>
+<p>updates the local cache of available charts/versions — like
+<code>apt update</code>. Stale index = stale versions.</p>
+</details>
+<details class="info">
+<summary>Expected output</summary>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>Update<span class="w"> </span>Complete.<span class="w"> </span>⎈Happy<span class="w"> </span>Helming!⎈<span class="w">                 </span><span class="c1"># (1)!</span>
+</span></code></pre></div>
+<ol>
+<li>Index downloaded. The ⎈ is Helm's ship-wheel mascot.</li>
+</ol>
+</details>
+</details>
+</li>
+<li>
+<p>See which chart versions exist:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>helm<span class="w"> </span>search<span class="w"> </span>repo<span class="w"> </span>bitnami/postgresql<span class="w"> </span>--versions<span class="w"> </span><span class="p">|</span><span class="w"> </span>head
+</span></code></pre></div>
+<details class="info">
+<summary>INFO</summary>
+<details class="question">
+<summary>Why?</summary>
+<p>charts version independently of the app they install — check both
+columns before picking one.</p>
+</details>
+<details class="info">
+<summary>Expected output</summary>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a>NAME<span class="w">                  </span>CHART<span class="w"> </span>VERSION<span class="w">   </span>APP<span class="w"> </span>VERSION<span class="w">   </span>DESCRIPTION<span class="w">       </span><span class="c1"># (1)!</span>
+</span><span id="__span-17-2"><a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a>bitnami/postgresql<span class="w">    </span><span class="m">16</span>.x.x<span class="w">          </span><span class="m">17</span>.x<span class="w">          </span>PostgreSQL<span class="w"> </span>is<span class="w"> </span>...
+</span><span id="__span-17-3"><a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a>bitnami/postgresql<span class="w">    </span><span class="m">15</span>.x.x<span class="w">          </span><span class="m">16</span>.x<span class="w">          </span>...
+</span></code></pre></div>
+<ol>
+<li><code>CHART VERSION</code>: the package's own version · <code>APP VERSION</code>: the
+    PostgreSQL release it deploys. Pin either with <code>--version</code>/
+    <code>--set image.tag</code>.</li>
+</ol>
+</details>
+</details>
+</li>
+<li>
+<p>Inspect the chart metadata before installing:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a>helm<span class="w"> </span>show<span class="w"> </span>chart<span class="w"> </span>bitnami/postgresql
+</span></code></pre></div>
+<details class="info">
+<summary>INFO</summary>
+<details class="question">
+<summary>Why?</summary>
+<p><code>helm show chart</code> prints the chart's <code>Chart.yaml</code> — the package
+manifest. It tells you what you'll get (which app version, which images,
+what it depends on) <em>without installing anything</em>.</p>
+</details>
+<details class="info">
+<summary>Expected output (trimmed)</summary>
+<div class="language-yaml highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v2</span><span class="w">                              </span><span class="c1"># (1)!</span>
+</span><span id="__span-19-2"><a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">postgresql</span>
+</span><span id="__span-19-3"><a id="__codelineno-19-3" name="__codelineno-19-3" href="#__codelineno-19-3"></a><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">18.12.4</span><span class="w">                            </span><span class="c1"># (2)!</span>
+</span><span id="__span-19-4"><a id="__codelineno-19-4" name="__codelineno-19-4" href="#__codelineno-19-4"></a><span class="nt">appVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">18.6.0</span><span class="w">                          </span><span class="c1"># (3)!</span>
+</span><span id="__span-19-5"><a id="__codelineno-19-5" name="__codelineno-19-5" href="#__codelineno-19-5"></a><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">PostgreSQL (Postgres) is an open source object-relational ...</span>
+</span><span id="__span-19-6"><a id="__codelineno-19-6" name="__codelineno-19-6" href="#__codelineno-19-6"></a><span class="nt">home</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://bitnami.com</span>
+</span><span id="__span-19-7"><a id="__codelineno-19-7" name="__codelineno-19-7" href="#__codelineno-19-7"></a><span class="nt">dependencies</span><span class="p">:</span>
+</span><span id="__span-19-8"><a id="__codelineno-19-8" name="__codelineno-19-8" href="#__codelineno-19-8"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">common</span>
+</span><span id="__span-19-9"><a id="__codelineno-19-9" name="__codelineno-19-9" href="#__codelineno-19-9"></a><span class="w">  </span><span class="nt">repository</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">oci://registry-1.docker.io/bitnamicharts</span>
+</span><span id="__span-19-10"><a id="__codelineno-19-10" name="__codelineno-19-10" href="#__codelineno-19-10"></a><span class="w">  </span><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2.41.0</span><span class="w">                           </span><span class="c1"># (4)!</span>
+</span><span id="__span-19-11"><a id="__codelineno-19-11" name="__codelineno-19-11" href="#__codelineno-19-11"></a><span class="nt">annotations</span><span class="p">:</span>
+</span><span id="__span-19-12"><a id="__codelineno-19-12" name="__codelineno-19-12" href="#__codelineno-19-12"></a><span class="w">  </span><span class="nt">images</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span>
+</span><span id="__span-19-13"><a id="__codelineno-19-13" name="__codelineno-19-13" href="#__codelineno-19-13"></a><span class="w">    </span><span class="no">- name: postgresql</span>
+</span><span id="__span-19-14"><a id="__codelineno-19-14" name="__codelineno-19-14" href="#__codelineno-19-14"></a><span class="w">      </span><span class="no">version: "18.6.0"</span>
+</span><span id="__span-19-15"><a id="__codelineno-19-15" name="__codelineno-19-15" href="#__codelineno-19-15"></a><span class="w">      </span><span class="no">image: registry-1.docker.io/bitnami/postgresql:latest</span>
+</span><span id="__span-19-16"><a id="__codelineno-19-16" name="__codelineno-19-16" href="#__codelineno-19-16"></a><span class="w">    </span><span class="no">- name: postgres-exporter</span>
+</span><span id="__span-19-17"><a id="__codelineno-19-17" name="__codelineno-19-17" href="#__codelineno-19-17"></a><span class="w">      </span><span class="no">version: 0.20.1</span>
+</span><span id="__span-19-18"><a id="__codelineno-19-18" name="__codelineno-19-18" href="#__codelineno-19-18"></a><span class="w">      </span><span class="no">image: registry-1.docker.io/bitnami/postgres-exporter:latest</span>
+</span><span id="__span-19-19"><a id="__codelineno-19-19" name="__codelineno-19-19" href="#__codelineno-19-19"></a><span class="w">    </span><span class="no">- name: os-shell</span>
+</span><span id="__span-19-20"><a id="__codelineno-19-20" name="__codelineno-19-20" href="#__codelineno-19-20"></a><span class="w">      </span><span class="no">version: "5"</span>
+</span><span id="__span-19-21"><a id="__codelineno-19-21" name="__codelineno-19-21" href="#__codelineno-19-21"></a><span class="w">      </span><span class="no">image: registry-1.docker.io/bitnami/os-shell:latest</span>
+</span><span id="__span-19-22"><a id="__codelineno-19-22" name="__codelineno-19-22" href="#__codelineno-19-22"></a><span class="nt">maintainers</span><span class="p">:</span>
+</span><span id="__span-19-23"><a id="__codelineno-19-23" name="__codelineno-19-23" href="#__codelineno-19-23"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Broadcom, Inc. All Rights Reserved.</span>
+</span><span id="__span-19-24"><a id="__codelineno-19-24" name="__codelineno-19-24" href="#__codelineno-19-24"></a><span class="w">  </span><span class="nt">url</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://github.com/bitnami/charts</span>
+</span><span id="__span-19-25"><a id="__codelineno-19-25" name="__codelineno-19-25" href="#__codelineno-19-25"></a><span class="nt">sources</span><span class="p">:</span>
+</span><span id="__span-19-26"><a id="__codelineno-19-26" name="__codelineno-19-26" href="#__codelineno-19-26"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://github.com/bitnami/charts/tree/main/bitnami/postgresql</span>
+</span></code></pre></div>
+<ol>
+<li><code>v2</code> = Helm 3 chart format.</li>
+<li>Chart (package) version — the thing <code>--version</code> pins.</li>
+<li><code>appVersion</code> = the PostgreSQL release it deploys — matches the
+    <code>APP VERSION</code> column in <code>helm search</code>.</li>
+<li>The chart depends on Bitnami's <code>common</code> library chart, pulled from
+    an <strong>OCI registry</strong> — Helm will fetch it automatically at install.</li>
+<li>The <code>images</code> annotation lists every image the chart can pull —
+    useful for air-gapped/proxy environments where you must mirror
+    them yourself.</li>
+</ol>
+</details>
+</details>
+</li>
+<li>
+<p>Dump the chart's default values:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-20-1"><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a>helm<span class="w"> </span>show<span class="w"> </span>values<span class="w"> </span>bitnami/postgresql<span class="w"> </span><span class="p">|</span><span class="w"> </span>less
+</span></code></pre></div>
+<details class="info">
+<summary>INFO</summary>
+<details class="question">
+<summary>Why?</summary>
+<p>this is how you <strong>discover what <code>values-db.yaml</code> can override</strong>.
+<code>helm show values</code> prints every tunable key with the chart's defaults and
+inline <code>@param</code> docs — your <code>-f</code> file is just a sparse subset of this.</p>
+</details>
+<details class="info">
+<summary>Expected output (trimmed)</summary>
+<div class="language-yaml highlight"><pre><span></span><code><span id="__span-21-1"><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a><span class="nt">auth</span><span class="p">:</span>
+</span><span id="__span-21-2"><a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a><span class="w">  </span><span class="nt">database</span><span class="p">:</span><span class="w"> </span><span class="s">""</span><span class="w">                              </span><span class="c1"># (1)!</span>
+</span><span id="__span-21-3"><a id="__codelineno-21-3" name="__codelineno-21-3" href="#__codelineno-21-3"></a><span class="w">  </span><span class="nt">existingSecret</span><span class="p">:</span><span class="w"> </span><span class="s">""</span><span class="w">                        </span><span class="c1"># (2)!</span>
+</span><span id="__span-21-4"><a id="__codelineno-21-4" name="__codelineno-21-4" href="#__codelineno-21-4"></a><span class="w">  </span><span class="nt">postgresPassword</span><span class="p">:</span><span class="w"> </span><span class="s">""</span>
+</span><span id="__span-21-5"><a id="__codelineno-21-5" name="__codelineno-21-5" href="#__codelineno-21-5"></a><span class="nt">primary</span><span class="p">:</span>
+</span><span id="__span-21-6"><a id="__codelineno-21-6" name="__codelineno-21-6" href="#__codelineno-21-6"></a><span class="w">  </span><span class="nt">persistence</span><span class="p">:</span>
+</span><span id="__span-21-7"><a id="__codelineno-21-7" name="__codelineno-21-7" href="#__codelineno-21-7"></a><span class="w">    </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</span><span id="__span-21-8"><a id="__codelineno-21-8" name="__codelineno-21-8" href="#__codelineno-21-8"></a><span class="w">    </span><span class="nt">size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8Gi</span><span class="w">                               </span><span class="c1"># (3)!</span>
+</span></code></pre></div>
+<ol>
+<li>We override to <code>auth.database: tutorial</code>.</li>
+<li><code>existingSecret: postgres-creds</code> — points the chart at the Secret
+    from step 1.1 instead of generating a random password.</li>
+<li>We shrink <code>primary.persistence.size</code> to <code>1Gi</code> for a local cluster.</li>
+</ol>
+</details>
+</details>
+</li>
+<li>
+<p>Create the values file:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-22-1"><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a>cat<span class="w"> </span>&gt;<span class="w"> </span>deploy/manifests/db/values-db.yaml<span class="w"> </span><span class="s">&lt;&lt;'EOF'</span>
+</span><span id="__span-22-2"><a id="__codelineno-22-2" name="__codelineno-22-2" href="#__codelineno-22-2"></a><span class="s">auth:</span>
+</span><span id="__span-22-3"><a id="__codelineno-22-3" name="__codelineno-22-3" href="#__codelineno-22-3"></a><span class="s">  database: tutorial</span>
+</span><span id="__span-22-4"><a id="__codelineno-22-4" name="__codelineno-22-4" href="#__codelineno-22-4"></a><span class="s">  existingSecret: postgres-creds</span>
+</span><span id="__span-22-5"><a id="__codelineno-22-5" name="__codelineno-22-5" href="#__codelineno-22-5"></a><span class="s">primary:</span>
+</span><span id="__span-22-6"><a id="__codelineno-22-6" name="__codelineno-22-6" href="#__codelineno-22-6"></a><span class="s">  persistence:</span>
+</span><span id="__span-22-7"><a id="__codelineno-22-7" name="__codelineno-22-7" href="#__codelineno-22-7"></a><span class="s">    size: 1Gi</span>
+</span><span id="__span-22-8"><a id="__codelineno-22-8" name="__codelineno-22-8" href="#__codelineno-22-8"></a><span class="s">EOF</span>
+</span></code></pre></div>
+<details class="info">
+<summary>INFO</summary>
+<details class="question">
+<summary>Why?</summary>
+<p>a values file is how you tell a chart <em>how</em> to install — your
+overrides on top of its defaults. You don't have to know the keys: each
+one below was picked straight out of the <code>helm show values</code> output above.
+(The tutorial repo ships this file, so if you cloned it, it's already at
+<code>deploy/manifests/db/values-db.yaml</code> — otherwise create it here.)</p>
+</details>
+<details class="info">
+<summary>What each key does — and where it came from</summary>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Effect</th>
+<th>Found via</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>auth.database</code></td>
+<td>database created on first boot</td>
+<td><code>helm show values</code> → <code>auth:</code> section</td>
+</tr>
+<tr>
+<td><code>auth.existingSecret</code></td>
+<td>read the admin password from the 1.1 Secret instead of generating a random one — the chart looks for a <code>postgres-password</code> key in it</td>
+<td><code>helm show values</code> → <code>auth.existingSecret</code></td>
+</tr>
+<tr>
+<td><code>primary.persistence.size</code></td>
+<td>shrink the 8Gi default to 1Gi for a local cluster</td>
+<td><code>helm show values</code> → <code>primary.persistence</code></td>
+</tr>
+</tbody>
+</table>
+<p>No file created? No problem — the same keys could be passed inline as
+<code>--set auth.database=tutorial --set auth.existingSecret=postgres-creds …</code>,
+but a file is repeatable, reviewable, and commit-able.</p>
+</details>
+</details>
+</li>
+<li>
+<p>Install the chart into <code>tutorial</code> with your values file:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-23-1"><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a>helm<span class="w"> </span>install<span class="w"> </span>pg<span class="w"> </span>bitnami/postgresql<span class="w"> </span>-n<span class="w"> </span>tutorial<span class="w"> </span>-f<span class="w"> </span>deploy/manifests/db/values-db.yaml
+</span></code></pre></div>
+<details class="info">
+<summary>INFO</summary>
+<details class="question">
+<summary>Why?</summary>
+<p><code>helm install</code> creates a <strong>release</strong> (<code>pg</code>). Breaking the command
+down — <code>bitnami/postgresql</code> is <code>repo-alias/chart-name</code>: Helm looks up
+<code>bitnami</code> in the repo index you added (<code>helm repo add</code>) and refreshed
+(<code>helm repo update</code>), downloads the <code>.tgz</code>, then renders the chart's
+templates with three layers of values merged in order — chart defaults ←
+<code>-f deploy/manifests/db/values-db.yaml</code> ← any <code>--set</code> flags.</p>
+</details>
+<details class="info">
+<summary>Expected output (trimmed)</summary>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-24-1"><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a>NAME:<span class="w"> </span>pg
+</span><span id="__span-24-2"><a id="__codelineno-24-2" name="__codelineno-24-2" href="#__codelineno-24-2"></a>LAST<span class="w"> </span>DEPLOYED:<span class="w"> </span>...
+</span><span id="__span-24-3"><a id="__codelineno-24-3" name="__codelineno-24-3" href="#__codelineno-24-3"></a>NAMESPACE:<span class="w"> </span>tutorial
+</span><span id="__span-24-4"><a id="__codelineno-24-4" name="__codelineno-24-4" href="#__codelineno-24-4"></a>STATUS:<span class="w"> </span>deployed<span class="w">                             </span><span class="c1"># (1)!</span>
+</span><span id="__span-24-5"><a id="__codelineno-24-5" name="__codelineno-24-5" href="#__codelineno-24-5"></a>REVISION:<span class="w"> </span><span class="m">1</span><span class="w">                                  </span><span class="c1"># (2)!</span>
+</span><span id="__span-24-6"><a id="__codelineno-24-6" name="__codelineno-24-6" href="#__codelineno-24-6"></a>NOTES:<span class="w"> </span>...
+</span></code></pre></div>
+<ol>
+<li><code>deployed</code> = the release was recorded — pods may still be
+    starting. Not the same as "ready".</li>
+<li>Every <code>helm upgrade</code> bumps <code>REVISION</code> — that's how Helm tracks
+    release history for rollbacks.</li>
+</ol>
+</details>
+</details>
+</li>
+<li>
+<p>Check what the chart actually created:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-25-1"><a id="__codelineno-25-1" name="__codelineno-25-1" href="#__codelineno-25-1"></a>kubectl<span class="w"> </span>get<span class="w"> </span>statefulset,pods,pvc<span class="w"> </span>-n<span class="w"> </span>tutorial
+</span></code></pre></div>
+<details class="info">
+<summary>INFO</summary>
+<details class="question">
+<summary>Why?</summary>
+<p>the chart emits several object kinds at once — StatefulSet, pod,
+and PVC. Seeing all three side by side is the persistence story.</p>
+</details>
+<details class="info">
+<summary>Expected output</summary>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-26-1"><a id="__codelineno-26-1" name="__codelineno-26-1" href="#__codelineno-26-1"></a>NAME<span class="w">                             </span>READY<span class="w">   </span>AGE
+</span><span id="__span-26-2"><a id="__codelineno-26-2" name="__codelineno-26-2" href="#__codelineno-26-2"></a>statefulset.apps/pg-postgresql<span class="w">   </span><span class="m">1</span>/1<span class="w">     </span>2m<span class="w">     </span><span class="c1"># (1)!</span>
+</span><span id="__span-26-3"><a id="__codelineno-26-3" name="__codelineno-26-3" href="#__codelineno-26-3"></a>
+</span><span id="__span-26-4"><a id="__codelineno-26-4" name="__codelineno-26-4" href="#__codelineno-26-4"></a>NAME<span class="w">                   </span>READY<span class="w">   </span>STATUS<span class="w">    </span>RESTARTS<span class="w">   </span>AGE
+</span><span id="__span-26-5"><a id="__codelineno-26-5" name="__codelineno-26-5" href="#__codelineno-26-5"></a>pod/pg-postgresql-0<span class="w">    </span><span class="m">1</span>/1<span class="w">     </span>Running<span class="w">   </span><span class="m">0</span><span class="w">          </span>2m<span class="w">   </span><span class="c1"># (2)!</span>
+</span><span id="__span-26-6"><a id="__codelineno-26-6" name="__codelineno-26-6" href="#__codelineno-26-6"></a>
+</span><span id="__span-26-7"><a id="__codelineno-26-7" name="__codelineno-26-7" href="#__codelineno-26-7"></a>NAME<span class="w">                                    </span>STATUS<span class="w">   </span>VOLUME<span class="w">     </span>CAPACITY
+</span><span id="__span-26-8"><a id="__codelineno-26-8" name="__codelineno-26-8" href="#__codelineno-26-8"></a>persistentvolumeclaim/data-pg-postgresql-0<span class="w">   </span>Bound<span class="w">   </span>pvc-...<span class="w">   </span>1Gi<span class="w">   </span><span class="c1"># (3)!</span>
+</span></code></pre></div>
+<ol>
+<li>A <strong>StatefulSet</strong>, not a Deployment — databases need stable
+    identity and ordered startup.</li>
+<li><code>pg-postgresql-0</code> — the <code>-0</code> ordinal is the StatefulSet signature:
+    the name survives restarts, unlike Deployment pods' random suffix.</li>
+<li><code>Bound</code> = a PersistentVolume was provisioned and attached. The
+    claim name embeds the pod name — each replica gets its own volume.</li>
+</ol>
+</details>
+<details class="failure">
+<summary>Got <code>arguments in resource/name form must have a single resource and name</code>?</summary>
+<p>You typed spaces after the commas:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-27-1"><a id="__codelineno-27-1" name="__codelineno-27-1" href="#__codelineno-27-1"></a>kubectl<span class="w"> </span>get<span class="w"> </span>statefulset,<span class="w"> </span>pods,<span class="w"> </span>pvc<span class="w">   </span><span class="c1"># ✗ — `pods` and `pvc` are read</span>
+</span><span id="__span-27-2"><a id="__codelineno-27-2" name="__codelineno-27-2" href="#__codelineno-27-2"></a><span class="w">                                   </span><span class="c1">#    as NAMES of statefulsets</span>
+</span></code></pre></div>
+<p>Comma-separated resource types must be <strong>one word</strong> — spaces start a
+new argument, and kubectl then thinks you asked for a statefulset
+literally named <code>pods</code>. Correct form (no spaces):</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-28-1"><a id="__codelineno-28-1" name="__codelineno-28-1" href="#__codelineno-28-1"></a>kubectl<span class="w"> </span>get<span class="w"> </span>statefulset,pods,pvc<span class="w"> </span>-n<span class="w"> </span>tutorial
+</span></code></pre></div>
+</details>
+<details class="note">
+<summary>Why doesn't <code>kubectl get all</code> show the PVC?</summary>
+<p><code>get all</code> is misleadingly named — it's a <strong>fixed alias</strong> for a subset
+of workload types only:</p>
+<p><code>pods, services, daemonsets, deployments, replicasets, statefulsets, jobs, cronjobs</code></p>
+<p>PVCs, Secrets, ConfigMaps, Ingresses, Roles — everything else — are
+silently excluded. There is no built-in "list literally everything";
+you either name the types explicitly (as in this command) or query
+<code>api-resources</code> for the full catalog. Rule: <code>get all</code> for a quick
+workload overview, explicit types when you need storage/config/RBAC.</p>
+</details>
+</details>
+</li>
+<li>
+<p>Trace where the data physically lives:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-29-1"><a id="__codelineno-29-1" name="__codelineno-29-1" href="#__codelineno-29-1"></a>kubectl<span class="w"> </span>describe<span class="w"> </span>pvc<span class="w"> </span>data-pg-postgresql-0
+</span></code></pre></div>
+<details class="info">
+<summary>INFO</summary>
+<details class="question">
+<summary>Why?</summary>
+<p>the PVC is the pod's contract with storage. <code>describe</code> shows which
+volume and which provisioner satisfied it.</p>
+</details>
+<details class="info">
+<summary>Expected output (trimmed)</summary>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-30-1"><a id="__codelineno-30-1" name="__codelineno-30-1" href="#__codelineno-30-1"></a>Name:<span class="w">          </span>data-pg-postgresql-0
+</span><span id="__span-30-2"><a id="__codelineno-30-2" name="__codelineno-30-2" href="#__codelineno-30-2"></a>Status:<span class="w">        </span>Bound
+</span><span id="__span-30-3"><a id="__codelineno-30-3" name="__codelineno-30-3" href="#__codelineno-30-3"></a>Volume:<span class="w">        </span>pvc-4f9b...<span class="w">                       </span><span class="c1"># (1)!</span>
+</span><span id="__span-30-4"><a id="__codelineno-30-4" name="__codelineno-30-4" href="#__codelineno-30-4"></a>Access<span class="w"> </span>Modes:<span class="w">  </span>RWO<span class="w">                               </span><span class="c1"># (2)!</span>
+</span><span id="__span-30-5"><a id="__codelineno-30-5" name="__codelineno-30-5" href="#__codelineno-30-5"></a>StorageClass:<span class="w">  </span>local-path<span class="w">                        </span><span class="c1"># (3)!</span>
+</span></code></pre></div>
+<ol>
+<li>The actual PersistentVolume backing the claim.</li>
+<li><code>RWO</code> = ReadWriteOnce — one node mounts it at a time. Fine for
+    a single DB pod.</li>
+<li>k3s' built-in provisioner — it just makes a directory on the node.
+    In the cloud this would be an EBS/GCE disk instead.</li>
+</ol>
+</details>
+</details>
+</li>
+<li>
+<p>Check the release health from Helm's side:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-31-1"><a id="__codelineno-31-1" name="__codelineno-31-1" href="#__codelineno-31-1"></a>helm<span class="w"> </span>status<span class="w"> </span>pg
+</span></code></pre></div>
+<details class="info">
+<summary>INFO</summary>
+<details class="question">
+<summary>Why?</summary>
+<p>kubectl shows objects; <code>helm status</code> shows the <em>release</em> — its
+state, revision, and the chart's post-install notes.</p>
+</details>
+<details class="info">
+<summary>Expected output (trimmed)</summary>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-32-1"><a id="__codelineno-32-1" name="__codelineno-32-1" href="#__codelineno-32-1"></a>NAME:<span class="w"> </span>pg
+</span><span id="__span-32-2"><a id="__codelineno-32-2" name="__codelineno-32-2" href="#__codelineno-32-2"></a>STATUS:<span class="w"> </span>deployed
+</span><span id="__span-32-3"><a id="__codelineno-32-3" name="__codelineno-32-3" href="#__codelineno-32-3"></a>REVISION:<span class="w"> </span><span class="m">1</span>
+</span><span id="__span-32-4"><a id="__codelineno-32-4" name="__codelineno-32-4" href="#__codelineno-32-4"></a>NOTES:<span class="w"> </span>...<span class="w">                                     </span><span class="c1"># (1)!</span>
+</span></code></pre></div>
+<ol>
+<li>The chart's own usage notes (connection strings, password
+    hints). Read them — chart authors put important gotchas here.</li>
+</ol>
+</details>
+</details>
+</li>
+<li>
+<p>See your effective configuration:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-33-1"><a id="__codelineno-33-1" name="__codelineno-33-1" href="#__codelineno-33-1"></a>helm<span class="w"> </span>get<span class="w"> </span>values<span class="w"> </span>pg<span class="w"> </span>-n<span class="w"> </span>tutorial
+</span></code></pre></div>
+<details class="info">
+<summary>INFO</summary>
+<details class="question">
+<summary>Why?</summary>
+<p>shows what your <code>-f</code> file actually overrode vs the chart's
+hundreds of defaults.</p>
+</details>
+<details class="info">
+<summary>Expected output</summary>
+<div class="language-yaml highlight"><pre><span></span><code><span id="__span-34-1"><a id="__codelineno-34-1" name="__codelineno-34-1" href="#__codelineno-34-1"></a><span class="nt">USER-SUPPLIED VALUES</span><span class="p">:</span>
+</span><span id="__span-34-2"><a id="__codelineno-34-2" name="__codelineno-34-2" href="#__codelineno-34-2"></a><span class="nt">auth</span><span class="p">:</span>
+</span><span id="__span-34-3"><a id="__codelineno-34-3" name="__codelineno-34-3" href="#__codelineno-34-3"></a><span class="w">  </span><span class="nt">database</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tutorial</span>
+</span><span id="__span-34-4"><a id="__codelineno-34-4" name="__codelineno-34-4" href="#__codelineno-34-4"></a><span class="w">  </span><span class="nt">existingSecret</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">postgres-creds</span><span class="w">        </span><span class="c1"># (1)!</span>
+</span><span id="__span-34-5"><a id="__codelineno-34-5" name="__codelineno-34-5" href="#__codelineno-34-5"></a><span class="nt">primary</span><span class="p">:</span>
+</span><span id="__span-34-6"><a id="__codelineno-34-6" name="__codelineno-34-6" href="#__codelineno-34-6"></a><span class="w">  </span><span class="nt">persistence</span><span class="p">:</span>
+</span><span id="__span-34-7"><a id="__codelineno-34-7" name="__codelineno-34-7" href="#__codelineno-34-7"></a><span class="w">    </span><span class="nt">size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1Gi</span>
+</span></code></pre></div>
+<ol>
+<li>Tells the chart to read the password from your Secret instead
+    of generating one. Add <code>-a</code> to see <em>all</em> values including
+    defaults.</li>
+</ol>
+</details>
+</details>
+</li>
+</ol>
+<div class="admonition success">
+<p class="admonition-title">Verify</p>
+<p><code>pg-postgresql-0</code> is Running; PVC is <code>Bound</code>. Understand why a StatefulSet
+(stable pod name, ordered startup, per-pod storage) instead of a Deployment.</p>
+</div>
+<hr />
+<h2 id="13-db-user-password-management">1.3 — DB user &amp; password management<a class="headerlink" href="#13-db-user-password-management" title="Permanent link">&para;</a></h2>
+<p><strong>Goals:</strong> Create a least-privilege app user; learn credential handling.</p>
+<p><strong>Concepts:</strong> exec into pods, Postgres roles/grants, superuser vs app user,
+rotation.</p>
+<ol>
+<li>
+<p>Open a psql shell inside the DB pod:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-35-1"><a id="__codelineno-35-1" name="__codelineno-35-1" href="#__codelineno-35-1"></a>kubectl<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-it<span class="w"> </span>pg-postgresql-0<span class="w"> </span>--<span class="w"> </span>psql<span class="w"> </span>-U<span class="w"> </span>postgres<span class="w"> </span>-d<span class="w"> </span>tutorial
+</span></code></pre></div>
+<details class="info">
+<summary>INFO</summary>
+<details class="question">
+<summary>Why?</summary>
+<p>the DB isn't exposed outside the cluster — <code>exec</code> is how you
+administer it in place.</p>
+</details>
+<details class="info">
+<summary>Expected output</summary>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-36-1"><a id="__codelineno-36-1" name="__codelineno-36-1" href="#__codelineno-36-1"></a>psql<span class="w"> </span><span class="o">(</span><span class="m">17</span>.x<span class="o">)</span>
+</span><span id="__span-36-2"><a id="__codelineno-36-2" name="__codelineno-36-2" href="#__codelineno-36-2"></a>Type<span class="w"> </span><span class="s2">"help"</span><span class="w"> </span><span class="k">for</span><span class="w"> </span>help.
+</span><span id="__span-36-3"><a id="__codelineno-36-3" name="__codelineno-36-3" href="#__codelineno-36-3"></a>
+</span><span id="__span-36-4"><a id="__codelineno-36-4" name="__codelineno-36-4" href="#__codelineno-36-4"></a><span class="nv">tutorial</span><span class="o">=</span><span class="c1">#                                # (1)!</span>
+</span></code></pre></div>
+<ol>
+<li><code>=#</code> — the <code>#</code> prompt means you're connected as a <strong>superuser</strong>
+    (<code>postgres</code>). A regular user gets <code>=&gt;</code>. Everything you run now is
+    inside the pod, not your machine.</li>
+</ol>
+</details>
+</details>
+</li>
+<li>
+<p>Create the least-privilege app user and the <code>progress</code> table — paste this
+    into the psql session:</p>
+<div class="language-sql highlight"><pre><span></span><code><span id="__span-37-1"><a id="__codelineno-37-1" name="__codelineno-37-1" href="#__codelineno-37-1"></a><span class="k">CREATE</span><span class="w"> </span><span class="k">USER</span><span class="w"> </span><span class="n">app_user</span><span class="w"> </span><span class="k">WITH</span><span class="w"> </span><span class="n">PASSWORD</span><span class="w"> </span><span class="s1">'AppPass456'</span><span class="p">;</span>
+</span><span id="__span-37-2"><a id="__codelineno-37-2" name="__codelineno-37-2" href="#__codelineno-37-2"></a><span class="k">GRANT</span><span class="w"> </span><span class="k">CONNECT</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="k">DATABASE</span><span class="w"> </span><span class="n">tutorial</span><span class="w"> </span><span class="k">TO</span><span class="w"> </span><span class="n">app_user</span><span class="p">;</span>
+</span><span id="__span-37-3"><a id="__codelineno-37-3" name="__codelineno-37-3" href="#__codelineno-37-3"></a><span class="k">GRANT</span><span class="w"> </span><span class="k">USAGE</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="k">SCHEMA</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="k">TO</span><span class="w"> </span><span class="n">app_user</span><span class="p">;</span>
+</span><span id="__span-37-4"><a id="__codelineno-37-4" name="__codelineno-37-4" href="#__codelineno-37-4"></a><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">progress</span><span class="w"> </span><span class="p">(</span>
+</span><span id="__span-37-5"><a id="__codelineno-37-5" name="__codelineno-37-5" href="#__codelineno-37-5"></a><span class="w">  </span><span class="n">step</span><span class="w"> </span><span class="nb">INT</span><span class="w"> </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="p">,</span>
+</span><span id="__span-37-6"><a id="__codelineno-37-6" name="__codelineno-37-6" href="#__codelineno-37-6"></a><span class="w">  </span><span class="n">done</span><span class="w"> </span><span class="nb">BOOLEAN</span><span class="w"> </span><span class="k">DEFAULT</span><span class="w"> </span><span class="k">false</span><span class="p">,</span>
+</span><span id="__span-37-7"><a id="__codelineno-37-7" name="__codelineno-37-7" href="#__codelineno-37-7"></a><span class="w">  </span><span class="n">ts</span><span class="w"> </span><span class="n">TIMESTAMPTZ</span><span class="w"> </span><span class="k">DEFAULT</span><span class="w"> </span><span class="n">now</span><span class="p">()</span>
+</span><span id="__span-37-8"><a id="__codelineno-37-8" name="__codelineno-37-8" href="#__codelineno-37-8"></a><span class="p">);</span>
+</span><span id="__span-37-9"><a id="__codelineno-37-9" name="__codelineno-37-9" href="#__codelineno-37-9"></a><span class="k">GRANT</span><span class="w"> </span><span class="k">SELECT</span><span class="p">,</span><span class="w"> </span><span class="k">INSERT</span><span class="p">,</span><span class="w"> </span><span class="k">UPDATE</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">progress</span><span class="w"> </span><span class="k">TO</span><span class="w"> </span><span class="n">app_user</span><span class="p">;</span>
+</span><span id="__span-37-10"><a id="__codelineno-37-10" name="__codelineno-37-10" href="#__codelineno-37-10"></a><span class="err">\</span><span class="n">l</span><span class="w">        </span><span class="c1">-- list databases</span>
+</span><span id="__span-37-11"><a id="__codelineno-37-11" name="__codelineno-37-11" href="#__codelineno-37-11"></a><span class="err">\</span><span class="n">du</span><span class="w">       </span><span class="c1">-- list users/roles</span>
+</span><span id="__span-37-12"><a id="__codelineno-37-12" name="__codelineno-37-12" href="#__codelineno-37-12"></a><span class="err">\</span><span class="n">dt</span><span class="w">       </span><span class="c1">-- list tables</span>
+</span><span id="__span-37-13"><a id="__codelineno-37-13" name="__codelineno-37-13" href="#__codelineno-37-13"></a><span class="err">\</span><span class="n">q</span>
+</span></code></pre></div>
+<details class="info">
+<summary>INFO</summary>
+<details class="question">
+<summary>Why?</summary>
+<p>the app tier only needs to read/write one table. Superuser for the
+app would make any app bug or SQL injection catastrophic.</p>
+</details>
+<details class="info">
+<summary>Expected output</summary>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-38-1"><a id="__codelineno-38-1" name="__codelineno-38-1" href="#__codelineno-38-1"></a>CREATE ROLE                               # (1)!
+</span><span id="__span-38-2"><a id="__codelineno-38-2" name="__codelineno-38-2" href="#__codelineno-38-2"></a>GRANT
+</span><span id="__span-38-3"><a id="__codelineno-38-3" name="__codelineno-38-3" href="#__codelineno-38-3"></a>GRANT
+</span><span id="__span-38-4"><a id="__codelineno-38-4" name="__codelineno-38-4" href="#__codelineno-38-4"></a>CREATE TABLE
+</span><span id="__span-38-5"><a id="__codelineno-38-5" name="__codelineno-38-5" href="#__codelineno-38-5"></a>GRANT                                     # (2)!
+</span></code></pre></div>
+<ol>
+<li><code>CREATE ROLE</code> — users <em>are</em> roles in Postgres.</li>
+<li>Then <code>\l</code> lists <code>tutorial</code>, <code>\du</code> shows both <code>postgres</code> and
+    <code>app_user</code>, <code>\dt</code> shows <code>progress</code>. <code>\q</code> exits.</li>
+</ol>
+</details>
+</details>
+</li>
+<li>
+<p>Rotation drill — change the password <strong>inside Postgres</strong> first:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-39-1"><a id="__codelineno-39-1" name="__codelineno-39-1" href="#__codelineno-39-1"></a>kubectl<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-it<span class="w"> </span>pg-postgresql-0<span class="w"> </span>--<span class="w"> </span>psql<span class="w"> </span>-U<span class="w"> </span>postgres<span class="w"> </span>-d<span class="w"> </span>tutorial<span class="w"> </span>-c<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-39-2"><a id="__codelineno-39-2" name="__codelineno-39-2" href="#__codelineno-39-2"></a><span class="w">  </span><span class="s2">"ALTER USER postgres WITH PASSWORD 'NewSecret'; \</span>
+</span><span id="__span-39-3"><a id="__codelineno-39-3" name="__codelineno-39-3" href="#__codelineno-39-3"></a><span class="s2">   ALTER USER app_user WITH PASSWORD 'NewAppPass';"</span>
+</span></code></pre></div>
+<details class="info">
+<summary>INFO</summary>
+<details class="question">
+<summary>Why?</summary>
+<p><strong>The purpose:</strong> password rotation is routine ops — credentials leak,
+expire, or policy forces periodic change. This drills the exact
+workflow you'll use for real.</p>
+<p><strong>The subtlety:</strong> the Secret's <code>postgres-password</code> only <em>seeds</em> the
+database on <strong>first boot</strong> (when the PVC/data dir is empty). Postgres
+stores real credentials in its own catalog (<code>pg_authid</code>) — a Secret
+update does <strong>not</strong> change them. Restarting the pod with a new env
+var value won't rotate the DB password; Bitnami even logs a
+"password differs from the one persisted" warning when they diverge.</p>
+<p>So a real rotation starts where the password actually lives — inside
+the database.</p>
+</details>
+<details class="info">
+<summary>Expected output</summary>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-40-1"><a id="__codelineno-40-1" name="__codelineno-40-1" href="#__codelineno-40-1"></a>Password<span class="w"> </span><span class="k">for</span><span class="w"> </span>user<span class="w"> </span>postgres:<span class="w">                  </span><span class="c1"># (1)!</span>
+</span><span id="__span-40-2"><a id="__codelineno-40-2" name="__codelineno-40-2" href="#__codelineno-40-2"></a>ALTER<span class="w"> </span>ROLE<span class="w">                                   </span><span class="c1"># (2)!</span>
+</span><span id="__span-40-3"><a id="__codelineno-40-3" name="__codelineno-40-3" href="#__codelineno-40-3"></a>ALTER<span class="w"> </span>ROLE
+</span></code></pre></div>
+<ol>
+<li>psql prompts for the <strong>current</strong> password — the pod enforces
+    auth even on the local socket. <code>-it</code> is what lets the prompt
+    reach your terminal; type <code>SuperSecret123</code> (nothing echoes).</li>
+<li>One <code>ALTER ROLE</code> per user — the password hashes in <code>pg_authid</code>
+    are updated. Old passwords stop working <strong>immediately</strong>.</li>
+</ol>
+</details>
+<details class="failure">
+<summary>Got <code>fe_sendauth: no password supplied</code>?</summary>
+<p>You ran <code>exec</code> <strong>without <code>-it</code></strong> — psql tried to prompt for the
+password, but with no terminal attached it can't read one:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-41-1"><a id="__codelineno-41-1" name="__codelineno-41-1" href="#__codelineno-41-1"></a>kubectl<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>pg-postgresql-0<span class="w"> </span>--<span class="w"> </span>psql<span class="w"> </span>-U<span class="w"> </span>postgres<span class="w"> </span>...<span class="w">   </span><span class="c1"># ✗</span>
+</span></code></pre></div>
+<p>Two fixes: keep <code>-it</code> and answer the prompt, or pass it
+non-interactively through the container's own env var:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-42-1"><a id="__codelineno-42-1" name="__codelineno-42-1" href="#__codelineno-42-1"></a>kubectl<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>pg-postgresql-0<span class="w"> </span>--<span class="w"> </span>sh<span class="w"> </span>-c<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-42-2"><a id="__codelineno-42-2" name="__codelineno-42-2" href="#__codelineno-42-2"></a><span class="w">  </span><span class="s1">'PGPASSWORD="$POSTGRES_PASSWORD" psql -U postgres -d tutorial -c "ALTER ..."'</span>
+</span></code></pre></div>
+<p>(Mind the trap: once the Secret is updated <em>and</em> the pod restarted,
+<code>$POSTGRES_PASSWORD</code> already holds the new password — authenticate
+with whatever the DB currently holds.)</p>
+</details>
+</details>
+</li>
+<li>
+<p>Sync the Secret to match the new passwords:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-43-1"><a id="__codelineno-43-1" name="__codelineno-43-1" href="#__codelineno-43-1"></a>kubectl<span class="w"> </span>create<span class="w"> </span>secret<span class="w"> </span>generic<span class="w"> </span>postgres-creds<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-43-2"><a id="__codelineno-43-2" name="__codelineno-43-2" href="#__codelineno-43-2"></a><span class="w">  </span>--from-literal<span class="o">=</span>postgres-password<span class="o">=</span><span class="s1">'NewSecret'</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-43-3"><a id="__codelineno-43-3" name="__codelineno-43-3" href="#__codelineno-43-3"></a><span class="w">  </span>--from-literal<span class="o">=</span>app-password<span class="o">=</span><span class="s1">'NewAppPass'</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-43-4"><a id="__codelineno-43-4" name="__codelineno-43-4" href="#__codelineno-43-4"></a><span class="w">  </span>--dry-run<span class="o">=</span>client<span class="w"> </span>-o<span class="w"> </span>yaml<span class="w"> </span><span class="p">|</span><span class="w"> </span>kubectl<span class="w"> </span>apply<span class="w"> </span>-f<span class="w"> </span>-
+</span></code></pre></div>
+<details class="info">
+<summary>INFO</summary>
+<details class="question">
+<summary>Why?</summary>
+<p>The Secret is still the <em>declared</em> state — the chart and any
+future pod specs read from it. If it stays stale, the next fresh
+install (empty PVC) seeds the old password, and the env vars
+handed to the pod diverge from the DB — a confusing drift.
+Update the spec to match reality.</p>
+<p><strong>Why this construction:</strong> <code>kubectl create secret</code> alone would
+fail — the Secret already exists (<code>AlreadyExists</code>; <code>create</code>
+isn't idempotent). And <code>kubectl edit</code> means hand-juggling
+base64. The fix:</p>
+<ol>
+<li><code>--dry-run=client -o yaml</code> — render the Secret to YAML
+   <strong>locally</strong>, without touching the cluster
+   (<code>--dry-run=server</code> would validate against the API instead).</li>
+<li><code>| kubectl apply -f -</code> — apply does <strong>create-or-update</strong>
+   (upsert): creates if missing, patches if present. This is the
+   imperative→declarative bridge — <code>create</code> renders the spec,
+   <code>apply</code> persists it.</li>
+<li>No manifest file needed — which matters, because Secrets
+   shouldn't sit in files or git anyway.</li>
+</ol>
+</details>
+<details class="info">
+<summary>Expected output</summary>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-44-1"><a id="__codelineno-44-1" name="__codelineno-44-1" href="#__codelineno-44-1"></a>Warning:<span class="w"> </span>resource<span class="w"> </span>secrets/postgres-creds<span class="w"> </span>is<span class="w"> </span>missing<span class="w"> </span>the
+</span><span id="__span-44-2"><a id="__codelineno-44-2" name="__codelineno-44-2" href="#__codelineno-44-2"></a>kubectl.kubernetes.io/last-applied-configuration<span class="w"> </span>annotation<span class="w"> </span>...<span class="w"> </span><span class="c1"># (1)!</span>
+</span><span id="__span-44-3"><a id="__codelineno-44-3" name="__codelineno-44-3" href="#__codelineno-44-3"></a>The<span class="w"> </span>missing<span class="w"> </span>annotation<span class="w"> </span>will<span class="w"> </span>be<span class="w"> </span>patched<span class="w"> </span>automatically.
+</span><span id="__span-44-4"><a id="__codelineno-44-4" name="__codelineno-44-4" href="#__codelineno-44-4"></a>secret/postgres-creds<span class="w"> </span>configured<span class="w">          </span><span class="c1"># (2)!</span>
+</span></code></pre></div>
+<ol>
+<li>Expected on the <strong>first</strong> apply over an imperatively-created
+    object — see the warning dropdown below.</li>
+<li><code>configured</code> (not <code>created</code>) = the object existed and was
+    updated in place.</li>
+</ol>
+</details>
+<details class="warning">
+<summary>Why the <code>last-applied-configuration</code> warning?</summary>
+<p><code>kubectl apply</code> does a <strong>three-way merge</strong>: it diffs your input,
+the live object, and the <code>last-applied-configuration</code> annotation
+— which records what <em>you</em> last declared, so it can tell your
+changes apart from defaults and other actors. Objects created
+imperatively (like our step-1.1 <code>kubectl create secret</code>) have no
+such annotation, so apply warns and writes it in for you.</p>
+<p>Harmless — it only appears once. From now on the annotation
+exists and subsequent applies merge cleanly. This is also why
+the rule exists: <em>"only <code>apply</code> objects that were created
+declaratively"</em> — mixing imperative writes with apply is exactly
+what produces this class of warning.</p>
+</details>
+</details>
+</li>
+<li>
+<p>Restart the DB pod:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-45-1"><a id="__codelineno-45-1" name="__codelineno-45-1" href="#__codelineno-45-1"></a>kubectl<span class="w"> </span>rollout<span class="w"> </span>restart<span class="w"> </span>statefulset/pg-postgresql
+</span></code></pre></div>
+<details class="info">
+<summary>INFO</summary>
+<details class="question">
+<summary>Why?</summary>
+<p>Pods snapshot env-var secrets at startup — the running pod still has
+the <em>old</em> <code>POSTGRES_PASSWORD</code> in its environment. <code>rollout restart</code>
+cycles it so spec and runtime agree. Because you already rotated the
+password <em>inside</em> Postgres (step 3), nothing breaks — whereas
+restarting with a mismatched env var is exactly when the Bitnami
+"passwords diverge" warning would appear in the pod logs.</p>
+</details>
+<details class="info">
+<summary>Expected output</summary>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-46-1"><a id="__codelineno-46-1" name="__codelineno-46-1" href="#__codelineno-46-1"></a>statefulset.apps/pg-postgresql<span class="w"> </span>restarted<span class="w">  </span><span class="c1"># (1)!</span>
+</span></code></pre></div>
+<ol>
+<li>The pod is recreated one at a time (StatefulSets are ordered).
+    <code>kubectl get pods -w</code> shows the <code>Terminating</code> → <code>Running</code> cycle.</li>
+</ol>
+</details>
+</details>
+</li>
+</ol>
+<div class="admonition success">
+<p class="admonition-title">Verify</p>
+<p>Connect as <code>app_user</code> and confirm it can write <code>progress</code> but not create
+tables. After the rotation drill, <code>psql -U postgres</code> with the <strong>old</strong>
+password should fail and <code>NewSecret</code> should work — proof the rotation
+happened in the DB, not just the Secret. Rule: <strong>the app tier never uses
+superuser credentials.</strong></p>
+</div>
+<hr />
+<h2 id="14-cluster-dns-services">1.4 — Cluster DNS &amp; Services<a class="headerlink" href="#14-cluster-dns-services" title="Permanent link">&para;</a></h2>
+<p><strong>Goals:</strong> Understand how pods find each other.</p>
+<p><strong>Concepts:</strong> ClusterIP service types, DNS naming
+<code>svc.namespace.svc.cluster.local</code>, headless services.</p>
+<ol>
+<li>
+<p>List the services Helm created:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-47-1"><a id="__codelineno-47-1" name="__codelineno-47-1" href="#__codelineno-47-1"></a>kubectl<span class="w"> </span>get<span class="w"> </span>svc<span class="w"> </span>-n<span class="w"> </span>tutorial
+</span></code></pre></div>
+<details class="info">
+<summary>INFO</summary>
+<details class="question">
+<summary>Why?</summary>
+<p>the chart made two services — a normal ClusterIP and a headless
+one. Seeing both is the point.</p>
+</details>
+<details class="info">
+<summary>Expected output</summary>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-48-1"><a id="__codelineno-48-1" name="__codelineno-48-1" href="#__codelineno-48-1"></a>NAME<span class="w">                 </span>TYPE<span class="w">        </span>CLUSTER-IP<span class="w">     </span>PORT<span class="o">(</span>S<span class="o">)</span>
+</span><span id="__span-48-2"><a id="__codelineno-48-2" name="__codelineno-48-2" href="#__codelineno-48-2"></a>pg-postgresql<span class="w">        </span>ClusterIP<span class="w">   </span><span class="m">10</span>.43.x.x<span class="w">      </span><span class="m">5432</span>/TCP<span class="w">   </span><span class="c1"># (1)!</span>
+</span><span id="__span-48-3"><a id="__codelineno-48-3" name="__codelineno-48-3" href="#__codelineno-48-3"></a>pg-postgresql-hl<span class="w">     </span>ClusterIP<span class="w">   </span>None<span class="w">           </span><span class="m">5432</span>/TCP<span class="w">   </span><span class="c1"># (2)!</span>
+</span></code></pre></div>
+<ol>
+<li>Stable virtual IP fronting the postgres pod(s) — apps connect to
+    <em>this</em>, never a pod IP.</li>
+<li><code>CLUSTER-IP: None</code> = <strong>headless</strong> — DNS returns the pod IPs
+    directly instead of a VIP. StatefulSets use it so clients reach a
+    specific replica.</li>
+</ol>
+</details>
+</details>
+</li>
+<li>
+<p>Resolve the service name from inside the cluster:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-49-1"><a id="__codelineno-49-1" name="__codelineno-49-1" href="#__codelineno-49-1"></a>kubectl<span class="w"> </span>run<span class="w"> </span>dnsutils<span class="w"> </span>--image<span class="o">=</span>busybox:1.36<span class="w"> </span>--rm<span class="w"> </span>-it<span class="w"> </span>--restart<span class="o">=</span>Never<span class="w"> </span>--<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-49-2"><a id="__codelineno-49-2" name="__codelineno-49-2" href="#__codelineno-49-2"></a><span class="w">  </span>nslookup<span class="w"> </span>pg-postgresql.tutorial.svc.cluster.local
+</span></code></pre></div>
+<details class="info">
+<summary>INFO</summary>
+<details class="question">
+<summary>Why?</summary>
+<p>proves cluster DNS works — <code>nslookup</code> from a throwaway pod queries
+the same CoreDNS every pod uses.</p>
+</details>
+<details class="info">
+<summary>Expected output</summary>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-50-1"><a id="__codelineno-50-1" name="__codelineno-50-1" href="#__codelineno-50-1"></a>Server:<span class="w">    </span><span class="m">10</span>.43.0.10<span class="w">                          </span><span class="c1"># (1)!</span>
+</span><span id="__span-50-2"><a id="__codelineno-50-2" name="__codelineno-50-2" href="#__codelineno-50-2"></a>Address<span class="w"> </span><span class="m">1</span>:<span class="w"> </span><span class="m">10</span>.43.0.10<span class="w"> </span>kube-dns.kube-system.svc.cluster.local
+</span><span id="__span-50-3"><a id="__codelineno-50-3" name="__codelineno-50-3" href="#__codelineno-50-3"></a>
+</span><span id="__span-50-4"><a id="__codelineno-50-4" name="__codelineno-50-4" href="#__codelineno-50-4"></a>Name:<span class="w">      </span>pg-postgresql.tutorial.svc.cluster.local
+</span><span id="__span-50-5"><a id="__codelineno-50-5" name="__codelineno-50-5" href="#__codelineno-50-5"></a>Address<span class="w"> </span><span class="m">1</span>:<span class="w"> </span><span class="m">10</span>.43.x.x<span class="w">                           </span><span class="c1"># (2)!</span>
+</span></code></pre></div>
+<ol>
+<li><code>10.43.0.10</code> — CoreDNS, the cluster's DNS server.</li>
+<li>Resolves to the service's ClusterIP.</li>
+<li><code>--rm</code> deletes the pod on exit — nothing left to clean up.</li>
+</ol>
+</details>
+<details class="note">
+<summary>Where does that DNS name come from?</summary>
+<p>You don't look it up — you <strong>construct</strong> it from a fixed pattern:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-51-1"><a id="__codelineno-51-1" name="__codelineno-51-1" href="#__codelineno-51-1"></a>&lt;service&gt;.&lt;namespace&gt;.svc.cluster.local
+</span><span id="__span-51-2"><a id="__codelineno-51-2" name="__codelineno-51-2" href="#__codelineno-51-2"></a>└─ item 1    └─ you created   └─ same for every cluster
+</span><span id="__span-51-3"><a id="__codelineno-51-3" name="__codelineno-51-3" href="#__codelineno-51-3"></a>  output       it (1.1)
+</span></code></pre></div>
+<ul>
+<li><strong><code>&lt;service&gt;</code></strong> — the <code>NAME</code> column from step 1:
+  <code>kubectl get svc -n tutorial</code> → <code>pg-postgresql</code></li>
+<li><strong><code>&lt;namespace&gt;</code></strong> — <code>tutorial</code>, where the service lives</li>
+<li><strong><code>.svc.cluster.local</code></strong> — the cluster's baked-in DNS suffix;
+  <code>svc</code> marks it as a Service record</li>
+</ul>
+<p>And you rarely need the full form — every pod's
+<code>/etc/resolv.conf</code> (written by kubelet) carries <code>search</code> domains,
+so inside a pod <code>pg-postgresql</code> (same namespace) or
+<code>pg-postgresql.tutorial</code> (cross-namespace) resolve automatically.
+The FQDN is only needed when the caller lives in a <em>different</em>
+namespace — which is exactly the web/app tiers' case later.</p>
+</details>
+<details class="failure">
+<summary>Got <code>timed out waiting for the condition</code> + pod deleted?</summary>
+<p>Two likely causes — check your command first:</p>
+<ol>
+<li><strong>Missing <code>--</code> on <code>--restart=Never</code></strong> — typing <code>restart=Never</code>
+   without dashes makes kubectl treat it as a bare argument, so
+   the pod gets the default <code>restartPolicy: Always</code>. busybox runs
+   <code>nslookup</code>, exits, restarts, <code>CrashLoopBackOff</code> — and
+   <code>--rm -it</code> never gets a running container to attach to:
+   timeout, then the pod is deleted.</li>
+<li><strong>Slow image pull</strong> — the first <code>busybox:1.36</code> pull can exceed
+   the attach timeout. Retry the command (image is cached now),
+   or watch <code>kubectl get pods -w</code> to see <code>ContainerCreating</code>.</li>
+</ol>
+<p>Corrected form:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-52-1"><a id="__codelineno-52-1" name="__codelineno-52-1" href="#__codelineno-52-1"></a>kubectl<span class="w"> </span>run<span class="w"> </span>dnsutils<span class="w"> </span>--image<span class="o">=</span>busybox:1.36<span class="w"> </span>--rm<span class="w"> </span>-it<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-52-2"><a id="__codelineno-52-2" name="__codelineno-52-2" href="#__codelineno-52-2"></a><span class="w">  </span>--restart<span class="o">=</span>Never<span class="w"> </span>--<span class="w"> </span>nslookup<span class="w"> </span>pg-postgresql.tutorial.svc.cluster.local
+</span></code></pre></div>
+</details>
+</details>
+</li>
+<li>
+<p>See which pods sit behind the service:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-53-1"><a id="__codelineno-53-1" name="__codelineno-53-1" href="#__codelineno-53-1"></a>kubectl<span class="w"> </span>get<span class="w"> </span>endpoints<span class="w"> </span>pg-postgresql
+</span></code></pre></div>
+<details class="info">
+<summary>INFO</summary>
+<details class="question">
+<summary>Why?</summary>
+<p>a Service doesn't hold pods — it holds an <strong>Endpoints</strong> list that
+controllers keep in sync with Ready pods. This is the wiring.</p>
+</details>
+<details class="info">
+<summary>Expected output</summary>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-54-1"><a id="__codelineno-54-1" name="__codelineno-54-1" href="#__codelineno-54-1"></a>NAME<span class="w">            </span>ENDPOINTS<span class="w">          </span>AGE
+</span><span id="__span-54-2"><a id="__codelineno-54-2" name="__codelineno-54-2" href="#__codelineno-54-2"></a>pg-postgresql<span class="w">   </span><span class="m">10</span>.42.0.x:5432<span class="w">     </span>5m<span class="w">         </span><span class="c1"># (1)!</span>
+</span></code></pre></div>
+<ol>
+<li>The <em>pod</em> IP, not the service IP — traffic flows Service VIP →
+    endpoint → pod. Empty <code>ENDPOINTS</code> would mean no Ready pods match
+    the selector.</li>
+</ol>
+</details>
+</details>
+</li>
+</ol>
+<div class="admonition success">
+<p class="admonition-title">Verify</p>
+<p>DNS resolves the service name; endpoints match the postgres pod IP
+(compare with <code>kubectl get pod pg-postgresql-0 -o wide</code>).</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../phase-0/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Phase 0 · Environment &amp; Orientation">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Phase 0 · Environment & Orientation
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../phase-2/" class="md-footer__link md-footer__link--next" aria-label="Next: Phase 2 · App Tier (FastAPI)">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                Phase 2 · App Tier (FastAPI)
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.sections", "navigation.top", "navigation.indexes", "navigation.footer", "toc.follow", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>
